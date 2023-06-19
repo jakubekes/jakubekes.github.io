@@ -63,7 +63,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 .banner_main {
 	margin:20px auto;
 	max-width: 1050px;
-	min-height: 55px;
+	min-height: 70px;
 	padding:10px 10px;
  background: rgb(0,57,74);
 /*background: radial-gradient(circle, rgba(0,57,74,1) 0%, rgba(18,18,18,1) 46%, rgba(0,57,74,1) 100%); 
@@ -81,8 +81,7 @@ border:1px solid #fff;*/
 	font-family: "myFirstFont", "Courier New";
 	display:inline-block;
 	float:left;
-	height: 55px;
-	margin:0;
+	margin-top:10px;
 }
 
 .banner .banner_title {	
@@ -106,7 +105,7 @@ border:1px solid #fff;*/
 	display:inline-block;
 	height: 55px;
 	float:right;
-	margin-top:5px;
+	margin-top:12px;
 	/*background: #101020;*/
 	/*width: 100%;*/
 	/*border-bottom: 2px solid #008B8B;*/
