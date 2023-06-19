@@ -63,6 +63,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 .banner_main {
 	margin:20px auto;
 	max-width: 1050px;
+	min-width: 1000px;
 	min-height: 70px;
 	padding:10px 10px;
  background: rgb(0,57,74);
