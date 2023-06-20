@@ -152,7 +152,7 @@ die mit dem angegeben Speicher-DC kompatibel ist. Wenn es gelingt, ist der Rück
 </span><span class="sc10">}</span></div>
 &emsp;Starten von der Mainfunktion, prufen wir, ob das "ScreenshotTaker" Verzeichnis existiert, wenn nicht - wir erstellen das mit <span class="code_quote">std::filesystem::create_directory()</span> aus dem Filesystemheader (es funktioniert ab C++17). Wir können das auf die alte Weise mit <span class="code_quote">_mkdir</span> einschließlich <span class="code_quote">direct.h</span> tun.
 <br/>
-Danach stellen wir sicher dass das Konsolenfenster den Bildschirm nicht verdecken wird, deshalb verwenden wir class="code_quote">ShowWindow(GetConsoleWindow(), SW_HIDE)</span>.<br/>
+Danach stellen wir sicher dass das Konsolenfenster den Bildschirm nicht verdecken wird, deshalb verwenden wir <span> class="code_quote">ShowWindow(GetConsoleWindow(), SW_HIDE)</span>.<br/>
 Als nächstes erhalten wir aktuelle Uhrzeit als das ist wie unsere neue Bitmapdatei genannt wird und  konvertieren sie vom Zeitstempelwert in ein lesbares Datum mit <span class="code_quote">ctime_s()</span> Funktion.
 Um Stringdaten leicht zu manipulieren, verwenden wir <span class="code_quote">std::string</span> Variable.
 Als unserer Zeitstempelwert enthält eine Doppelpunkte, die fur Dateisystemnamen nicht erlaubt sind, ändern wir sie in Unterstrichzeichen, wenn sie aus dem Puffer in unsere Stringdatei umziehen.
@@ -167,7 +167,7 @@ Als nächstes stellen wir die alle Werten für <span class="code_quote">BITMAPIN
 
 &emsp;Um die Bytegröße von Bitmap zu berechnen müssen wir zuerst wissen, dass 32-Bit DWORD (siehe oben) zum Speichern von Werten in einer Zeile verwendet wird und seine Größe muss durch Auffüllen auf die DWORD Größe gerundet werden. Wir multiplizieren die Breite in Pixels mit einem BPP-Wert (32 allgemein für hohe Qualität) und addieren 31 (es ergibt sich aus der 32-Bit DWORD Größe minus 1, da wir den Divisionsoperator „/“ verwenden und daher abrunden) um ihn durch 32 (DWORD Bit-Größe) zu dividieren, also erhalten wir wie viele DWORDS für die einzelne Zeile gebraucht werden.
 Schließlich müssen wir mit 4 multiplizieren (weil DWORD gat 4 Bytegröße) um die Bytegröße von die Zeile zu erhalten. Am ende multiplizieren wir das Ergebnis mit Wert der Pixelhöhe.<br/>
-&emsp;Als nächste ordnen wir das Zeichenfeld für unsere Bitmapdatei mit der oben berechneten Größe  dynamisch zu und führen span class="code_quote">GetDIBits()</span> aus, die die Bits aus angegebene Bitmap in den Puffer als DIB umziehen.<br/>
+&emsp;Als nächste ordnen wir das Zeichenfeld für unsere Bitmapdatei mit der oben berechneten Größe  dynamisch zu und führen <span class="code_quote">GetDIBits()</span> aus, die die Bits aus angegebene Bitmap in den Puffer als DIB umziehen.<br/>
 
 &emsp;Endlich können wir alle Daten in einer Datei speichern. Wir benutzen unseren Handle und die <span class="code_quote">CreateFileW()</span> Funktion (CreateFileW verwendet eine Zeichenfolge von UNICODE UTF-16LE Zeichen für den Pfad also wchar_t).
 Wir rechnen die Gesamtgröße von der Datei also addieren die Größen von der Bitmap und von ihre Info-Headers was zusammen DIB darstellst, stellen den Offsetwert für das Pixelarray, Gesamtgröße und den Typ ein. Danach speichern wir alle drei Teile unserer Datei in der richtigen Reihenfolge und schließen den Dateihandle.<br/>
