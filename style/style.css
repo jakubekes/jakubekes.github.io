@@ -245,6 +245,10 @@ nav .mainmenu>li {
 
 @media (max-width: 1050px) {
 	
+	.content {
+		padding: 0px 10px 10px 10px;	
+	}
+	
 	.banner {
 		margin:0px;
 		width: 100%;
