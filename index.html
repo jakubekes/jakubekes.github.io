@@ -19,7 +19,7 @@
 
 </head>
 
-<body>
+<body onclick tabIndex=0>
 	<div id = "containers" class="container">
 	<div class="banner_main">
 
@@ -57,6 +57,35 @@
 			<div><a id = "register" >Register</a></div>		-->
 			</nav>
 	</div>
+
+	<nav class = "menu_thin">
+				<ul class = "mainmenu">
+					<span class="menu_break" >|</span>
+					<li><a id = "home"  href="#/home">Home</a></li>
+					<span class="menu_break" >|</span>
+					<li class = "parent" ><a>Articles</a>
+						<ul class = "child" >
+							<li><a>C++</a></li>		
+							<li><a id = "windows" href="#/windows">Windows</a></li>		
+							<li class = "parent" ><a>Linux </a><!--<span class = "expand" >|</span>
+								<ul class = "child">
+									<li><a>Article1</a></li>				
+									<li><a>Article2</a></li>
+									<li><a>Article3</a></li>
+									<li><a>Article4</a></li>
+								</ul>-->
+							</li>
+							<li><a>Virtualization</a></li>
+						</ul>
+					</li>
+					<span class="menu_break" >|</span>
+					<li><a id = "contact" href="#/contact">Contact</a></li>
+				</ul>
+				
+			<!--<div><a id = "signin"  >Sign in</a></div>
+			<div><a id = "register" >Register</a></div>		-->
+	</nav>
+
 
 		<div id = "contents" class="content"></div>
 		
