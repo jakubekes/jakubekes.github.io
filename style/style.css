@@ -271,7 +271,7 @@ nav .mainmenu>li {
 .content_title, .content_title a{
 	color:#eee;
 	font-style: italic;
-	font-family: consolas, monaco;
+	font-family: consolas, Monaco;
 	text-decoration:none;
 }
 
@@ -291,7 +291,7 @@ nav .mainmenu>li {
 	color: #D3D3D3;
 	font-size: 16px;
 	white-space: nowrap;
-	font-family: consolas, monaco;
+	font-family: consolas, Monaco;
 	white-space: pre;
 	border:1px solid #abf;	
 }
@@ -306,7 +306,7 @@ nav .mainmenu>li {
 	color: #D3D3D3;
 	font-size: 16px;
 	white-space: nowrap;
-	font-family: consolas, monaco;
+	font-family: consolas, Monaco;
 	white-space: pre;
 	border:1px solid #abf;	
 }
@@ -316,7 +316,7 @@ nav .mainmenu>li {
 	font-weight: bold;
 	/*color: #ee1a1a;*/
 	color:#FFE4B5;
-	font-family: consolas, monaco;
+	font-family: consolas, Monaco;
 }
 
 .quote {
