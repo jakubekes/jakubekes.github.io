@@ -19,7 +19,7 @@
 
 </head>
 
-<body>
+<body onclick tabIndex=0>
 	<div id = "containers" class="container">
 	<div class="banner_main">
 
