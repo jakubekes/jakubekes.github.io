@@ -311,7 +311,7 @@ nav .mainmenu>li {
 .content_title, .content_title a{
 	color:#eee;
 	font-style: italic;
-	font-family: consolas;
+	font-family: consolas, localFontConsola;
 	text-decoration:none;
 }
 
@@ -331,7 +331,7 @@ nav .mainmenu>li {
 	color: #D3D3D3;
 	font-size: 16px;
 	white-space: nowrap;
-	font-family: consola;
+	font-family: consolas, localFontConsola;
 	white-space: pre;
 	border:1px solid #abf;	
 }
@@ -346,7 +346,7 @@ nav .mainmenu>li {
 	color: #D3D3D3;
 	font-size: 16px;
 	white-space: nowrap;
-	font-family: consola;
+	font-family: consolas, localFontConsola;
 	white-space: pre;
 	border:1px solid #abf;	
 }
