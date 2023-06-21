@@ -101,22 +101,23 @@ border:1px solid #fff;*/
 
 .menu {
 	display:inline-block;
-	height: 50px;
-	width: 400px;
+	height: 45px;
+	width: 370px;
+	padding-top:10px;
 	float:right;
 }
 
 .menu_thin {
-	position:static;
+	position:relative;
 	margin: 0 auto;
-	height: 50px;
-	width:308px;
+	height: 32px;
+	width:280px;
 	display: none;
 }
 
 .mainmenu {
 	padding: 0px;
-	margin: 10px 0px 0px 0px;
+	margin: 0 auto;
 	font-weight:bold;
 	outline:none;
 }
@@ -242,48 +243,7 @@ nav .mainmenu>li {
 }
 
 
-@media (max-width: 1050px) {
-	
-	.content {
-		padding: 0px 10px 10px 10px;	
-	}
-	
-	.banner {
-		margin:0px;
-		width: 100%;
-	}
-	.banner_main{
-		min-height: 40px;	
-		margin:15px 10px 0px 10px;
-	}
-	
-	.banner .banner_title {
-		font-size:32px;
-	}
-	
-	.banner .banner_quote {
-		font-size:12px;
-	}
-	
-	nav a:link, nav a:visited, nav a:active, nav a{
-	font-size:1.1em;
-	padding: 5px;
-	width: 
-	}
-	
-	.menu {
-		display:none;
-	}
-	
-	.menu_thin {
-		display:block;
-	}
-	
-	.mainmenu {
-		margin: 0px;
-	}
-	
-}
+
 
 
 /* ******************* Contents styles ******************* */
@@ -407,4 +367,51 @@ nav .mainmenu>li {
 .sc16 {
 	font-weight: bold;
 	color: #CEDF99;
+}
+
+/*
+https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
+The most common reason for this issue is you define your @media queries before styling your element in CSS file so you should always put @media queries at the end of your CSS file!*/
+
+@media (max-width: 1050px) {
+	
+	.content {
+		padding: 0px 20px 10px 20px;	
+	}
+	
+	.banner {
+		margin:0px;
+		width: 100%;
+	}
+	.banner_main{
+		min-height: 40px;	
+		margin:15px 10px 0px 10px;
+	}
+	
+	.banner .banner_title {
+		font-size:32px;
+	}
+	
+	.banner .banner_quote {
+		font-size:12px;
+	}
+	
+	nav a:link, nav a:visited, nav a:active, nav a{
+	font-size:1.1em;
+	padding: 5px;
+	width: 
+	}
+	
+	.menu {
+		display:none;
+	}
+	
+	.menu_thin {
+		display:block;
+	}
+	
+	.mainmenu {
+		margin: 0px;
+	}
+	
 }
