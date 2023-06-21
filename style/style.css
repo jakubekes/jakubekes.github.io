@@ -162,6 +162,7 @@ nav .mainmenu>li {
 	background: rgba(30,30,30, .95);
 	position: absolute;
 	z-index: 1;
+	text-align:left;
 }
 
 /*.parent:hover>ul, .parent:active>ul {
