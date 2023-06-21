@@ -111,7 +111,7 @@ border:1px solid #fff;*/
 	position:relative;
 	margin: 0 auto;
 	height: 32px;
-	width:280px;
+	width:295px;
 	display: none;
 }
 
@@ -192,13 +192,6 @@ nav .mainmenu>li {
 	color: #ff0000;	
 }
 
-
-.styled-scrollbars {
-  --scrollbar-foreground: #999
-  --scrollbar-background: #333
-  /* Foreground, Background */
-  scrollbar-color: var(--scrollbar-foreground) var(--scrollbar-background);
-}
 .styled-scrollbars::-webkit-scrollbar {
   width: 10px; /* Mostly for vertical scrollbars */
   height: 10px; /* Mostly for horizontal scrollbars */
@@ -290,7 +283,7 @@ nav .mainmenu>li {
 	/*width: 95%;*/
 	height: 100%;
 	overflow-x:auto;
-	overflow-y:none;	
+	overflow-y:hidden;	
 	background: #111;
 	color: #D3D3D3;
 	font-size: 16px;
@@ -373,7 +366,7 @@ nav .mainmenu>li {
 https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
 The most common reason for this issue is you define your @media queries before styling your element in CSS file so you should always put @media queries at the end of your CSS file!*/
 
-@media only screen and (max-width: 1050px) {
+@media only screen and (max-width: 800px) {
 	
 	.content {
 		padding: 0px 20px 10px 20px;	
@@ -397,9 +390,8 @@ The most common reason for this issue is you define your @media queries before s
 	}
 	
 	nav a:link, nav a:visited, nav a:active, nav a{
-	font-size:1.1em;
-	padding: 5px;
-	width: 
+	font-size: 1.1em;
+	padding: 8px;
 	}
 	
 	.menu {
