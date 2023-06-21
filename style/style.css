@@ -399,11 +399,7 @@ The most common reason for this issue is you define your @media queries before s
 	}
 	
 	.menu_thin {
-		display:block;
-	}
-	
-	.mainmenu {
-		margin: 0px;
+		display:inline-block;
 	}
 	
 	.menu_break {
