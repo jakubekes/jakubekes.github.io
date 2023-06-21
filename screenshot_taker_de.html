@@ -152,7 +152,7 @@ die mit dem angegeben Speicher-DC kompatibel ist. Wenn es gelingt, ist der Rück
 </span><span class="sc10">}</span></div>
 &emsp;Starten von der Mainfunktion, prufen wir, ob das "ScreenshotTaker" Verzeichnis existiert, wenn nicht - wir erstellen das mit <span class="code_quote">std::filesystem::create_directory()</span> aus dem Filesystemheader (es funktioniert ab C++17). Wir können das auf die alte Weise mit <span class="code_quote">_mkdir</span> einschließlich <span class="code_quote">direct.h</span> tun.
 <br/>
-Danach stellen wir sicher dass das Konsolenfenster den Bildschirm nicht verdecken wird, deshalb verwenden wir <span> class="code_quote">ShowWindow(GetConsoleWindow(), SW_HIDE)</span>.<br/>
+Danach stellen wir sicher dass das Konsolenfenster den Bildschirm nicht verdecken wird, deshalb verwenden wir <span class="code_quote">ShowWindow(GetConsoleWindow(), SW_HIDE)</span>.<br/>
 Als nächstes erhalten wir aktuelle Uhrzeit als das ist wie unsere neue Bitmapdatei genannt wird und  konvertieren sie vom Zeitstempelwert in ein lesbares Datum mit <span class="code_quote">ctime_s()</span> Funktion.
 Um Stringdaten leicht zu manipulieren, verwenden wir <span class="code_quote">std::string</span> Variable.
 Als unserer Zeitstempelwert enthält eine Doppelpunkte, die fur Dateisystemnamen nicht erlaubt sind, ändern wir sie in Unterstrichzeichen, wenn sie aus dem Puffer in unsere Stringdatei umziehen.
