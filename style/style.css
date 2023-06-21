@@ -373,7 +373,7 @@ nav .mainmenu>li {
 https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
 The most common reason for this issue is you define your @media queries before styling your element in CSS file so you should always put @media queries at the end of your CSS file!*/
 
-@media (max-width: 1050px) {
+@media only screen and (max-width: 1050px) {
 	
 	.content {
 		padding: 0px 20px 10px 20px;	
@@ -412,6 +412,10 @@ The most common reason for this issue is you define your @media queries before s
 	
 	.mainmenu {
 		margin: 0px;
+	}
+	
+	.menu_break {
+	color: #0033ff;	
 	}
 	
 }
