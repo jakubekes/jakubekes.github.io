@@ -1,0 +1,410 @@
+html {
+	height:100%;
+}
+body{
+	height:100%;
+	margin: 0;
+	padding: 0;
+	background-image:URL("/pictures/bg.jpg");
+	background-size: 100% 100%;
+ /*background: rgb(40,40,50);*/
+/*background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(50,50,50,1) 15%, rgba(50,50,50,1) 85%, rgba(0,0,0,1)  100%);*/
+
+
+/*background:rgba(50,50,50,1);
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23BA1919' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23C40000'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+	*/
+	
+	font-family: verdana;
+	position:relative;
+}
+
+.container {
+	margin: 0 auto;
+	/*min-width:885px;	
+	//max-width:1050px;*/
+	width:100%;
+	min-height:calc(100% - 41px);
+	max-height:calc(100% - 41px);
+	overflow-y:auto;
+	overflow-x:hidden;
+	scrollbar-width: none;   /*Firefox */
+	/*border-left: 1px solid #050505;
+	border-right: 1px solid #050505;	*/
+	position: relative;
+}
+
+.container::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+.footer {
+	position:absolute;
+	bottom:0;
+	width:100%;
+	height: 41px;
+}
+
+.footer_text {
+	margin: 0 auto;
+	/*min-width:885px;*/		
+	max-width:1050px;		
+	height: 30px;
+	padding-top:10px;
+	color:#fff;
+	letter-spacing:5px;
+	text-align:center;
+	font-family: "Courier New";
+	position:relative;
+}
+
+/* ******************* Banner styles ******************* */
+
+.banner_main {
+	margin:20px auto;
+	max-width: 1050px;
+	min-height: 65px;
+	padding:10px 10px;
+	background: rgb(0,57,74);
+/*background: radial-gradient(circle, rgba(0,57,74,1) 0%, rgba(18,18,18,1) 46%, rgba(0,57,74,1) 100%); 
+border:1px solid #fff;*/
+	background-image:URL("/pictures/women_banner.jpg");
+    background-size: cover;
+	background-repeat:no-repeat;
+	border-radius: 50px;	
+	box-shadow: inset 0 6px 9px rgba(255,80,80,.16), 0 6px 9px rgba(255,80,80,.45);
+}
+
+.banner {
+	/*color: #50394c;*/
+	color:#D3D3D3;
+	/*font-family: 'Kanit', sans-serif;*/
+	font-family: "myFirstFont", "Courier New";
+	display:inline-block;
+	float:left;
+	margin-top:5px;
+}
+
+.banner .banner_title {	
+	margin-left:10px;
+	font-size:40px;
+	font-weight:bold;	
+	display: inline;
+}
+
+.banner .banner_quote {
+	font-size:15px;
+	font-style: italic;
+	display: inline-block;
+}
+
+/* ******************* Menu styles ******************* */
+
+.menu {
+	height: 45px;
+	width: 370px;
+	padding-top:10px;
+	float:right;
+}
+
+.menu_thin {
+	width: 100%;
+	height: 32px;
+	display: none;
+}
+
+.mainmenu {
+	width: 100%;
+	padding: 0px;
+	margin: 0 auto;
+	font-weight:bold;
+	outline:none;
+	text-align:center;
+}
+
+nav a:link, nav a:visited, nav a:active, nav a{
+	font-size:1.25em;
+	padding: 10px 15px;
+	text-decoration: none;
+	/*color:#0f0;*/
+	color:#eaeaea;
+	/*float: left;*/
+	width:auto;
+	border:none;
+	outline:none;
+	display:inline-block;
+	cursor: pointer;
+}
+
+nav a:hover, nav a:active{
+	color: #ff0000;
+	/*text-decoration:underline;*/
+	/*background: rgba(30, 30, 30,  .85);	*/
+	transition: all .2s ease-in-out;
+}
+
+nav a:hover>.expand {
+	/*color: #008B8B;	*/
+}
+
+nav .mainmenu>li {
+	display: inline-block;
+	position: relative;
+}
+
+.mainmenu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0px;
+}
+
+.child {
+	display: none;
+	background: rgba(30,30,30, .95);
+	position: absolute;
+	z-index: 1;
+	text-align:left;
+}
+
+/*.parent:hover>ul, .parent:active>ul {
+	display: block;
+	position: absolute;
+	left:100%;
+	top:0;
+	border-radius: 25px;
+	border: 1px solid #d3d3d3;
+}*/
+
+.mainmenu>.parent:hover>ul, .mainmenu>.parent:active>ul{
+	display: block;
+	position: absolute;
+	left:-25%;
+	top:100%;
+	border-radius: 25px;
+	border: 1px solid #d3d3d3;
+}
+
+.expand {
+	font-size:11px; 
+	float:right;
+}
+
+.menu_break {
+	color: #ff0000;	
+}
+
+.styled-scrollbars::-webkit-scrollbar {
+  width: 10px; /* Mostly for vertical scrollbars */
+  height: 10px; /* Mostly for horizontal scrollbars */
+}
+.styled-scrollbars::-webkit-scrollbar-thumb { /* Foreground */
+  background: var(--scrollbar-foreground);
+}
+.styled-scrollbars::-webkit-scrollbar-track { /* Background */
+  background: var(--scrollbar-background);
+}
+
+
+@font-face {
+  font-family: myFirstFont;
+  src: url(/Orbitron-Regular.ttf);
+}
+
+@font-face {
+  font-family: myFirstFont2;
+  src: url(/Michroma-Regular.ttf);
+}
+
+@font-face {
+  font-family: localFontConsola;
+  src: url(/consola.ttf);
+}
+
+/* ******************* Submenu styles ******************* */
+
+.submenu_site {
+	list-style: japanese-formal;
+}
+
+.submenu_site a {
+	color: #d3d3d3;
+	text-decoration:none;
+}
+
+.content a:hover, .content a:active {
+	text-decoration:underline;
+	cursor: pointer;	
+}
+
+
+
+
+
+/* ******************* Contents styles ******************* */
+
+.content {
+	z-index:1;
+	margin: 0 auto;
+	position:static;
+	/*min-width:885px;*/	
+	max-width:1020px;
+	padding: 20px;
+	font-family: noto sans, sans-serif;/*arial, helvetica, sans-serif;*/
+	text-align: justify;
+	/*font-size: 1.1rem;*/
+	font-size:15px;
+	line-height: 1.65rem;
+	border-left: 1px solid #D3D3D3;
+	border-right: 1px solid #D3D3D3;	
+	/*background: rgba(11, 11, 11,  .75);*/	
+	color:#efefef;
+
+}
+
+/*.content a{
+	text-decoration:none;
+	color:#944;
+}*/
+
+.content_title, .content_title a{
+	color:#eee;
+	font-style: italic;
+	font-family: consolas, "localFontConsola";
+	text-decoration:none;
+}
+
+.content_title_current {
+	font-weight: bold;
+	text-decoration:underline;
+}
+
+.code_short {
+	padding: 15px;
+	margin: 20px auto;
+	/*width: 95%;*/
+	height: 100%;
+	overflow-x:auto;
+	overflow-y:hidden;	
+	background: #111;
+	color: #D3D3D3;
+	font-size: 16px;
+	white-space: nowrap;
+	font-family: consolas, "localFontConsola";
+	white-space: pre;
+	border:1px solid #abf;	
+}
+
+.code_long {
+	padding: 15px;
+	margin: 20px auto;
+	/*width: 95%;*/
+	height: 400px;
+	overflow-x:auto;
+	background: #111;
+	color: #D3D3D3;
+	font-size: 16px;
+	white-space: nowrap;
+	font-family: consolas, "localFontConsola";
+	white-space: pre;
+	border:1px solid #abf;	
+}
+
+.code_quote {
+	font-style: italic;
+	font-weight: bold;
+	/*color: #ee1a1a;*/
+	color:#FFE4B5;
+	font-family: consolas, "localFontConsola";
+}
+
+.quote {
+	color: #88cccc;
+}
+
+.external_link {
+	color: #f00;
+	font-style: italic;
+	text-decoration: none;
+}
+
+.internal_link {
+	color: #4aa;
+	font-style: italic;
+	text-decoration: none;
+}
+
+
+.sc0 {
+	color: #9cc;
+}
+.sc2 {
+	font-weight: bold;
+	font-style: italic;
+	color: #7F9F7F;
+}
+.sc4 {
+	color: #8CD0D3;
+}
+.sc5 {
+	font-weight: bold;
+	color: #DFC47D;
+}
+.sc6 {
+	color: #CC9393;
+}
+.sc9 {
+	color: #FFCFAF;
+}
+.sc10 {
+	font-weight: bold;
+	color: #9F9D6D;
+}
+.sc11 {
+	
+}
+.sc16 {
+	font-weight: bold;
+	color: #CEDF99;
+}
+
+/*
+https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
+The most common reason for this issue is you define your @media queries before styling your element in CSS file so you should always put @media queries at the end of your CSS file!*/
+
+@media only screen and (max-width: 800px) {
+	
+	.content {
+		padding: 10px 20px 10px 20px;	
+	}
+	
+	.banner {
+		margin:0px;
+		width: 100%;
+	}
+	.banner_main{
+		min-height: 40px;	
+		margin:15px 10px 0px 10px;
+	}
+	
+	.banner .banner_title {
+		font-size:32px;
+	}
+	
+	.banner .banner_quote {
+		font-size:12px;
+	}
+	
+	nav a:link, nav a:visited, nav a:active, nav a{
+	font-size: 1.1em;
+	padding: 8px;
+	}
+	
+	.menu {
+		display:none;
+	}
+	
+	.menu_thin {
+		display:block;
+	}
+	
+}

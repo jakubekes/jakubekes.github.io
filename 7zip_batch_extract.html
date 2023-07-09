@@ -1,0 +1,40 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">7zip batch extract to subfolders</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;I had a few times situation requiring extraction from lot of archives saved under different dir tree levels so it had to be solved with some automated process.<br/>
+Below I'm presenting the batch file using <a class="external_link" target="_blank" href="https://www.7-zip.org/" >7-Zip</a>  file archiver. It extracts all *.zip *.7z *.rar archives into subfolders named like the source files with <span class="quote">"_extracted"</span> suffix.<br/><br/>
+
+<div id="codeid" class ="code_short">@ECHO ON
+
+SET source="C:\Users\Michael\Documents\Archives"<br/>
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.zip"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.7z"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.rar"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+EXIT
+</div>
+<br/>
+
+<span class="code_quote">@ECHO ON</span> - we turn commands echoing on.<br/><br/>
+
+<span class="code_quote">SET source=""</span> - definition of "source" variable containing string with the path to the directory where the script will be executed.<br/><br/>
+
+<span class="code_quote">FOR /F</span> - as we can find in help listed after entering <span class="code_quote">"FOR /?"</span> in command line, this will execute for loop for the file-set:<br/>
+<span class="quote">"file-set is one or more file names.  Each file is opened, read and processed before going on to the next file in file-set."</span><br/><br/>
+
+<span class="code_quote">"tokens=*"</span> - <span class="quote">specifies which tokens from each line are to be passed to the for body for each iteration. This will cause additional variable names to be allocated.</span><br/>
+By default token delimiters are space and tabulator. For example if we have below path like:<br/>
+<span class="quote">"C:\Users\Michael\Documents\Archives"</span> it counts as a one token but in another example:<br/>
+<span class="quote">"C:\Users\Michael Kohlhaas\Documents\Archives 1\"</span> we can separate three tokens, so if we would pass <span class="code_quote">"tokens=1"</span>, our variable <span class="code_quote">%F</span> would store <span class="quote">"C:\Users\Michael"</span> only. Using <span class="code_quote">"tokens=*"</span> we can be sure we passed complete string.<br/><br/>
+
+<span class="code_quote">%%F</span> - this is our variable storing value that change during every FOR loop execution round. <span style="text-decoration:underline;">We use double percentage sign in batch files, when executing directly in cmd we use only one!</span><br/><br/>
+
+<span class="code_quote">IN ('DIR /S /B "%source%\*.zip"')</span> - in this part we define IN what file-set we should execute the loop. <span class="code_quote">DIR</span> command will run through all directories and subdirectoriens thanks to <span class="code_quote">/S</span> option and return only bare format data without summary etc. (<span class="code_quote">/B</span> switch). We pass our <span class="code_quote">%source%</span> variable as the path, wildcard (<span class="code_quote">*</span>) to get all the filenames and proper extension (.zip .7z .rar).<br/><br/>
+
+<span class="code_quote">DO "C:\Program Files\7-Zip\7z.exe" x -aou "%%~fF" -o"%%~fF_extracted"</span> - finally we DO something, meaning in this case we execute 7Zip tool from its installation path with proper options:</br>
+<span class="code_quote">x</span> - extract files with full paths,<br/>
+<span class="code_quote">"%%~fF"</span> - <span class="code_quote">~f</span> expands our variable <span class="code_quote">%%F</span> to a fully qualified path name,<br/>
+<span class="code_quote">-o"%%~fF_extracted"</span> - we pass to <span class="code_quote">-o</span> (output directory) our variable what will create directory under the same path where currently executing file exists. Directory will be named same as the file with added <span class="quote">"_extracted"</span> suffix and contain content of the corresponding file.
+
+</div>

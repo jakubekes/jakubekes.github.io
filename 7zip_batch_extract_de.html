@@ -1,0 +1,41 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">7zip batch extract to subfolders <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Ich hatte mehrmals Situationen, denen die Extraction aus mehreren Archiven unter verschidene Ebene des Verzeichnisbaums erforderlich war, deshalb musste es mit einem automatisierten Prozess gelöst werden.<br/>
+Hier unten präsentiere ich eine Batch-Datei, die <a class="external_link" target="_blank" href="https://www.7-zip.org/" >7-Zip</a> Archivierer benutzt. 
+Es extrahiert alle *.zip *.7z *.rar Archive in Unterordnen, die wie die Quelldateien mit dem zugegeben <span class="quote">"_extracted"</span> Suffix benannt sind.<br/><br/>
+
+<div id="codeid" class = "code_short">@ECHO ON
+
+SET source="C:\Users\Michael\Documents\Archives"
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.zip"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.7z"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.rar"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"
+EXIT
+</div>
+<br/>
+
+<span class="code_quote">@ECHO ON</span> - wir aktivieren das Befehlsecho.<br/><br/>
+
+<span class="code_quote">SET source=""</span> - die Definition der "source" Variable, die eine Zeichenfolge mit dem Pfad zu dem Verzeichnis enthält, in dem das Skript ausgeführt wird.<br/><br/>
+
+<span class="code_quote">FOR /F</span> - wie wir in der Hilfe nach der <span class="code_quote">"FOR /?"</span> Eingabe in der Befehlszeile finden können, es wird eine For-Schleife für den Dateisatz ausführen:<br/>
+
+<span class="quote">"Dateisatz ist ein oder mehrere Dateinamen. Jede Datei wird geöffnet, gelesen und verarbeitet, bevor zur nächsten Datei im Dateisatz übergegangen wird."</span><br/><br/>
+
+<span class="code_quote">"tokens=*"</span> - <span class="quote">gibt an, welche Token aus jeder Zeile für jede Iteration an den For-Schleife Korper übergeben werden sollen. Dadurch werden zusätzliche Variablennamen vergeben.</span><br/>
+Standardmäßig sind Token-Trennzeichen Leerzeichen und Tabulator. Zum Beispiel, wenn wir den folgenden Pfad haben:<br/>
+<span class="quote">"C:\Users\Michael\Documents\Archives"</span> es zählt als ein Token, aber in einem anderen Beispiel:<br/>
+<span class="quote">"C:\Users\Michael Kohlhaas\Documents\Archives 1\"</span> wir können drei Token trennen, wenn wir also <span class="code_quote">"tokens=1"</span> übergeben würden, würde unsere Variable %F nur <span class="quote">"C:\Users\Michael"</span> speichern. Mit <span class="code_quote">"tokens=*"</span> können wir sicher sein, dass wir den vollständigen Zeichenfolge übergeben haben.<br/><br/>
+
+<span class="code_quote">%%F</span> - das ist unsere Variable, die den Wert speichert, der sich während jeder Ausführungsrunde der FOR-Schleife ändert. <span style="text-decoration:underline;">Wir verwenden doppelte Prozentzeichen in Batchdateien aber wenn wir direkt in cmd ausführen, verwenden wir nur eines!</span><br/><br/>
+
+<span class="code_quote">IN ('DIR /S /B "%source%\*.zip"')</span> - in diesem Teil definieren wir, IN welchem Dateisatz wir die Schleife ausführen sollen. Der DIR-Befehl durchläuft dank der Option <span class="code_quote">/S</span> alle Verzeichnisse und Unterverzeichnisse und gibt nur reine Formatdaten ohne Zusammenfassung usw. zurück (<span class="code_quote">/B</span> switch). Wir übergeben unsere <span class="code_quote">%source%</span> Variable als Pfad, Platzhalter (<span class="code_quote">*</span>) um alle Dateinamen und die richtige Erweiterungen erhalten (.zip .7z .rar).<br/><br/>
+
+<span class="code_quote">DO "C:\Program Files\7-Zip\7z.exe" x -aou "%%~fF" -o"%%~fF_extracted"</span> - schließlich TUN (DO) wir etwas, was in diesem Fall bedeutet, dass wir das 7Zip-Tool aus seinem Installationspfad mit den richtigen Optionen ausführen:</br>
+<span class="code_quote">x</span> - Dateien mit vollständigen Pfaden extrahieren,<br/>
+<span class="code_quote">"%%~fF"</span> - <span class="code_quote">~f</span> erweitert unsere Variable <span class="code_quote">%%F</span> zu einem vollständig qualifizierten Pfadnamen,<br/>
+<span class="code_quote">-o"%%~fF_extracted"</span> - wir übergeben an <span class="code_quote">-o</span> (Ausgabeverzeichnis) unsere Variable, die ein Verzeichnis unter demselben Pfad erstellt, in dem die aktuell ausgeführte Datei vorhanden ist. Das Verzeichnis wird genauso benannt wie die Datei mit dem Suffix <span class="quote">„_extracted“</span> und enthält den Inhalt der entsprechenden Datei.
+</div>
