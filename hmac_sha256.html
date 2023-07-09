@@ -49,10 +49,10 @@ Going back to conversion and merging 8-bit data chunks into 32-bit words, when t
 4: <span class="quote">put 1b</span> -> <span class="quote">0x80</span> -> <span class="quote">0b10000000</span> ->(no shift) -> <span class="quote">0b11111111111111111111111110000000</span></br>
 When I was using addition then I got this value:
 <span class="quote">0b01110010011011000110001110000000</span>,<br/>
-<span style="text-align:left;">nothing suspicious at the first look when comparing to the correct output:</span>
-<span class="quote">0b01110010011011000110010010000000</span>,<br/>
-<span style="text-align:left;">but when I did change addition to OR it was clearly visible something went wrong:</span>
-<span class="quote">0b11111111111111111111111110000000</span>.<br/>
+<div style="text-align:left;">nothing suspicious at the first look when comparing to the correct output:
+<span class="quote">0b01110010011011000110010010000000</span>,</div><br/>
+<div style="text-align:left;">but when I did change addition to OR it was clearly visible something went wrong:
+<span class="quote">0b11111111111111111111111110000000</span>.</div><br/>
 &emsp;Below code is complete standalone console program for generating only SHA256 or HMAC SHA256 hash with time measure function but obviously its purpose is rather to be used as internal function or library of complex program.<br/>
 I'm not copying here alogrithms descriptions because they're included under the links above.
 
