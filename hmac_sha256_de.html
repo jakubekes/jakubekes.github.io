@@ -45,11 +45,11 @@ Zurück zur 8-Bit Datenbrocken nach 32-Bit Wortdatenstrukturen konvertieren und 
 2: <span class="quote">'l'</span> -> <span class="quote">0x6C</span> -> <span class="quote">0b01101100</span> ->(Linksverschiebung 16 bits) -> <span class="quote">0b00000000011011000000000000000000</span><br/>
 3: <span class="quote">'d'</span> -> <span class="quote">0x64</span> -> <span class="quote">0b01100100</span> ->(Linksverschiebung 8 bits) -> <span class="quote">0b00000000000000000110010000000000</span><br/>
 4: <span class="quote">put 1b</span> -> <span class="quote">0x80</span> -> <span class="quote">0b10000000</span> ->(ohne die Verschiebung) -> <span class="quote">0b11111111111111111111111110000000</span></br>
-Als ich die Addierung verwendet habe, have ich dieser Wert erhalten:
-<span class="quote">0b01110010011011000110001110000000</span>,<br/>
+<div style="text-align:left;">Als ich die Addierung verwendet habe, have ich dieser Wert erhalten:
+<span class="quote">0b01110010011011000110001110000000</span>,</div>
 <div style="text-align:left;">nichts Verdächtiges auf den ersten Blick wann mit der richtigen Ausgabe vergleichen: 
 <span class="quote">0b01110010011011000110010010000000</span>,</div>
-align:left;">aber wenn ich addiere zu dem logischen OR ändern habe, es war deutlich sichtbar, dass etwas schlecht gegangen ist:
+<div style="text-align:left;">aber wenn ich addiere zu dem logischen OR ändern habe, es war deutlich sichtbar, dass etwas schlecht gegangen ist:
 <span class="quote">0b11111111111111111111111110000000</span>.</div><br/>
 &emsp;Der folgende Code ist das vollständige und eigenständige Programm für nur SHA-256 oder HMAC SHA-256 Hash-Funktion Erstellung mit der Zeitmessfunktion, aber natürlich ihr Zweck ist eher um als eine innere Funktion oder eine Bibliothek eines komplexen Programms zu verwenden werden.<br/>
 Ich kopiere hier keine Algorithmenbeschreibungen, da sie unter den obigen Links gefügt sind.
