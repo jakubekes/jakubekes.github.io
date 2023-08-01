@@ -36,7 +36,13 @@ var routes = {
     },  	  
 	'/hmac_sha256_de': function () { 
 		contents_load_func("hmac_sha256_de")
-    } 	 	 	
+    },  	  
+	'/efi_partition_access_windows': function () { 
+		contents_load_func("efi_partition_access_windows")
+    },  	  
+	'/efi_partition_access_windows_de': function () { 
+		contents_load_func("efi_partition_access_windows_de")
+    } 	 	 	 	 	
 };
 
 	var router = Router(routes);
