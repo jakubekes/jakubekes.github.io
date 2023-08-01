@@ -1,0 +1,23 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">EFI partition access on Windows</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Granting access to the EFI partition is not necessarily straightforward on Windows 10 machine and my reason to do this was related to Linux distro hopping what caused the partition full, resulting finally an error when trying to install another distribution.<br/>
+In some moment BIOS booting sequence looked like that, altough two of the Linux distros were not existing anymore:<br/>
+<img style='width:566px; display:block; margin: 20px auto; box-shadow: inset 0 6px 9px rgba(255,255,255,.16), 0 6px 9px rgba(255,255,255,.45); border-radius: 13px;' src='pictures/efi_partition_access_windows_1.jpg'>
+It is also worth mentioning that similar situation can happen in Windows BCD (Boot Configuration Data) when we install Linux in Dual Boot mode so entry is added to Windows Boot Manager. BCD we can check with <span class="quote">bcdedit</span> command in cmd or PS, however deleting them
+won't free up much space but I wanted to clean up the mess. The file is saved under <span class="quote">\EFI\Microsoft\Boot</span>.
+<a href = "https://medium.com/@duminduakalanka.14/how-to-use-bcdedit-command-line-tool-2e9c1328eb2b" target="_blank"><img style='width:566px; display:block; margin: 20px auto; box-shadow: inset 0 6px 9px rgba(255,255,255,.16), 0 6px 9px rgba(255,255,255,.45); border-radius: 13px;' src='pictures/efi_partition_access_windows_2.jpg' alt = "Source: https://medium.com/@duminduakalanka.14/how-to-use-bcdedit-command-line-tool-2e9c1328eb2b"></a>
+&emsp;Trying to mount EFI volume on Windows 10 as normal user even with administrative permissions can be tricky so there are some steps to do and get into:
+<ol>
+  <li>In cmd we type and start <span class="code_quote">diskpart</span> as Disk Management won't allow us to mount EFI volume.</li>
+  <li>We type <span class="code_quote">list volume</span> and determine which one is EFI partition, in my case it was "Volume 2", 100MB large, not mounted, formatted to FAT32 filesystem and "System" info.</li>
+  <li>Next we select it by executing <span class="code_quote">select volume 2</span></li>
+  <li>Then we mount it with <span class="code_quote">assign letter = e</span> (or any other free letter).</li>
+</ol>  
+Again, as normal user we won't access it through Windows Explorer, so I recommend to stay in cmd, if it has been launched without administrative rights, please relaunch it with them. We jump to EFI folder and after listing the content we see same stuff from the first screenshot:<br/>
+<img style='width:4\350px; display:block; margin: 20px auto; box-shadow: inset 0 6px 9px rgba(255,255,255,.16), 0 6px 9px rgba(255,255,255,.45); border-radius: 13px;' src='pictures/efi_partition_access_windows_3.jpg'>
+Now we can deleted unnecessary directories with their content to free up the space by using <span class="code_quote">rmdir /S/Q</span> command with proper switches to remove them recusively and quietly without additional confirmation.
+<img style='width:4\350px; display:block; margin: 20px auto; box-shadow: inset 0 6px 9px rgba(255,255,255,.16), 0 6px 9px rgba(255,255,255,.45); border-radius: 13px;' src='pictures/efi_partition_access_windows_4.jpg'>
+</div>
