@@ -407,4 +407,8 @@ The most common reason for this issue is you define your @media queries before s
 		display:block;
 	}
 	
+	.content_image {
+		width: 90%;
+	}
+	
 }
