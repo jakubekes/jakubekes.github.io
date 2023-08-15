@@ -19,6 +19,9 @@ var routes = {
 	'/cpp': function () { 
 		contents_load_func("cpp")
     },
+	'/virtualization': function () { 
+		contents_load_func("virtualization")
+    },
 	'/7zip_batch_extract': function () { 
 		contents_load_func("7zip_batch_extract")
     },  	  
@@ -42,7 +45,13 @@ var routes = {
     },  	  
 	'/efi_partition_access_windows_de': function () { 
 		contents_load_func("efi_partition_access_windows_de")
-    } 	 	 	 	 	
+    },  	  
+	'/qemu_basics': function () { 
+		contents_load_func("qemu_basics")
+    },  	  
+	'/qemu_basics_de': function () { 
+		contents_load_func("qemu_basics_de")
+    } 	 	 	 	 	 	
 };
 
 	var router = Router(routes);

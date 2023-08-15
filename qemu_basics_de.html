@@ -1,0 +1,174 @@
+<span class = "content_title"> <a href="#/virtualization"> Virtualization</a> / <span class = "content_title_current">QEMU basics <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>
+<img class = "content_image" style='max-width: 350px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_0.png'>
+
+&emsp;QEMU (Quick Emulator) ist eine freie Open Source Virtualisierungs und Emulations Software, der viele Gastbetriebssysteme auszuführen erlaubt. Er war grundsätzlich für Linux Systeme entwickelt, jedoch gibt es auch die Installateure für Windows und Mac OS verfugbär.</br>
+Wir können QEMU in zwei grundlegenden Betriebsmodi verwenden:<br/><br/>
+- voll System Emulation - führt eine standardmäßige virtuelle Maschine, einschließlich die gesamte Hardware (die CPU, der RAM, die Laufwerke, der Ethernet-Controller, die Soundkarte und andere). <br/><br/>
+- Benutzermodus Emulation - er kann die Prozessen auf einer CPU ausführen, die auf einer anderen kompiliert wurden. Er unterstüzt die Emulation von ARM, PowerPC, SPARC, x86, x86-64 and mehr (VirtualBox oder VMWare Player/Workstation sind keine Emulatoren und sie sind nur für die x86, x86-64 Prozessoren entwickelt).<br/><br/>
+QEMU kann selbständig arbeiten aber er ist am meistens mit der KVM (Kernel-based Virtual Machine) oder den Xen Hypervisoren / Beschleuniger auf den Linux-Betriebsysteme verwenden, was macht die Leistung tatsächlich gleich wie auf eine physische Maschine.<br/>
+Das QEMU Thema is erwähnenswert, da ist er nicht nur eine Low-End Linux-Gemeinschaft Virtualisierung Software. Es sieht so aus, dass der Virtualization Station Hypervisor des QNAP, der an der NAS Servers angeboten ist, basiert auf QEMU und es ist definitiv kein totes Projekt.<br/>
+Es sind einige Dateiformate, die virtuelle Laufwerke des QEMU presentieren:<br/>
+raw, qcow2, qcow, luks, vdi, vmdk, vhd/x und andere.<br/>
+Qcow2 ist das basic und neuste Dateiformat, das alle nützlichen Vorteile von QEMU beinhaltet.<br/>
+Nach dem QEMU auf Windows Herunterladen und Installieren, können wir das basic Konsolentool  verwenden starten, um eine Abbilder zu verwalten und wir machen das mit qemu-img (<a class="external_link" target="_blank" href="https://www.qemu.org/download">https://www.qemu.org/download</a>).<br/>
+<span class = "code_quote">qemu-img</span> Befehl - QEMU Dienstprogramm für die Laufwerksabbilder verwalten. Sie sollen nie qemu-img benutzen um die Laufwerksabbilder zu ändern, wenn sie von einer laufenden virtuellen Maschine oder von einem anderen Prozess verwenden sind. Die Maschine muss im ausgeschalteten Zustand werden um den qemu-img Befehl zu verwenden.<br/>
+Das ist eine standardmethode für die Arbeit mit den QEMU Abbilder in Windows, also nur diese Befehle  sind vorgeführt.<br/>
+Es ist wie die Structuren aussehen, nachdem qcow2 Datei Erstellung:
+<img class = "content_image" style='display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_1.png'>
+<span class="code_quote">qemu-img create -f qcow2 disk.qcow 64G</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird eine qcow2 Datei mit dem Namen 'disc.qcow', mit einer maximale Größe von 64GB erstellen.</span><br/><br/>
+Die alle Abbilder haben 2-Ebene Referentzanzahltabelle, die die Verwendung von jedem Host-Cluster und also die L1/L2 Tabelle beschreibt, die die Zuordnung von jedem Gast-Cluster beschreibt (mit keine Dateien zugeordnet, L2 ist weggelassen).<br/>
+Die L1 Tabelle ist ein Array von Dateioffsets zu L2 Tabellen und jede L2 Tabelle is ein Array der Dateioffsets zu Clustern.<br/>
+Nach dem Hinzufügen einige Daten:
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_2.png'>
+
+QEMU bietet natürlich die Unterstützung für Snapshots und wir können sie in interne und externe Snapshots unterteilen.
+
+<h2 style="text-align:center;">Die intern Snapshots</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+Nach dem intern Snapshot entwickeln:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_3.png'>
+
+.. und nach dem Hinzufügen einige Daten:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_4.png'>
+
+<span class = "code_quote">qemu-img snapshot -c one disk.qcow</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird ein intern Snapshot in der 'disk.qcow' Datei entwickeln, der wird 'one' markiert.</span><br/><br/>
+
+<span class = "code_quote">qemu-img snapshot -l disk.qcow</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird alle internen Snapshots von der 'disk.qcow' Datei auflisten.</span><br/><br/>
+
+<span class = "code_quote">qemu-img snapshot -d one disk.qcow</span><br/>
+<span style="font-style: italic;">Die obige Befehl wird ein intern Snapshot mit dem Tag 'one' in der 'disk.qcow' Datei entfernen.</span><br/><br/>
+
+Intern Snapshots können durch libvirt (Open Source API, Daemon und 
+Verwaltungstool zur Leitung der Plattformvirtualisierung) leicht verwaltet werden. Es gibt auch GUI Virt-Manager benannt. Die beide werden von Red Hat Inc entiwickelt. Intern Snapshots sind unabhängig von einander. Das Löschen einer Snapshots wird alle andere Snapshots immer noch völlig unabhängig bleiben. Die ganze Vorstellung von der Snapshot-Hierarchie ist tatsächlich nur die Metadaten. Intern Snapshots können live erstellt werden oder wann die Virtualmaschine ausgeschaltet ist.<br/>
+Zusammenfassend lässt sich sagen, wenn wir für die Benutzung interner Snapshots entscheiden, bleiben wir mit libvirt und Virt Manager, wird es auch live Snapshots verwenden lassen.<br/>
+
+<h2 style="text-align:center;">Extern Snapshots</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+Verwendung externer Snapshots kann etwas schwierig sein, selbst libvirt empfiehlt um sie mit qemu-img Befehltool manuell zu verwenden.<br/><br/>
+
+<span class = "code_quote">qemu-img create -f qcow2 -b disk.qcow snapshot.qcow</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird eine Datei‘snapshot.qcow' in dem qcow2 Format entwickeln und stellt ‘disk.qcow’ als Sicherungsdatei dafür ein. Jetzt sollte die VM aus der Datei snapshot.qcow gestarted werden und sie wird in Lese-/Schreibmodus funktionieren, disk.qcow wird nur in dem schreibgeschützten Modus verfügbar. Das Ausführen von VM über disk.qcow kann den Snapshot beschädigen!<</span><br/><br/>
+
+Mehr als ein Gast kann dieselbe Sicherungsdatei verwenden:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_5.png'>
+
+Zwei Snapshotskette mit der Basisdatei:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_6.png'>
+
+<h3>Das Löschen des Snapshot</h3>
+
+Stellen wir “Basis ← Snap1 ← Snap2 ← Snap3 ← aktive Schicht” Kette vor, wo wollen wir den 'Snap2' wegnehmen. Es ist machbar durch 'Snap1' in 'Snap2' Übertragung oder durch die Bestätigung ‘Snap2’ in 
+‘Snap1’. Es sieht aus dass die Übertragung kann nur über libvirt verwalten werden.<br/>
+Die Standardmethode, die mit "qemu-img" funktioniert:<br/><br/>
+
+<span class = "code_quote">qemu-img commit -f qcow2 snapshot.qcow</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird alle Änderungen der 'snapshot.qcow' Datei in ihre Basisdatei bestätigen.</span></br>
+
+<span style="font-style: italic; color:red;">Während wir uns auf extern Snapshots konzentrieren, die mit dem Tool qemu-img verwaltet werden, brauchen wir erstlich um der Snapshot mit der Basisdatei zu bestätigen und danach können wir ihn sicher löschen. Die Verwendung des Snapshots in der Kette oder die Basisdatei wird alle Snapshots beschädigen.</span><br/><br/>
+
+Der qemu-img convert Befehl kann eine Konvertierung zwischen des mehreren Formaten ausführen, einschließlich qcow2, qed, raw, vdi, vhd/x, and vmdk.<br/><br/>
+
+<span class = "code_quote">qemu-img convert -f qcow2 -O vhdx disk.qcow disk.vhdx</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird die disk.qcow qcow2 Format Datei in vhdx Format konvertieren und sie mit disk.vhdx benennen. -f ist optional, weil qemu wird das Quelldateiformat erkennen.</span><br/><br/>
+
+Dies kann auch für die Bestätigung der Kette verwendet werden- die Übergabe des Snapshot als die Quelldatei wird eine neue eigenständige Datei erstellen, durch zusammenführen von die voll Sicherungskette, z.B.:<br/><br/>
+
+<span class = "code_quote">qemu-img convert -f qcow2 -O qcow2 snapshot.qcow disk_complete.qcow</span>
+
+<h2 style="text-align:center;">Weitere nützliche Befehle</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+<span class = "code_quote">qemu-img info disk.qcow</span> – <span style="font-style: italic;">zeigt die Hauptinformationen zur Datei disk.qcow Datei.</span>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_7.png'>
+
+Wenn die Snapshotdatei übergeben, erhalten wir die Information darüber, welche Datei ist die Sicherungsdatei:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_8.png'>
+
+<span class = "code_quote">qemu-img check disk.qcow</span> – <span style="font-style: italic;">überprüft die Datei disk.qcow auf Fehler.</span>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_9.png'>
+
+Wenn überprüfen die Snapshotdatei, der Befehl wird die ganze Sicherungskette überprüft, falls eine Datei fehlt, erhalten wir eine Fehlermeldung:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_10.png'>
+
+der Sektor 0:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_11.png'>
+
+<span style="font-style: italic;">Der obige Sektor 0 kommt von der Snapshotdatei und wir können beim Offset 0x198 die Information über die Basisdatei, welche win10.qcow2 ist.</span><br/><br/>
+<span class = "code_quote">qemu-system-x86_64 -cdrom win10.iso -enable-kvm -m 2048 -smp 2 -drive
+file=disk.qcow,format=qcow2</span><br/>
+<span style="font-style: italic;">Der obige Befehl wird die VM auf x86_64 Gastgeber gestartet werden:</span><br/>
+<span class = "code_quote">-cdrom win10.iso</span> - verwendet win10.iso als CD-ROM-Gerät.<br/>
+<span class = "code_quote">-enable-kvm</span> – macht die KVM Beschleunigung (Linux) an,<br/>
+<span class = "code_quote">-m 2048</span> – verwendet 2048MB RAM,<br/>
+<span class = "code_quote">-smp 2</span> – verwendet 2 Kerne/Threads,<br/>
+<span class = "code_quote">-drive file=disk.qcow,format=qcow2</span> – benutzt virtuelle Laufwerk disk.qcow im qcow2 Format.<br/>
+
+<h2 style="text-align:center;">Was passiert, wenn wir einen VMWare oder VirtualBox Snapshot löschen? </h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<h3>VirtualBox (von der Oracle VirtualBox Webseite):</h3>
+
+Wenn du später einen Snapshot löschen, um Speichernplatz freizugeben, für jeden Laufwerkanhang, eines von Snapshotabbilder obsolet wird. In diesem Fall, kann das Snapshotabbild nicht einfach gelöscht werden. Stattdessen muss sich Oracle VM VirtualBox auf jeden Sektor des Snapshotabbild anssehen und es zurück nach seinem übergeordnet Abbild kopieren. Es ist Abbilder "bestätigen" benannt und es kann möglicherweise ein langer Prozess sein, es hängt davon ab, wie groß das Schnappschussbild ist. Es kann auch 
+Es kann auch vorübergehend eine beträchtliche Menge zusätzlichen Speicherplatzes benötigen, bevor der Snapshotabbild, der durch den Zusammenführungsprozess veraltete ist, gelöscht wird.<br/>
+
+<h3>VMWare (von der VMWare Webseite):</h3>
+<h4>Löschen der Snapshots</h4>
+
+Löschung eines Snapshots nimmt den Snapshot aus dem Snapshot-Manager weg. VMWare Snapshotdateien sind zusammengelegt und nach übergeordnet Snapshotabbild gespeichert und nach dem Basislaufwerk der virtuellen machinen bestätigt.<br/><br/>
+Löschung eines Snapshots ändert die virtuelle Maschine oder andere Snapshots nicht. Löschung eines Snapshots legst die Änderungen zwischen die Snapshots und vorherige Laufwerkenzustände zusammen, und speichert alle Daten von Deltalaufwerk, der die Information über entfernt Spanshots enthält, nach dem Basislaufwerk. Wenn du den basis, ersten Snapshots entfernt, alle Änderungen mit dem Basislaufwerk zusammengeführt werden.
+
+<h4>Delete (Löschen)</h4>
+Benutzt die Delete Option um einen übergeordnet oder untenstehenden Snapshot aus dem Snapshots-Baum zu entfernen. Delete schreibst Laufwerksänderungen nach dem Basislaufwerk, die zwischen den Snapshotszustände und dem vorherigen Laufwerkenzustand geschehen.<br/><br/>
+Anmerkung: Löschung einen einzelnen Snapshot behält den aktuellen Zustand der virtuellen Maschine und wirkt  andere Snapshots nicht ein.<br/><br/>
+Du kannst auch die Delete Option benutzen um einen beschädigten Snapshot zu entfernen oder seine Dateien von einem verlassener Zweig des Snapshotsbaum, ohne zusammenführen sie mit dem übergeordneten Snapshot.
+
+<h4>Delete All (Alles löschen)</h4>
+Benutzt die Delete All Option um alle Snapshots aus dem Snapshot-Manager wegzunehmen. Delete all konsolidiert and schreibt die Änderungen nach dem übergeordneten Basislaufwerk auf, die zwischen Snapshots und vorherige Deltalaufwerkzustände geschehen und Delete All führt sie mit dem Basislaufwerk der virtuellen Maschine zusammen.<br/><br/>
+Delete all Operation der Snapshots wird alle Snapshots der Kette nach dem(n) Basislaufwerk(e) der virtuellen Maschine bestätigt. Mit diesem neuen Algorithmus:<br/><br/>
+&emsp;Wenn das Basislaufwerk vorab zugewiesene ist (thick provision), keinen zusätzlichen Speicherplatz für den Delete all Befehl erforderlich ist. Das Basislaufwerk wird nicht wachsen, weil es zugewiesene oder thick ist.<br/>
+&emsp;Wenn das Basislaufwerk nicht vorab zugewiesene ist (thin provision), wird es nur wachsen, wenn er  Informationen von den Snapshots bestätigt. Jedes thin provision Laufwerk kann wachsen bis zur maximalen Größe, wie in die Provisioned Size Option für das Laufwerk von den Einstellungen der virtuellen Maschine  erwähnt.<br/>
+
+<h2 style="text-align:center;">Quellen</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+<a class="external_link" target="_blank" href="https://wiki.qemu.org/Documentation">https://wiki.qemu.org/Documentation</a><br/>
+
+<a class="external_link" target="_blank" href="https://www.qemu.org/documentation/">https://www.qemu.org/documentation/</a><br/>
+
+<a class="external_link" target="_blank" href="http://manpages.ubuntu.com/manpages/trusty/man1/qemu-img.1.html">http://manpages.ubuntu.com/manpages/trusty/man1/qemu-img.1.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://blog.wikichoon.com/2014/03/snapshot-support-in-virt-manager.html">https://blog.wikichoon.com/2014/03/snapshot-support-in-virt-manager.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://youtu.be/etIGp12RHRE">https://youtu.be/etIGp12RHRE</a><br/>
+
+<a class="external_link" target="_blank" href="https://youtu.be/Yo3fTh7L2tA">https://youtu.be/Yo3fTh7L2tA</a><br/>
+
+<a class="external_link" target="_blank" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockpull_to_shorten_a_backing_chain">https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockpull_to_shorten_a_backing_chain</a><br/>
+
+<a class="external_link" target="_blank" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockcommit_to_shorten_a_backing_chain">https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockcommit_to_shorten_a_backing_chain</a><br/>
+
+<a class="external_link" target="_blank" href="https://libvirt.org/">https://libvirt.org/</a><br/>
+
+<a class="external_link" target="_blank" href="https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/diffimages.html">https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/diffimages.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://kb.vmware.com/s/article/1023657">https://kb.vmware.com/s/article/1023657</a>
+</div>

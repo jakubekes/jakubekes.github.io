@@ -1,0 +1,218 @@
+<span class = "content_title"> <a href="#/virtualization"> Virtualization</a> / <span class = "content_title_current">QEMU basics</span> </span>
+<hr/>
+<br/>
+
+<div>
+<img class = "content_image" style='max-width: 350px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_0.png'>
+
+
+&emsp;QEMU (Quick Emulator) is free, open-source virtualization and emulation software that allows 
+to run lot of guest operating systems. It was designed basically for Linux systems, however 
+there are also installers available for Windows and Mac OS.<br/>
+We can use QEMU in two basic operating modes:<br/><br/>
+- full system emulation- runs standard full system virtual machine including all the hardware 
+(CPU, RAM, drives, ethernet controller, sound card and others). <br/><br/>
+- user mode emulation- can launch processes compiled for one CPU on another CPU. It 
+supports emulation of ARM, PowerPC, SPARC, x86, x86-64 and more (VirtualBox or VMWare 
+Player/Workstation are not emulators and are designed only for x86, x86-64 processors).<br/><br/>
+QEMU can work independently but mostly is used with KVM (Kernel-based Virtual Machine) or 
+Xen hypervisors / accelerators on Linux systems what makes the performance practically like 
+on a physical machine.<br/>
+The QEMU topic is worth mentioning as it’s not only low-end Linux community virtualization 
+software. It looks that Virtualization Station hypervisor offered by QNAP on NAS servers is 
+based on QEMU, and it’s definitely not a dead project.<br/>
+There are a few file formats representing virtual disks working with QEMU:<br/>
+raw, qcow2, qcow, luks, vdi, vmdk, vhd/x and others.<br/>
+Qcow2 is the basic and newest file format which takes all useful advantages of QEMU.
+After downloading and installing qemu on Windows we can start using basic console tool to 
+manage images which is qemu-img (<a class="external_link" target="_blank" href="https://www.qemu.org/download">https://www.qemu.org/download</a>).<br/>
+<span class = "code_quote">qemu-img</span> command – QEMU disk image utility. Never use qemu-img to modify images in use 
+by a running virtual machine or any other process. Machine must be in shutdown state to use 
+qemu-img command.<br/>
+It is the standard way of working with QEMU images on Windows so only these commands are 
+presented.<br/>
+This is how the structures look like after creating new qcow2 file:
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 6px 9px rgba(255,255,255,.16), 0 6px 9px rgba(255,255,255,.45); border-radius: 13px;'  src='pictures/qemu_basics_1.png'>
+
+<span class="code_quote">qemu-img create -f qcow2 disk.qcow 64G</span><br/>
+<span style="font-style: italic;">The above command will create a qcow2 file named ‘disk.qcow’ with 64GB maximum size.</span><br/><br/>
+
+All images have a 2-level refcount table, describing the usage of each host cluster and also 
+L1/L2 table, describing the mapping of each guest cluster (with no data mapped, L2 is 
+omitted).
+The L1 table is an array of file offsets to L2 tables, and each L2 table is an array of file offsets 
+to clusters.<br/>
+After adding some data:
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_2.png'>
+
+QEMU naturally offers snapshots support and we can divide them into internal and external 
+snapshots.
+
+<h2 style="text-align:center;">Internal snapshots</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+After creating an internal snapshot:<br/>
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_3.png'>
+
+.. and adding some data to it.<br/>
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_4.png'>
+
+<span class = "code_quote">qemu-img snapshot -c one disk.qcow</span><br/>
+<span style="font-style: italic;">The above command will create an internal snapshot tagged ‘one’ in ‘disk.qcow’ file.</span><br/><br/>
+
+<span class = "code_quote">qemu-img snapshot -l disk.qcow</span><br/>
+<span style="font-style: italic;">The above command will list all internal snapshots in ‘disk.qcow’ file.</span><br/><br/>
+
+<span class = "code_quote">qemu-img snapshot -d one disk.qcow</span><br/>
+<span style="font-style: italic;">The above command will delete an internal snapshot tagged ‘one’ in ‘disk.qcow’ file.</span><br/><br/>
+
+Internal snapshots can be easily managed by libvirt (open-source API, daemon and 
+management tool for managing platform virtualization). There is also GUI called Virt-Manager. 
+Both are developed by Red Hat Inc. Internal snapshots are all independent of each other. 
+Deleting any snapshots will cause that all snapshots left are still completely independent. Any 
+notion of a snapshot hierarchy is really just metadata. Internal snapshots can be taken live or 
+on turned off VM.<br/>
+To summarize, if we decide to use internal snapshots let’s stay with libvirt and Virt Manager, it 
+will also allow to use live snapshots.<br/>
+
+<h2 style="text-align:center;">External snapshots</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+External snapshots usage can be a bit tricky, even libvirt suggests to manage them manually 
+using qemu-img command tool.<br/><br/>
+
+<span class = "code_quote">qemu-img create -f qcow2 -b disk.qcow snapshot.qcow</span><br/>
+<span style="font-style: italic;">The above command will create new file ‘snapshot.qcow in qcow2 format and set ‘disk.qcow’ as a backing file for it. Now VM should be started from snapshot.qcow file and it will work in read-write mode, disk.qcow will be only in read-only mode. Running VM from disk.qcow can damage the snapshot!</span><br/><br/>
+
+More than one guest can use the same backing file:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_5.png'>
+
+Two snapshots chain with the base file:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_6.png'>
+
+<h3>Deleting a snapshot</h3>
+Let’s imagine “base ← snap1 ← snap2 ← snap3 ← active layer” chain where we want to get rid 
+of ‘snap2’ snapshot. It can be done by pulling ‘snap1’ into ‘snap2’ or committing ‘snap2’ into 
+‘snap1’. It looks blockpull can be managed mainly with libvirt.<br/>
+Standard way which works with “qemu-img” tool:<br/><br/>
+
+<span class = "code_quote">qemu-img commit -f qcow2 snapshot.qcow</span><br/>
+<span style="font-style: italic;">The above command will commit all changes from ‘snapshot.qcow’ to its base file.</span></br>
+
+<span style="font-style: italic; color:red;">While focusing on external snapshots managed with qemu-img tool, we need first to commit snapshot with the base file and then we can safely delete it. Using older snapshots in chain or just the base file will damage all children snapshots.</span><br/><br/>
+
+The qemu-img convert command can do conversion between multiple formats, including 
+qcow2, qed, raw, vdi, vhd/x, and vmdk.<br/><br/>
+
+<span class = "code_quote">qemu-img convert -f qcow2 -O vhdx disk.qcow disk.vhdx</span><br/>
+<span style="font-style: italic;">The above command will convert disk.qcow file in qcow2 format to vhdx format and name it disk.vhdx. -f is optional as qemu will try to recognize source file format.</span><br/><br/>
+
+This can be used also for committing the chain- passing the snapshot as the source file will 
+create new file merging all backing chain into one standalone file, i.e.:<br/><br/>
+<span class = "code_quote">qemu-img convert -f qcow2 -O qcow2 snapshot.qcow disk_complete.qcow</span>
+
+<h2 style="text-align:center;">Other useful commands</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+<span class = "code_quote">qemu-img info disk.qcow</span> – <span style="font-style: italic;">shows the main information about the file disk.qcow.</span>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_7.png'>
+
+When passing the snapshot file we get info about which file is the backing file:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_8.png'>
+
+<span class = "code_quote">qemu-img check disk.qcow</span> – <span style="font-style: italic;"> checks the file disk.qcow for any errors.</span>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_9.png'>
+
+When checking the snapshot file it will check whole backing chain, when any file is missing we 
+get an error:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_10.png'>
+
+Sector 0:<br/>
+
+<img class = "content_image" style='max-width:750px; display:block; margin: 20px auto; border-radius: 10px;'  src='pictures/qemu_basics_11.png'>
+
+<span style="font-style: italic;">Above sector 0 comes from snapshot file, we can notice at 0x198 offset information about the backing file which is win10.qcow2.</span><br/><br/>
+<span class = "code_quote">qemu-system-x86_64 -cdrom win10.iso -enable-kvm -m 2048 -smp 2 -drive
+file=disk.qcow,format=qcow2</span><br/>
+<span style="font-style: italic;">Above command will start VM on x86_64 hosts:</span><br/>
+<span class = "code_quote">-cdrom win10.iso</span> - use win10.iso as cdrom device.<br/>
+<span class = "code_quote">-enable-kvm</span> – enable KVM acceleration (Linux),<br/>
+<span class = "code_quote">-m 2048</span> – use 2048MB of RAM,<br/>
+<span class = "code_quote">-smp 2</span> – use 2 cores/threads,<br/>
+<span class = "code_quote">-drive file=disk.qcow,format=qcow2</span> – use disk.qcow virtual drive in qcow2 format.<br/>
+
+<h2 style="text-align:center;">What happens when we delete a VMware or VirtualBox snapshot?</h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<h3>VirtualBox (from Oracle VirtualBox site):</h3>
+If you later delete a snapshot in order to free disk space, for each disk attachment, one of the 
+differencing images becomes obsolete. In this case, the differencing image of the disk 
+attachment cannot simply be deleted. Instead, Oracle VM VirtualBox needs to look at each 
+sector of the differencing image and needs to copy it back into its parent. This is called 
+"merging" images and can be a potentially lengthy process, depending on how large the 
+differencing image is. It can also temporarily need a considerable amount of extra disk space, 
+before the differencing image obsoleted by the merge operation is deleted.<br/>
+<h3>VMWare (from VMWare site):</h3>
+<h4>Deleting Snapshots</h4>
+Deleting a snapshot removes the snapshot from the Snapshot Manager. The VMware snapshot 
+files are consolidated and written to the parent snapshot disk and merge with the virtual 
+machine base disk.<br/><br/>
+Deleting a snapshot does not change the virtual machine or other snapshots. Deleting a 
+snapshot consolidates the changes between snapshots and previous disk states and writes all 
+the data from the delta disk that contains the information about the deleted snapshot to the 
+parent disk. When you delete the base parent snapshot, all changes merge with the base 
+virtual machine disk.
+<h4>Delete</h4>
+Use the Delete option to remove a single parent or child snapshot from the snapshot tree. 
+Delete writes disk changes that occur between the state of the snapshot and the previous disk 
+state to the parent snapshot.<br/><br/>
+Note: Deleting a single snapshot preserves the current state of the virtual machine and does 
+not affect any other snapshot.<br/><br/>
+You can also use the Delete option to remove a corrupt snapshot and its files from an 
+abandoned branch of the snapshot tree without merging them with the parent snapshot.
+<h4>Delete All</h4>
+Use the Delete All option to delete all snapshots from the Snapshot Manager. Delete all 
+consolidates and writes the changes that occur between snapshots and the previous delta disk 
+states to the base parent disk and merges them with the base virtual machine disk.<br/><br/>
+Delete all snapshots operation will commit every snapshot of the chain directly to the Base 
+Disk(s) of the virtual machine. With this new algorithm:<br/><br/>
+&emsp;If the Base Disk is preallocated (thick provision), no extra space is required for the Delete 
+all operation. The Base Disk will not grow as it is preallocated or thick.<br/>
+&emsp;If the Base Disk is non-preallocated (thin provision), the base disk will grow only on 
+committing information from the snapshots. Each thin provision disk may grow up to its 
+maximum size as mentioned in the Provisioned Size option in the virtual machine settings for 
+the disk.<br/>
+
+<h2 style="text-align:center;">Sources</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+<a class="external_link" target="_blank" href="https://wiki.qemu.org/Documentation">https://wiki.qemu.org/Documentation</a><br/>
+
+<a class="external_link" target="_blank" href="https://www.qemu.org/documentation/">https://www.qemu.org/documentation/</a><br/>
+
+<a class="external_link" target="_blank" href="http://manpages.ubuntu.com/manpages/trusty/man1/qemu-img.1.html">http://manpages.ubuntu.com/manpages/trusty/man1/qemu-img.1.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://blog.wikichoon.com/2014/03/snapshot-support-in-virt-manager.html">https://blog.wikichoon.com/2014/03/snapshot-support-in-virt-manager.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://youtu.be/etIGp12RHRE">https://youtu.be/etIGp12RHRE</a><br/>
+
+<a class="external_link" target="_blank" href="https://youtu.be/Yo3fTh7L2tA">https://youtu.be/Yo3fTh7L2tA</a><br/>
+
+<a class="external_link" target="_blank" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockpull_to_shorten_a_backing_chain">https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockpull_to_shorten_a_backing_chain</a><br/>
+
+<a class="external_link" target="_blank" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockcommit_to_shorten_a_backing_chain">https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/virtualization_administration_guide/sub-sect-domain_commands-using_blockcommit_to_shorten_a_backing_chain</a><br/>
+
+<a class="external_link" target="_blank" href="https://libvirt.org/">https://libvirt.org/</a><br/>
+
+<a class="external_link" target="_blank" href="https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/diffimages.html">https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/diffimages.html</a><br/>
+
+<a class="external_link" target="_blank" href="https://kb.vmware.com/s/article/1023657">https://kb.vmware.com/s/article/1023657</a>
+</div>
