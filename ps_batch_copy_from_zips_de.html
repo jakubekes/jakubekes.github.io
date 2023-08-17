@@ -1,0 +1,25 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell batch copy from zips <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Unten können sie sehen den einfachen PoweShell-Code, der bei mir als Einziger funktioniert hat, wann ich Batch-Extraktion den bäschadigten Zip-Archiven versucht habe. 7Zip, PS Expand-Archive, cmd tar - alles ist gescheitert. Ich habe bemerkt, das ich hinein diesen Archiven mit dem Windows Explorer oder der Total Commander Anwendung betreten kann und dass „Alle extrahieren“ des Explorers funktioniert richtig, wenn man mit der rechten Maustaste auf eine Datei klickt.<br/>
+Ich habe damals nachgedacht als ich finden sollte, wie kann ich "Extract All" in cmd/PS ausführen aber der Effekt ist tatsätzlich derselbe, wie wenn spezifische Zip-Datei als ein Verzeichnis betreten, den Inhalt kopieren und nach Zielordner einfügen, also der Code unten gleichwertig ist.<br/>
+&emsp;Der Code wird dürch angegebenen Pfad recursiv gehen und er wird den Inhalt der allen Zips nach dem Ordner unten dem Zielordner der Zip-Datei mit "_extracted" suffix kopieren. Wenn keinen Inhalt kopiert ist, dann wird erstellter Ordner gelöscht.
+
+<div id="codeid" class ="code_short" style = "background-color:#012456"><span class="sc5">$shell</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc9">New-Object</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">ComObject</span><span class="sc0"> </span><span class="sc7">Shell</span><span class="sc6">.</span><span class="sc7">Application</span><span class="sc0">
+
+</span><span class="sc8">foreach</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$file</span><span class="sc0"> </span><span class="sc8">in</span><span class="sc0"> </span><span class="sc9">Get-ChildItem</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc2">"C:\Users\Bill\Desktop\Archives\*.zip"</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Recurse</span><span class="sc6">){</span><span class="sc0">
+    </span><span class="sc5">$newpath</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">"$file"</span><span class="sc6">+</span><span class="sc2">"_extracted"</span><span class="sc0">
+    </span><span class="sc7">MKDIR</span><span class="sc0"> </span><span class="sc5">$newpath</span><span class="sc0">
+    </span><span class="sc5">$shell</span><span class="sc6">.</span><span class="sc7">Namespace</span><span class="sc6">(</span><span class="sc5">$newpath</span><span class="sc6">).</span><span class="sc7">copyhere</span><span class="sc6">((</span><span class="sc5">$shell</span><span class="sc6">.</span><span class="sc7">NameSpace</span><span class="sc6">(</span><span class="sc5">$file</span><span class="sc6">.</span><span class="sc7">FullName</span><span class="sc6">)).</span><span class="sc7">items</span><span class="sc6">(),</span><span class="sc4">1560</span><span class="sc6">)</span><span class="sc0">
+    
+    </span><span class="sc8">if</span><span class="sc6">((</span><span class="sc9">Get-ChildItem</span><span class="sc0"> </span><span class="sc5">$newpath</span><span class="sc0"> </span><span class="sc6">|</span><span class="sc0"> </span><span class="sc9">Measure-Object</span><span class="sc6">).</span><span class="sc7">Count</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc6">){</span><span class="sc0">
+        </span><span class="sc9">Remove-Item</span><span class="sc0"> </span><span class="sc2">"$newpath"</span><span class="sc0">
+    </span><span class="sc6">}</span><span class="sc0">
+</span><span class="sc6">}</span>
+</div>
+<br/>
+
+
+</div>

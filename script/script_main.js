@@ -51,7 +51,13 @@ var routes = {
     },  	  
 	'/qemu_basics_de': function () { 
 		contents_load_func("qemu_basics_de")
-    } 	 	 	 	 	 	
+    },  	  
+	'/ps_batch_copy_from_zips': function () { 
+		contents_load_func("ps_batch_copy_from_zips")
+    },  	  
+	'/ps_batch_copy_from_zips_de': function () { 
+		contents_load_func("ps_batch_copy_from_zips_de")
+    }  	 	  	 	 	 	 	 	
 };
 
 	var router = Router(routes);
