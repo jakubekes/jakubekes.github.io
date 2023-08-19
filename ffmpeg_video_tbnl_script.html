@@ -1,0 +1,15 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">Video thumbnails script with FFmpeg</span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Simple script that uses <a class="external_link" target="_blank" href="https://www.ffmpeg.org/" >FFmpeg</a> and extracts pointed to frames to jpg files. In my case, the names and dates of the video files were lost, but every clip had visible film slate during the first seconds so it was possible to dump timeframe 00:00:00 and comfortably restore missing names and include dates. To read more about cmd details please reffer to this article: <a class="internal_link" href="#/7zip_batch_extract">7zip batch extract to subfolders</a> / <a class="internal_link" href="#/7zip_batch_extract_de" style ="color:#f00;">DE Version</a>.
+
+<div id="codeid" class ="code_short">SET source=C:\Users\Bill\Videos\
+SET ffmpeg=C:\Users\Bill\Downloads\ffmpeg\ffmpeg-6.0-full_build\bin\ffmpeg.exe
+SET destination=C:\Users\Bill\Videos\tbnls\
+
+FOR /F "tokens=*" %F IN ('DIR /S /B "%source%\*.MKV"') DO %ffmpeg% -i "%F" -ss 00:00:00 -vframes 1 -s 1920x1080 "%destination%%~nxF.jpg"
+</div>
+<br/>
+</div>

@@ -1,0 +1,14 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">Video thumbnails script with FFmpeg  <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>&emsp; Einfaches Skript das <a class="external_link" target="_blank" href="https://www.ffmpeg.org/" >FFmpeg</a> verwendet und angegebene Videobilder nach jpg Dateien extrahieren. In meinem Fall, die Namen und die Erstellungsdaten / Änderungsdaten von den Videodataien war verloren, aber alle Videoclips hatten einen sichtbaren Filmschiefer in den ersten Sekunden, also es war möglich um ein 00:00:00 Videobild zu fangen und verlorene Dateinamen und Daten bequem zu wiederherstellen. Um mehr über cmd-Einzelheiten zu lesen, bitte gehen sie nach diesem Artikel: <a class="internal_link" href="#/7zip_batch_extract">7zip batch extract to subfolders</a> / <a class="internal_link" href="#/7zip_batch_extract_de" style ="color:#f00;">DE Version</a>.
+
+<div id="codeid" class ="code_short">SET source=C:\Users\Bill\Videos\
+SET ffmpeg=C:\Users\Bill\Downloads\ffmpeg\ffmpeg-6.0-full_build\bin\ffmpeg.exe
+SET destination=C:\Users\Bill\Videos\tbnls\
+
+FOR /F "tokens=*" %F IN ('DIR /S /B "%source%\*.MKV"') DO %ffmpeg% -i "%F" -ss 00:00:00 -vframes 1 -s 1920x1080 "%destination%%~nxF.jpg"
+</div>
+<br/>
+</div>

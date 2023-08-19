@@ -57,7 +57,13 @@ var routes = {
     },  	  
 	'/ps_batch_copy_from_zips_de': function () { 
 		contents_load_func("ps_batch_copy_from_zips_de")
-    }  	 	  	 	 	 	 	 	
+    },  	  
+	'/ffmpeg_video_tbnl_script': function () { 
+		contents_load_func("ffmpeg_video_tbnl_script")
+    },  	  
+	'/ffmpeg_video_tbnl_script_de': function () { 
+		contents_load_func("ffmpeg_video_tbnl_script_de")
+    }   	 	  	 	 	 	 	 	
 };
 
 	var router = Router(routes);
