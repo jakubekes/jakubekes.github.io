@@ -1,0 +1,33 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">John The Ripper - Cracking the MS Office docx basics</span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Here is the simple example how to use <a class="external_link" target="_blank" href="https://www.openwall.com/john/" >John the Ripper</a> password cracker in case of password protected MS Office document like docx.<br/>
+First we need to create hash of the file and this can be made with one of John's scripts written in <a class="external_link" target="_blank" href="https://www.python.org/" >Python</a> under <span class="quote">\run\office2john.py</span>. When you have Python installed just type in cmd:<br/>
+
+<div id="codeid" class ="code_short">python <span class ="quote">&lt;path to office2john.py&gt; &lt;path to Office file&gt;</span> &gt; <span class ="quote">&lt;path to file where hash has to be saved&gt</span>
+</div>
+When we have the hash file we can start hacking. John has a lot of options which can be checked in <a class="external_link" target="_blank" href="https://www.openwall.com/john/doc/" >documentation</a> or invoked with --help. For my case I got some advices what the password could be, so I could create some pattern/mask to significantly shorten the hacking time. It looked like this:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john1.png'>
+
+Also normally John will use CPU, but it's much faster to take advantage of GPU if we have such possibility. John itself recommends tu add <span class="code_quote">--format=office-opencl</span> parameter, however we can expect this outcome:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john2.png'>
+
+To fix this we need to edit the file <span class ="quote">\etc\OpenCL\vendors\amd.icd</span> with the default path pointing to c:\Windows\System32\amdocl64.dll (there is also naturally nvidia.icd file with the default path c:\Windows\System32\nvopencl.dll) and we need to edit it by finding first proper path for this file, anyway look for it under c:\Windows\System32. After fix we can go further:
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john3.png'>
+
+<div id="codeid" class ="code_short">john.exe --mask=[a-z][a-z][a-z][a-z][a-z]?d?d --format=office-opencl C:\Users\Bill\Desktop\john\hash.txt
+</div>
+
+..and succesfully crack the password:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john4.png'>
+
+Just please notice I changed the mask to make it faster :). Correct password is passw12. Also worth attention is that we can press 'q' or Ctrl-C to quit and use any other key to show the cracking status.
+If you want to play with different options for the same hash, compare CPU vs GPU cracking speed etc. you need to delete the corresponding log from the file <span class="quote">\run\john.pot</span> as john will inform you it has been already hacked.
+
+</div>

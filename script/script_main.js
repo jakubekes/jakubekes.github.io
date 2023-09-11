@@ -63,7 +63,19 @@ var routes = {
     },  	  
 	'/ffmpeg_video_tbnl_script_de': function () { 
 		contents_load_func("ffmpeg_video_tbnl_script_de")
-    }   	 	  	 	 	 	 	 	
+    },  	  
+	'/john-the-ripper_office_pwd_cracking': function () { 
+		contents_load_func("john-the-ripper_office_pwd_cracking")
+    },  	  
+	'/john-the-ripper_office_pwd_cracking_de': function () { 
+		contents_load_func("john-the-ripper_office_pwd_cracking_de")
+    },  	  
+	'/ps_hash_copy': function () { 
+		contents_load_func("ps_hash_copy")
+    },  	  
+	'/ps_hash_copy_de': function () { 
+		contents_load_func("ps_hash_copy_de")
+    }
 };
 
 	var router = Router(routes);

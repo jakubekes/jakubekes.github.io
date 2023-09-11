@@ -1,0 +1,117 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell batch copy from zips</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;I was asked one time to prepare copying code that would compare hashes after each file copy and log it to the file. To improve my PS skills I decided to use this MS scripting language.<br/>
+After writing a few first lines of the code I was greeted by this communicate:
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/ps_hash_copy_0.png'>
+
+If we investigate the execution policy state with <span class="code_quote">Get-ExecutionPolicy</span> we can see it's "Restricted". To change this we have to launch PS as Administrator and execute <span class="code_quote">Set-ExecutionPolicy RemoteSigned</span>. RemoteSigned is the default execution policy for Windows server computers:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/ps_hash_copy_1.png'>
+
+The script takes just two arguments, source path as the first and destination path as the second. They can be absolute or relative to current working directory. First part of the code checks if exactly two arguments have been provided and if the source path exists. Two log files are then created if they are not already there. After this basic variables are initialized from the provided arguments with the paths and also int for errors count. In the end destination directory is made if <span class="code_quote">Test-Path</span> fails indicating that it doesn't exist.<br/>
+Main <span class="code_quote">foreach</span> loop is set to take every object on the way what means it returns every directory or file as its full path. In such case we first check if object is folder/container (<span class="code_quote">$object.PSIsContainer -eq $true</span>) and create it if it's true, otherwise we need to handle with the file.<br/>
+We <span class="code_quote">Get-FileHash</span> from the source file and prepare complete path for the new copy. When the copy operation is finished hash is calculated for the new file and both are compared. If mismatch will occur we are informed about it and everything is getting logged like every step of this code, however errors are additionaly saved separetely to <span class="quote">hashCopyError.log</span>. In the end we are ensured if copy with hash checking went correctly or if hash inequalities occured.
+<br/>
+<button id="buttoncodeheightid" onclick="change_code_height();" style="float:right; width:100px;">100% height</button>
+<br/>
+<div id="codeid" class ="code_long" style = "background-color:#012456"><span class="sc8">if</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$args</span><span class="sc6">.</span><span class="sc7">count</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">lt</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc6">)</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+    </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Not enough arguments provided, terminating."</span><span class="sc0">
+    </span><span class="sc7">exit</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0"> </span><span class="sc8">elseif</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$args</span><span class="sc6">.</span><span class="sc7">count</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">gt</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc0"> </span><span class="sc6">)</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+    </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Too many arguments provided, terminating."</span><span class="sc0">
+    </span><span class="sc7">exit</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0"> </span><span class="sc8">elseif</span><span class="sc0"> </span><span class="sc6">(-</span><span class="sc7">not</span><span class="sc6">(</span><span class="sc9">Test-Path</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$args</span><span class="sc6">[</span><span class="sc4">0</span><span class="sc6">]))</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+    </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Source path doesn't exist, terminating."</span><span class="sc0">
+    </span><span class="sc7">exit</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0"> 
+
+</span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">".\hashCopy.log"</span><span class="sc0">
+</span><span class="sc8">if</span><span class="sc6">(-</span><span class="sc7">not</span><span class="sc6">(</span><span class="sc9">Test-Path</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc6">)){</span><span class="sc0">
+</span><span class="sc9">New-Item</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$logFile</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0">
+
+</span><span class="sc5">$errorLogFile</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">".\hashCopyError.log"</span><span class="sc0">
+</span><span class="sc8">if</span><span class="sc6">(-</span><span class="sc7">not</span><span class="sc6">(</span><span class="sc9">Test-Path</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$errorLogFile</span><span class="sc6">)){</span><span class="sc0">
+</span><span class="sc9">New-Item</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$errorLogFile</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0">
+
+</span><span class="sc5">$errorsCount</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc0">
+
+</span><span class="sc5">$sourcePath</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc9">Get-Item</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$args</span><span class="sc6">[</span><span class="sc4">0</span><span class="sc6">])).</span><span class="sc7">FullName</span><span class="sc0">
+</span><span class="sc5">$sourcePathLen</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$sourcePath</span><span class="sc6">.</span><span class="sc7">Length</span><span class="sc0">
+</span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Source path: $sourcePath"</span><span class="sc0">
+</span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Source path length: $sourcePathLen"</span><span class="sc0">
+
+</span><span class="sc5">$destPath</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$args</span><span class="sc6">[</span><span class="sc4">1</span><span class="sc6">]</span><span class="sc0">
+</span><span class="sc5">$destPathLen</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$destPath</span><span class="sc6">.</span><span class="sc7">Length</span><span class="sc0">
+</span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Destination path: $destPath"</span><span class="sc0">
+</span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Destination path length: $destPathLen"</span><span class="sc0">
+
+</span><span class="sc8">if</span><span class="sc6">(-</span><span class="sc7">not</span><span class="sc6">(</span><span class="sc9">Test-Path</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$destPath</span><span class="sc6">)){</span><span class="sc0">
+</span><span class="sc7">MKDIR</span><span class="sc0"> </span><span class="sc5">$destPath</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0">
+
+</span><span class="sc8">foreach</span><span class="sc6">(</span><span class="sc5">$object</span><span class="sc0"> </span><span class="sc8">in</span><span class="sc0"> </span><span class="sc9">Get-ChildItem</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$sourcePath</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Recurse</span><span class="sc6">){</span><span class="sc0">
+    
+    </span><span class="sc8">if</span><span class="sc6">(</span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">PSIsContainer</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc5">$true</span><span class="sc6">){</span><span class="sc0">
+        </span><span class="sc5">$newObject</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$destPath</span><span class="sc6">+</span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">FullName</span><span class="sc6">.</span><span class="sc7">substring</span><span class="sc6">(</span><span class="sc5">$sourcePathLen</span><span class="sc6">)</span><span class="sc0">
+        </span><span class="sc7">MKDIR</span><span class="sc0"> </span><span class="sc5">$newObject</span><span class="sc0">
+    </span><span class="sc6">}</span><span class="sc0"> </span><span class="sc8">else</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+        </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Calculating hash for the file:"</span><span class="sc0">
+        </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"Calculating hash for the file:"</span><span class="sc0">
+        
+        </span><span class="sc5">$objectHash</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc7">Get-FileHash</span><span class="sc0"> </span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">FullName</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Algorithm</span><span class="sc0"> </span><span class="sc7">SHA256</span><span class="sc0">
+        
+        </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Hash: $objectHash"</span><span class="sc0">
+        </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"Hash: $objectHash"</span><span class="sc0">
+        
+        </span><span class="sc5">$newObject</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$destPath</span><span class="sc6">+</span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">FullName</span><span class="sc6">.</span><span class="sc7">substring</span><span class="sc6">(</span><span class="sc5">$sourcePathLen</span><span class="sc6">)</span><span class="sc0">
+        
+        </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Starting copy of the file.."</span><span class="sc0">
+        </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"Starting copy of the file.."</span><span class="sc0">
+        
+        </span><span class="sc9">Copy-Item</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">FullName</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Destination</span><span class="sc0"> </span><span class="sc5">$newObject</span><span class="sc0">
+        
+        </span><span class="sc5">$newObjectHash</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc7">Get-FileHash</span><span class="sc0"> </span><span class="sc5">$newObject</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Algorithm</span><span class="sc0"> </span><span class="sc7">SHA256</span><span class="sc0">
+        
+        </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"New object: $newObject"</span><span class="sc0">
+        </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"New object hash: $newObjectHash"</span><span class="sc0">
+        </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"New object hash: $newObjectHash"</span><span class="sc0">
+        
+        </span><span class="sc8">if</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$objectHash</span><span class="sc6">.</span><span class="sc7">Hash</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc5">$newObjectHash</span><span class="sc6">.</span><span class="sc7">Hash</span><span class="sc6">){</span><span class="sc0">
+            </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Hashes are equal!"</span><span class="sc0">
+            </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"Hashes are equal!`n"</span><span class="sc0">
+        </span><span class="sc6">}</span><span class="sc0"> </span><span class="sc8">else</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+            </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Hashes are NOT equal!"</span><span class="sc0">
+            </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$logFile</span><span class="sc0"> </span><span class="sc2">"Hashes are NOT equal!`n"</span><span class="sc0">
+            </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$errorLogFile</span><span class="sc0"> </span><span class="sc2">"Hash: $objectHash"</span><span class="sc0">
+            </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$errorLogFile</span><span class="sc0"> </span><span class="sc2">"New object hash:: $newObjectHash"</span><span class="sc0">
+            </span><span class="sc9">Add-Content</span><span class="sc0"> </span><span class="sc5">$errorLogFile</span><span class="sc0"> </span><span class="sc2">"Hashes are NOT equal!"</span><span class="sc0">
+            </span><span class="sc5">$errorsCount</span><span class="sc6">++</span><span class="sc0">
+        </span><span class="sc6">}</span><span class="sc0">   
+    </span><span class="sc6">}</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0">
+
+</span><span class="sc8">if</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$errorsCount</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc6">){</span><span class="sc0">
+    </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"No hash mismatches occured."</span><span class="sc0">
+</span><span class="sc6">}</span><span class="sc0"> </span><span class="sc8">else</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+    </span><span class="sc9">Write-Output</span><span class="sc0"> </span><span class="sc2">"Hash mismatches occured: $errorsCount. Check the hashCopyError.log file."</span><span class="sc0">
+</span><span class="sc6">}</span>
+</div>
+<br/>
+
+
+</div>
+
+<!--
+
+#add function to try again if hashes are not equal
+#add parameters to start script
+#how to enable running scripts!
+#dragging in admin mode doesn't work "You should be able to drag between 2 programs running elevated, but as far as I know explorer never runs elevated" - https://stackoverflow.com/questions/28658787/powershell-drag-and-drop-does-not-work-when-running-as-administrator
+
+-->
