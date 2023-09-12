@@ -11,7 +11,7 @@ First we need to create hash of the file and this can be made with one of John's
 When we have the hash file we can start hacking. John has a lot of options which can be checked in <a class="external_link" target="_blank" href="https://www.openwall.com/john/doc/" >documentation</a> or invoked with --help. For my case I got some advices what the password could be, so I could create some pattern/mask to significantly shorten the hacking time. It looked like this:<br/>
 
 <div class ="code_image">
-<img class = "content_image" style='display:block; margin: 0px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john1.png'>
+<img class = "content_image" style='display:block; height: auto; width: auto; margin: 0px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john1.png'>
 </div>
 
 Also normally John will use CPU, but it's much faster to take advantage of GPU if we have such possibility. John itself recommends tu add <span class="code_quote">--format=office-opencl</span> parameter, however we can expect this outcome:<br/>
