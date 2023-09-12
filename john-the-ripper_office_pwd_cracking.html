@@ -6,11 +6,13 @@
 &emsp;Here is the simple example how to use <a class="external_link" target="_blank" href="https://www.openwall.com/john/" >John the Ripper</a> password cracker in case of password protected MS Office document like docx.<br/>
 First we need to create hash of the file and this can be made with one of John's scripts written in <a class="external_link" target="_blank" href="https://www.python.org/" >Python</a> under <span class="quote">\run\office2john.py</span>. When you have Python installed just type in cmd:<br/>
 
-<div id="codeid" class ="code_short">python <span class ="quote">&lt;path to office2john.py&gt; &lt;path to Office file&gt;</span> &gt; <span class ="quote">&lt;path to file where hash has to be saved&gt</span>
+<div class ="code_short">python <span class ="quote">&lt;path to office2john.py&gt; &lt;path to Office file&gt;</span> &gt; <span class ="quote">&lt;path to file where hash has to be saved&gt</span>
 </div>
 When we have the hash file we can start hacking. John has a lot of options which can be checked in <a class="external_link" target="_blank" href="https://www.openwall.com/john/doc/" >documentation</a> or invoked with --help. For my case I got some advices what the password could be, so I could create some pattern/mask to significantly shorten the hacking time. It looked like this:<br/>
 
-<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john1.png'onclick="this.requestFullscreen()">
+<div class ="code_image">
+<img class = "content_image" style='display:block; margin: 0px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john1.png'>
+</div>
 
 Also normally John will use CPU, but it's much faster to take advantage of GPU if we have such possibility. John itself recommends tu add <span class="code_quote">--format=office-opencl</span> parameter, however we can expect this outcome:<br/>
 
@@ -20,7 +22,7 @@ To fix this we need to edit the file <span class ="quote">\etc\OpenCL\vendors\am
 
 <img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john3.png'>
 
-<div id="codeid" class ="code_short">john.exe --mask=[a-z][a-z][a-z][a-z][a-z]?d?d --format=office-opencl C:\Users\Bill\Desktop\john\hash.txt
+<div class ="code_short">john.exe --mask=[a-z][a-z][a-z][a-z][a-z]?d?d --format=office-opencl C:\Users\Bill\Desktop\john\hash.txt
 </div>
 
 ..and succesfully crack the password:<br/>

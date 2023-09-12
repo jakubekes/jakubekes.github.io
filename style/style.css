@@ -309,6 +309,18 @@ nav .mainmenu>li {
 	border:1px solid #abf;	
 }
 
+.code_image {
+	margin: 20px auto;
+	/*width: 95%;*/
+	overflow-x:auto;
+	overflow-y:hidden;
+	color: #D3D3D3;
+	font-size: 16px;
+	white-space: nowrap;
+	font-family: consolas, "localFontConsola";
+	white-space: pre;
+}
+
 .code_quote {
 	font-style: italic;
 	font-weight: bold;
@@ -408,7 +420,7 @@ The most common reason for this issue is you define your @media queries before s
 	}
 	
 	.content_image {
-		width: 90%;
+		/*width: 99%;*/
 	}
 	
 }
