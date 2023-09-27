@@ -1,0 +1,130 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">Creating bootable ISO from raw files and physical devices usage with virtual machines <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Manchmal müssen wir mit untypischen Situationen bewältigen, wie z.B. Behandlung der nicht korrekt abgegebene ISO-Datei, weil sie einfach nur als ihr archiviert zur ZIP-Datei Inhalt geliefert wurde - das ist was ich musste einmal mitarbeiten. Ein zusätzliches Hindernis war die Fernverbindung und niemand könnte mir vor Ort helfen. Das Archiv enthielt die Dateien der bootfähige Wiederherstellungstools der Entschlüsselungssoftware und der einzige Möglichkeit um das zu tun war die Benutzung einer virtuellen Machine.<br/>
+
+Das gelieferte Archiv enthielt die wichtigsten Dateien in dem Hauptverzeichnis, <span class="quote">bootmgr</span> und <span class="quote">bootmgr.efi</span> Dateien:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_0.png'>
+..und auch <span class="quote">bootx64.efi</span> unten <span class="quote">\EFI\Boot</span>:<br/>
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_1.png'>
+..und <span class="quote">“bootfix.bin”</span> Datei unten <span class="quote">\Boot\</span>.<br/>
+
+<span style="color:#ff4444;">Wenn ich den Fall später untersucht habe, soll ich eigentlich <span class="quote">“etfsboot.com”</span> aus dem gleichen Verzeichnis verwenden. Es enthalt die zusätliche Daten außer <a class="external_link" target="_blank" href="https://en.wikipedia.org/wiki/Master_boot_record" >MBR</a>, der ist allein in der <span class="quote">“bootfix.bin”</span> gespeichert. Die alle Probleme, wie nicht bootfähige ISO-Datei, würden dann nicht auftreten und das hat mich gezwungen um die Option Nr. 2 mit VHD wie unten erwähnt zu wählen.
+</span><br/><br/>
+
+Allgemein gesagt, gibt es je nach Situation mehrere Möglichkeiten um ein bootfähiges Gerät zu erstellen, z.B.:
+
+<ul style="list-style-type:decimal">
+	<li>Die Formatierung des USB-Sticks nach empfohlene FAT32, wenn er angehängt ist und kopieren Sie das gesamten Inhalt aus dem entpackten Verzeichnis (oder verwenden Sie einfach <a class="external_link" target="_blank" href="https://rufus.ie" >Rufus</a> und ISO, falls vorhanden).
+	</li>
+	<li>Die Erstellung des VHD in der Datenträgerverwaltung, die Formatierung nach FAT32 und das Kopieren das gesamten Inhalt aus dem entpackten Verzeichnis (das wird nicht )
+	Create VHD in Disk Management, format to FAT32 and copy all the content from unpacked directory (er wird nicht funktionieren, wenn Dateien größer als 4GB dort werden, wegen der FAT32-Beschränkung).
+	</li>
+	<li>Die Erstellung des ISO-Datei mit der kostenlosen, mächtigen <a class="external_link" target="_blank" href="https://imgburn.com" >ImgBurn</a>, wenn die Daten als bootfähige ISO nicht bereitgestellt wurden und das ist die Option, auf die wir uns konzentrieren.
+	</li>
+</ul>
+
+<h2 style="text-align:center;">Die Erstellung einer bootfähigen ISO mit ImgBurn</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+Nach dem Start der Aufwendung, wählen wir “Create image file from files/folders”:
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_2.png'>
+
+Danach klicken wir auf das “Browse folder” Symbol und wählen unser Verzeichnis aus.<br/>
+<div style='width: 100%; margin: 20px auto; text-align: center;'> 
+<img class = "content_image" style='display:inline-block; margin-right: 20px; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_3.png'>
+<img class = "content_image" style='display:inline-block; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_4.png'>
+</div>
+
+Auf der rechten Seite der Anwendung, wählen wir die "Advanced" Registerkarte und “Bootable Disc” untere Registerkarte. Wir mussen “Make Image Bootable” wählen:<br/>
+- “Emulation Type”- das sollen wir "custom" belassen.<br/>
+- “Boot Image”- hier mussen wir die Verzeichnise durchsuchen und in diesem Fall das ist die <span class="quote">“bootfix.bin”</span> Datei (<span style="color:#ff4444;">lesen Sie die rote Warnung oben!</span>) unter <span class="quote">\Boot\</span>:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_5.png'>
+
+Beachten Sie bitte, dass die Größe der Datei ist 1KB, also sie enthalts 2x Sektoren und wir mussen die vorgegebene “4” nach “2” in der “Sectors to Load” Option ändern (ein Sektor ist gelten wie 512 Bytes).
+“Platform ID:” 80x86.
+“Developer ID” und “Load segment” belassen wir standard.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_6.png'>
+
+Außerdem können wir einige zusätliche Einstellungen unter “Restrictions” Registerkarte berücksichtigen und also under "Labels" Hauptregisterkarte und anderen.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_7.png'>
+
+Wenn alles eingestellt ist, können wir unseren ISO Zielpfad wählen und die “Build” Taste klicken. Die Anwendung kann einige Bestätigungen nachfragen und danach haben wir erfolgreich eine bootfähige ISO erstellt.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_8.png'><br/>
+
+<h2 style="text-align:center;">Mit VMware entschlüsseln.</h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<ul style="list-style-type:decimal">
+	<li>Bereiten Sie eines der bootfähigen Geräte vor.
+	</li>
+	<li>Erstellen Sie eine neue VMWare Maschine, es empfiehlt sich, Windows 10 zu deklarieren, um EFI boot Probleme zu vermeiden.
+	</li>
+	<li>Wenn VM erstellt ist, wählen wir “Edit virtual machine settings”.
+	</li>
+	<li>In der “Hardware” Registerkarte könne wir unten die “Add..” Taste benötigen, klicken Sie “Hard disk” auf und “Use a physical disk” als nächstes, dann wählen Sie korrekt “PhysicalDrive” als entschlüsselungs Ziel (das kann man in Datenträgerverwaltung üuberprufen um die richtige Nummber zu erkennen z.B “PhysicalDrive2” ist gleich wie “Disk 2”).
+	</li>
+	<li>Danach, abhängig von unserer Auswahl, wählen wir:
+		<ul style="list-style-type:lower-alpha">
+			<li>ISO unter “CD/DVD (SATA)” Hardware,
+			</li>
+			<li>Wir geben unseres VHD zu gleich wir verschlüsseltes Gerät (als “Hard Disk”),
+			</li>
+			<li>Wir können unseren physischen bootfähigen USB-Stick anschließen.
+			</li>		
+		</ul>
+	</li>
+	<li>Bitte erinnern Sie sich richtige Bootfolge zu einstellen oder trafen Sie “Escape” wenn VM-Boot starten um Bootmenü anzuzeigen.
+	</li>
+	<li>Zu erleichtern können Sie zum VM Verzeichnis unter “User\Documents\Virtual Machines\VMname” eintreten und die VMname.vmx Datei in dem Texteditor öffnen, danach addieren Sie irgendwo zu die neue Zeile:<br/>
+	firmware = “efi” und auch bios.bootdelay = 5000 (was 5 Sekunden bedeutest).
+	</li>	
+</ul>
+
+<h2 style="text-align:center;">Mit VirtualBox entschlüsseln.</h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<ul style="list-style-type:decimal">
+	<li>Bereiten Sie eines der bootfähigen Geräte vor.
+	</li>
+	<li>Erstellen Sie eine neue virtuelle Maschine ohne eine neue Festplatte HDD zu einstellen und wählen Sie Windows 10
+	</li>
+	<li>In den VM-Einstellungen, unter der “System” Registerkarte, es ist wichtig um “Enable EFI (special OSes only)” zu auswählen.
+	</li>
+	<li>In VirtualBox das Hinzufügen der zusätzlichen physischen Geräte ist etwas komplizierter, weil wir CMD verwenden müssen:
+		<ul style="list-style-type:lower-alpha">
+			<li>Starten Sie CMD and gehen Sie zum Installationsordner des VirtualBox (C:\Program Files\Oracle\VirtualBox standardmäßig)
+			</li>
+			<li>Tippen Sie den folgenden Befehl um das virtuelle VMDK zu erstellen, das auf das physische Gerät verweist.<br/>
+			<span class="code_quote">VBoxManage internalcommands createrawvmdk -filename c:\Users\username\VirtualBox VMs\mydrive.vmdk -rawdisk \\.\PhysicalDrive0 </span><br/>
+			(das kann man unter die Datenträgerverwaltung überprufen um die correct Nummer zu erkennen z.B.: “\ \.\PhysicalDrive0” ist gleich wie “Disk 0” in der Datenträgerverwaltung).<br/>
+			Nach dem Befehl benutzen unter dem zugegebenen Pfad haben wir mydrive.vmdk, das auf das physische Laufwerk zeigt.
+			</li>		
+		</ul>
+	</li>
+	<li>Dann unter den VM-Einstellungen und der "Storage" Registerkarte zugeben wir unsere erstellte VMDK Dateien als die “Controller: SATA” Geräte.
+	</li>
+	<li>In meinem Fall verwendete ich auch VHD für die Entschlüsselungssoftware genau wie ich für VMWare gemacht habe, aber es hat nicht sofort gestartet, nach dem VM-Boot sehen wir “UEFI Interactive Shell”:<br/>
+	<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_9.png'>
+		<ul style="list-style-type:lower-alpha">
+			<li>Tippen Sie: <span class="code_quote">“FS0:”</span>, weil es unseres VHD mit bootfähige Entschlüsselungssoftware ist.
+			</li>
+			<li>Tippen Sie: <span class="code_quote">“cd \efi\boot”</span> um nach <span class="quote">\efi\boot</span> Ordner zu bewegen.<br/>
+			<img class = "content_image" style='display:block; margin: 20px auto;  box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45);border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_10.png'>	
+			</li>
+			<li>Wie wir unter diesem Ordner sehen können, gibt es da die Bootdatei, geben Sie bitte <span class="code_quote">“bootx64.efi”</span> ein und drücken Sie Enter um es auszuführen.
+			</li>
+		</ul>
+	</li>	
+	
+	
+</ul>
+
+</div>

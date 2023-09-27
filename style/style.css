@@ -122,6 +122,10 @@ border:1px solid #fff;*/
 	text-align:center;
 }
 
+nav .menu_hash {
+	font-size:0.85em;
+}
+
 nav a:link, nav a:visited, nav a:active, nav a{
 	font-size:1.25em;
 	padding: 10px 15px;
@@ -164,6 +168,7 @@ nav .mainmenu>li {
 	position: absolute;
 	z-index: 1;
 	text-align:left;
+	width:190px;
 }
 
 /*.parent:hover>ul, .parent:active>ul {
@@ -183,6 +188,8 @@ nav .mainmenu>li {
 	border-radius: 25px;
 	border: 1px solid #d3d3d3;
 }
+
+
 
 .expand {
 	font-size:11px; 
@@ -223,7 +230,7 @@ nav .mainmenu>li {
 /* ******************* Submenu styles ******************* */
 
 .submenu_site {
-	list-style: japanese-formal;
+	list-style: japanese-informal;
 }
 
 .submenu_site a {
@@ -252,7 +259,7 @@ nav .mainmenu>li {
 	font-family: noto sans, sans-serif;/*arial, helvetica, sans-serif;*/
 	text-align: justify;
 	/*font-size: 1.1rem;*/
-	font-size:15px;
+	font-size:16px;
 	line-height: 1.65rem;
 	border-left: 1px solid #D3D3D3;
 	border-right: 1px solid #D3D3D3;	
@@ -330,11 +337,11 @@ nav .mainmenu>li {
 }
 
 .quote {
-	color: #88cccc;
+	color: #89eef5;
 }
 
 .external_link {
-	color:#89eef5;
+	color:#89ee89;
 	font-style: italic;
 	text-decoration: none;
 }

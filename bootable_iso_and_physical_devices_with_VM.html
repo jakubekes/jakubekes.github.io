@@ -1,0 +1,126 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">Creating bootable ISO from raw files and physical devices usage with virtual machines</span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Sometimes we have to deal with not typical situations like to handle with the ISO file, just not properly delivered as its content archived to a zip file - this is what I had to work with one time. Additional obstacle was the remote connection and nobody could help me on place. The archive contained the files for bootable recovery tools for one of the decryption software and the only way to do this was to use a virtual machine.<br/>
+Delivered archive contained most important files in the root, <span class="quote">bootmgr</span> and <span class="quote">bootmgr.efi</span> files:<br/>
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_0.png'>
+..and also <span class="quote">bootx64.efi</span> under <span class="quote">\EFI\Boot</span>:<br/>
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_1.png'>
+..and <span class="quote">“bootfix.bin”</span> file under <span class="quote">\Boot\</span>.<br/>
+
+<span style="color:#ff4444;">When investigating the topic later, actually I should use <span class="quote">“etfsboot.com”</span> from the same directory. It contains additional data besides <a class="external_link" target="_blank" href="https://en.wikipedia.org/wiki/Master_boot_record" >MBR</a> stored alone like it's in <span class="quote">“bootfix.bin”</span>. All the issues would not occur then, like not bootable ISO, what made me to go with option no. 2 with VHD mentioned below.</span><br/><br/>
+Generally speaking, there are several ways to create a bootable device depending on the situation, e.g.:
+<ul style="list-style-type:decimal">
+	<li>Format USB stick if connected to recommended FAT32 and copy all the content from the unpacked directory (or just use <a class="external_link" target="_blank" href="https://rufus.ie" >Rufus</a> and ISO if provided).
+	</li>
+	<li>Create VHD in Disk Management, format to FAT32 and copy all the content from unpacked directory (it's not going to work if there are files above 4GB due to FAT32 limitation!).
+	</li>
+	<li>Create ISO using free powerful software <a class="external_link" target="_blank" href="https://imgburn.com" >ImgBurn</a> if data was not provided as bootable ISO and this is the option we are focusing on.
+	</li>
+</ul>
+
+<h2 style="text-align:center;">Creating bootable ISO using ImgBurn.</h2>
+<hr style="width:50%; color:#5784a5;"/><br/>
+
+After launching the tool we choose “Create image file from files/folders”:
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_2.png'>
+
+Then we click on the “Browse folder” icon and select our directory.<br/>
+<div style='width: 100%; margin: 20px auto; text-align: center;'> 
+<img class = "content_image" style='display:inline-block; margin-right: 20px; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_3.png'>
+<img class = "content_image" style='display:inline-block; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_4.png'>
+</div>
+
+On the right side of the tool we choose “Advanced” tab and “Bootable Disc” lower tab. We need to select “Make Image Bootable”:<br/>
+- “Emulation Type”- leave custom.<br/>
+- “Boot Image”- browse the folders and in this case is <span class="quote">“bootfix.bin”</span> file (<span style="color:#ff4444;">see red note above!</span>) under <span class="quote">\Boot\</span>:<br/>
+
+<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_5.png'>
+
+Please notice the file size is 1KB so it contains 2x sectors and we need to change default “4” to “2” in “Sectors to Load” option (sector is considered as 512 bytes). 
+“Platform ID:” 80x86.
+“Developer ID” and “Load segment” we leave by default.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_6.png'>
+
+In addition we can consider some additional options under “Restrictions” lower tab:
+..and also under “Labels” main tab and others.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_7.png'>
+
+When all is set up we can choose our ISO destination and click ‘Build” button.
+The tool can ask for some confirmations and after this we have successfully created bootable ISO.<br/>
+
+<img style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_8.png'><br/>
+
+<h2 style="text-align:center;">Using VMWare to decrypt.</h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<ul style="list-style-type:decimal">
+	<li>Prepare one of the bootable devices.
+	</li>
+	<li>Create new VMWare machine, recommended to declare Windows 10 to avoid EFI boot issues.
+	</li>
+	<li>When VM is created we choose “Edit virtual machine settings”.
+	</li>
+	<li>In “Hardware” tab we can see below “Add..” button, select “Hard disk” and “Use a physical disk” in second step, next choose proper “PhysicalDrive” as the decryption target (it can be checked under Disk Management to recognize correct number i.e. “PhysicalDrive2” is equal to “Disk 2” in DM.)
+	</li>
+	<li>After this depending on our choice we select:
+		<ul style="list-style-type:lower-alpha">
+			<li>ISO under “CD/DVD (SATA)” hardware,
+			</li>
+			<li>We add our VHD same as encrypted device (as “Hard Disk”),
+			</li>
+			<li>We can attach our physical bootable USB stick.
+			</li>		
+		</ul>
+	</li>
+	<li>Please remember to set correct boot order or hit “Escape” when starting to boot VM to show boot menu.
+	</li>
+	<li>To make it easier you can go to VM directory “User\Documents\Virtual Machines\VMname” (by default) and open VMname.vmx file in notepad, then add to the new line anywhere:<br/>
+	firmware = “efi” and also bios.bootdelay = 5000 (what means 5 seconds).
+	</li>	
+</ul>
+
+<h2 style="text-align:center;">Using VirtualBox to decrypt.</h2>
+<hr style="width:50%; color:#5784a5;"/>
+
+<ul style="list-style-type:decimal">
+	<li>Prepare one of the bootable devices.
+	</li>
+	<li>Create the VM without declaring new HDD and choose Windows 10.
+	</li>
+	<li>In VM settings, under “System” tab it is important to select “Enable EFI (special OSes only)”.
+	</li>
+	<li>In VirtualBox adding physical devices is a bit more complicated as we have to use CMD console:
+		<ul style="list-style-type:lower-alpha">
+			<li>Start CMR and go to the installation folder of the VirtualBox (C:\Program Files\Oracle\VirtualBox by default).
+			</li>
+			<li>Type below command to create virtual VMDK that links to physical device:<br/>
+			<span class="code_quote">VBoxManage internalcommands createrawvmdk -filename c:\Users\username\VirtualBox VMs\mydrive.vmdk -rawdisk \\.\PhysicalDrive0 </span><br/>
+			(it can be checked under Disk Management to recognize correct number i.e.: “\ \.\PhysicalDrive0” is equal to “Disk 0” in DM).<br/>
+			After using this command under provided path we have mydrive.vmdk that links to physical drive 0.
+			</li>		
+		</ul>
+	</li>
+	<li>Then under VM settings and “Storage” tab we add our created VMDK files as “Controller: SATA” devices.
+	</li>
+	<li>In my case I used also VHD for decryption software like I did with VMWare, but it didn’t boot immediately, after booting the VM we see “UEFI Interactive Shell”:<br/>
+	<img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_9.png'>
+		<ul style="list-style-type:lower-alpha">
+			<li>Type: <span class="code_quote">“FS0:”</span> as it’s our VHD with bootable decryption software.
+			</li>
+			<li>Type: <span class="code_quote">“cd \efi\boot”</span> to move to <span class="quote">\efi\boot</span> dir.<br/>
+			<img class = "content_image" style='display:block; margin: 20px auto;  box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45);border-radius: 6px;' src='pictures/bootable_iso_and_physical_devices_with_VM_10.png'>	
+			</li>
+			<li>As we can see under this directory is the boot file, please type <span class="code_quote">“bootx64.efi”</span> and press Enter to launch it.
+			</li>
+		</ul>
+	</li>	
+	
+	
+</ul>
+
+</div>

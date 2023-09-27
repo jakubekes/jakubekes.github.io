@@ -13,11 +13,17 @@ var routes = {
 	'/contact': function () { 
 		contents_load_func("contact")
 	},
+	'/all': function () { 
+		contents_load_func("all")
+	},
 	'/windows': function () { 
 		contents_load_func("windows")
     },
 	'/cpp': function () { 
 		contents_load_func("cpp")
+    },
+	'/linux': function () { 
+		contents_load_func("linux")
     },
 	'/virtualization': function () { 
 		contents_load_func("virtualization")
@@ -75,6 +81,18 @@ var routes = {
     },  	  
 	'/ps_hash_copy_de': function () { 
 		contents_load_func("ps_hash_copy_de")
+    },  	  
+	'/bootable_iso_and_physical_devices_with_VM': function () { 
+		contents_load_func("bootable_iso_and_physical_devices_with_VM")
+    },  	  
+	'/bootable_iso_and_physical_devices_with_VM_de': function () { 
+		contents_load_func("bootable_iso_and_physical_devices_with_VM_de")
+    },  	  
+	'/move_files_to_dirs_10k': function () { 
+		contents_load_func("move_files_to_dirs_10k")
+    },  	  
+	'/move_files_to_dirs_10k_de': function () { 
+		contents_load_func("move_files_to_dirs_10k_de")
     }
 };
 
