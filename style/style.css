@@ -168,7 +168,6 @@ nav .mainmenu>li {
 	position: absolute;
 	z-index: 1;
 	text-align:left;
-	width:190px;
 }
 
 /*.parent:hover>ul, .parent:active>ul {
@@ -242,10 +241,6 @@ nav .mainmenu>li {
 	text-decoration:underline;
 	cursor: pointer;	
 }
-
-
-
-
 
 /* ******************* Contents styles ******************* */
 
