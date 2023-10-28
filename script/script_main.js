@@ -93,6 +93,12 @@ var routes = {
     },  	  
 	'/move_files_to_dirs_10k_de': function () { 
 		contents_load_func("move_files_to_dirs_10k_de")
+    },  	  
+	'/csv_divider': function () { 
+		contents_load_func("csv_divider")
+    },  	  
+	'/csv_divider_de': function () { 
+		contents_load_func("csv_divider_de")
     }
 };
 
