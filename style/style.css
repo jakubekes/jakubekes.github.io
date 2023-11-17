@@ -69,7 +69,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	/*background: rgb(0,57,74);*/
 /*background: radial-gradient(circle, rgba(0,57,74,1) 0%, rgba(18,18,18,1) 46%, rgba(0,57,74,1) 100%); 
 border:1px solid #fff;*/
-	background-image:URL("/pictures/women_banner.jpg");
+	background-image:URL("/pictures/women_android_banner.jpg");
     background-size: cover;
 	background-repeat:no-repeat;
 	border-radius: 8px;
@@ -256,7 +256,7 @@ nav .mainmenu>li {
 	text-align: justify;
 	/*font-size: 1.1rem;*/
 	/*font-size:16px;*/
-	font-size: 1.08rem;
+	font-size: 1.04rem;
 	line-height: 1.75rem;
 	border-left: 1px solid #D3D3D3;
 	border-right: 1px solid #D3D3D3;	
@@ -326,26 +326,33 @@ nav .mainmenu>li {
 
 .code_quote {
 	font-style: italic;
-	font-weight: bold;
+	/*font-weight: bold;*/
 	/*color: #ee1a1a;*/
 	color:#FFE4B5;
 	font-family: consolas, "localFontConsola";
 }
 
 .quote {
-	color: #89eef5;
+	font-style: italic;
+	color: #9ae;
 }
 
 .external_link {
 	color:#89ee89;
 	font-style: italic;
-	text-decoration: none;
+	text-decoration:underline;
+	text-decoration-style: dotted;
 }
 
 .internal_link {
 	color: #4aa;
 	font-style: italic;
 	text-decoration: none;
+}
+
+.important {
+	color: #fbb;
+	font-style: italic;
 }
 
 
@@ -399,6 +406,7 @@ The most common reason for this issue is you define your @media queries before s
 	.banner_main{
 		min-height: 40px;	
 		margin:15px 10px 0px 10px;
+		background-size: 100% auto;
 	}
 	
 	.banner .banner_title {

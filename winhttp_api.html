@@ -1,0 +1,320 @@
+<span class = "content_title"> <a href="#/cpp"> C++</a> / <span class = "content_title_current">WinHTTP presented with Binance API requests</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;In case of C++ we have to rely on 3rd party libaries for networking and when starting to work on title theme I didn't have any need to make portable code, hence I decided to use <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/win32/winhttp/about-winhttp" >Microsoft's WinHttp</a>. My code is heavily based on these two similar examples: <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpreaddata" >WinHttpReadData function</a> and <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpaddrequestheaders" >WinHttpAddRequestHeaders function</a>.<br/>
+
+The second important knowledge source is <a class="external_link" target="_blank" href="https://www.binance.com" >Binance</a> cryptocurrency market with its available, well documented <a class="external_link" target="_blank" href="https://binance-docs.github.io/apidocs/spot/en/#change-log" >API</a>.<br/>
+
+Basic concept was to write a program to analyze data on the market and give some feedback for the user about interesting findings and maybe do some stuff automatically in the future, but below example is just some scheme how we can operate with WinHttp.<br/>
+
+Because all data we get from Binance API is in JSON format and it needs to be parsed, I found out about fantastic parser for C++ which is <a class="external_link" target="_blank" href="https://json.nlohmann.me/" >
+JSON for Modern C++</a> developed by Niels Lohmann.<br/>
+
+The WinHttp part is divided into steps that were put into separate functions to make it more readable. First we <span class="code_quote">open_session</span> and we need to do this only once with <span class="code_quote">WinHttpOpen</span> and <span class="code_quote">WinHttpConnect</span> funcs where we connect to the provided HTTP server. It's really important too pass <span class="code_quote">INTERNET_DEFAULT_HTTPS_PORT</span> but as mentioned in the <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/win32/api/winhttp/nf-winhttp-winhttpconnect">documentation</a>:<br/>
+<span class="quote">"Uses the default port for HTTPS servers (port 443). Selecting this port does not automatically establish a secure connection. You must still specify the use of secure transaction semantics by using the WINHTTP_FLAG_SECURE flag with WinHttpOpenRequest."</span><br/>
+
+The next step is necessary because we create a request for which we will expect specific data back, please notice the mentioned above <span class="code_quote">WINHTTP_FLAG_SECURE</span> parameter. Some API endpoints are available only with special API key that we pass as HTTP header with <span class="code_quote">WinHttpAddRequestHeaders</span> in <span class="code_quote">add_header()</span> and secret key that we use for HMAC SHA256 required hash, but more on that later.<br/>
+After that we <span class="code_quote">send_and_receive()</span> meaning we send our request and receive positive or false response including specified error.<br/>
+
+<span class="code_quote">keep_receiving()</span> part catches data for us. Because it's sent in chunks we put them into buffer and collecting as complete feedback into <span class="code_quote">std::string buffer</span> that we want to parse and use later. When something went wrong, we can check the errors thanks to <span class="code_quote">report_errors()</span> function and when we are done, we can <span class="code_quote">close_connection()</span> by closing all handles.<br/>
+
+Besides we have five functions stricly linked with Binance that are connecting to some specific endpoints, some of them are kind of nested and used inside anothers:<br/>
+- <span class="code_quote">get_time()</span>- just returns current timestamp but it's necesarry for the secured requests.<br/>
+- <span class="code_quote">getAvgPrice(std::string coin)</span>- returns average price for a specified symbol, used here inside another function, commented code for standalone usage.<br/>
+- <span class="code_quote">getCandles(std::string coin, std::string interval)</span>- the function gets klines for the provided symbol and all the details required. Useful when we want to visualize trading charts.<br/>
+- <span class="code_quote">get24hTicker()</span>- returns 24hr price change statistics for all trading pairs or just specified.<br/>
+- <span class="code_quote">get_wallet()</span>- main function in this example, it's a special one requesting user data, wallet details specifically, so it requires to pass api key as the html header and use special key for the hash function, meaning it's called signed endpoint.<br/>
+Additional steps here are to get the time with mentioned <span class="code_quote">get_time()</span> function and to create first proper string that is going to be a HMAC SHA256 message.
+I used here not mandatory recvWindow parameter to extend validity of the message:<br/>
+<span class="quote">An additional parameter, recvWindow, may be sent to specify the number of milliseconds after timestamp the request is valid for. If recvWindow is not sent, it defaults to 5000.</span><br/>
+In this case the message looks like (example timestamp):<br/>
+<span class="code_quote">timestamp=1699182169042&recvWindow=10000</span><br/>
+We copy both std:: string message and api_secret to std::vector <unsigned char> and passing them to the for loop including <a class="internal_link" target="_blank" href="#/hmac_sha256" >
+HMAC_SHA256 function</a>.<br/>
+The way values are passed to std::stringstream comes from the fact that we have to convert 8 bit chars, actually their integer values to hex repesentation consisting of two hex digits. The issue shows up when we would try to convert char with zeroes as first four bits e.g. 0b00001101 whose hex representation is 0x0D when keeping all the size. When this code part would look like this, we would get 0xD instead:<br/>
+<div class = "code_short"><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">ch</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">HMAC_SHA256_OBJ</span><span class="sc10">.</span><span class="sc11">HMAC_SHA256</span><span class="sc10">(</span><span class="sc11">message</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">api_secret</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">ss</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">uppercase</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">hex</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc5">static_cast</span><span class="sc10">&lt;</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc10">&gt;(</span><span class="sc11">ch</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span>
+</div>
+Operating on both 4 MSBits and LSBits separately keeps us safe. Finally we put the URL together and convert to proper type. It will look like this with sample timestamp and signature:<br/>
+<span class="code_quote">/sapi/v1/capital/config/getall?timestamp=1699182169042&recvWindow=10000&signature=27855B024A8499A8622C1DB127E8C9A6120CBBB9D7A7E7618D6EC17D96CE02A3</span><br/>
+In the end we parse std::string buffer, some responses from Binance API are passed as objects:<br/>
+<span class="quote">{ "key1": "value1", "key2": "value2" }</span>
+and we access them with the keys like <span class="code_quote">it.at("price")</span> or as arrays:<br/>
+<span class="quote">[ "first", "second", "third" ]</span> and we access them by indexes like <span class="code_quote">it.at(2)</span>.
+
+<br/><br/>
+<button id="buttoncodeheightid" onclick="change_code_height();" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="codeid"  class="code_long"><span class="sc9">#include &lt;windows.h&gt;
+#include &lt;winhttp.h&gt;
+#pragma comment(lib, "winhttp")
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include "HMAC_SHA256.h"
+#pragma comment(lib, "HMAC_SHA256")
+#include &lt;nlohmann\json.hpp&gt;
+</span><span class="sc0">
+</span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nlohmann</span><span class="sc10">::</span><span class="sc11">json</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc11">HINTERNET</span><span class="sc0">  </span><span class="sc11">hSession</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">hConnect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">hRequest</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">BOOL</span><span class="sc0">  </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">FALSE</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">dwDownloaded</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">LPSTR</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">burl</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">L"api.binance.com"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">recvWindow</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"&amp;recvWindow=10000"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">api_secret_s</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"Hf9EJd26BifFlepFQ720DcfaYJmqZG8e45FMpqe2LZRbv52dwqkl2lvjkglq01T2"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">buffer</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">json</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">open_session</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Use WinHttpOpen to obtain a session handle.
+</span><span class="sc0">    </span><span class="sc11">hSession</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpOpen</span><span class="sc10">(</span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_ACCESS_TYPE_DEFAULT_PROXY</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_NO_PROXY_NAME</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_NO_PROXY_BYPASS</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Specify an HTTP server.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">hConnect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpConnect</span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">burl</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">INTERNET_DEFAULT_HTTPS_PORT</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">L"GET"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc2">// Create an HTTP request handle.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">hRequest</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpOpenRequest</span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">endpoint</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">WINHTTP_NO_REFERER</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_DEFAULT_ACCEPT_TYPES</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_FLAG_SECURE</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">add_header</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Add a request header.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpAddRequestHeaders</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc6">L"X-MBX-APIKEY:cvjxfA4230fwAF48JQETYmvnc724FF345lopuiEAf23fzQAbLrnvmF842Hncve29"</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc10">(</span><span class="sc11">ULONG</span><span class="sc10">)-</span><span class="sc4">1L</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_ADDREQ_FLAG_ADD</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">send_and_receive</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Send a request.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpSendRequest</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_NO_ADDITIONAL_HEADERS</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_NO_REQUEST_DATA</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc2">// End the request.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpReceiveResponse</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">keep_receiving</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">""</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc2">// Keep checking for data until there is nothing left.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">do</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc2">// Check for available data.
+</span><span class="sc0">            </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">WinHttpQueryDataAvailable</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">dwSize</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %u in WinHttpQueryDataAvailable.\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc2">// Allocate space for the buffer.
+</span><span class="sc0">            </span><span class="sc11">pszOutBuffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc10">[</span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">];</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">pszOutBuffer</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Out of memory\n"</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc2">// Read the data.
+</span><span class="sc0">                </span><span class="sc11">ZeroMemory</span><span class="sc10">(</span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">WinHttpReadData</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">LPVOID</span><span class="sc10">)</span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0">
+                    </span><span class="sc11">dwSize</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">dwDownloaded</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                    </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %u in WinHttpReadData.\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                        </span><span class="sc11">buffer</span><span class="sc0"> </span><span class="sc10">+=</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+                        </span><span class="sc5">delete</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">report_errors</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Report any errors.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %d has occurred.\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">close_connection</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Close any open handles.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">get_time</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc6">L"/api/v3/time"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">keep_receiving</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">j</span><span class="sc10">.</span><span class="sc11">clear</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">j</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc10">::</span><span class="sc11">parse</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">//std::string serverTime = j.at("serverTime").dump();
+</span><span class="sc0">    </span><span class="sc2">//std::cout &lt;&lt; serverTime &lt;&lt; "\n";
+</span><span class="sc0">    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc6">"serverTime"</span><span class="sc10">).</span><span class="sc11">dump</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc11">json</span><span class="sc0"> </span><span class="sc11">getAvgPrice</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">coin</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">endpoint_avgPrice</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"/api/v3/avgPrice"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_avgPrice</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"?"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"symbol="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">coin</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"USDT"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint_wcs</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc11">endpoint_wcs</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">add_header</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">keep_receiving</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc1">/*j.clear();
+    j = json::parse(buffer);
+    for (auto it : j)
+     {
+         // "it" is of type json::reference and has no key() member
+         if (it["free"] != "0")
+             std::cout &lt;&lt; "coin: " &lt;&lt; it["coin"] &lt;&lt; " value: " &lt;&lt; it["free"] &lt;&lt; '\n';
+
+     }*/</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc10">::</span><span class="sc11">parse</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">getCandles</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">coin</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">interval</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">endpoint_candles</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"/api/v3/klines"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_candles</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"?symbol="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">coin</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"USDT&amp;interval="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">interval</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"&amp;limit=70"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint_wcs</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc11">endpoint_wcs</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">keep_receiving</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc11">j</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc10">::</span><span class="sc11">parse</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">vol</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">double</span><span class="sc0"> </span><span class="sc11">vol_d</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">vol</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc4">5</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">vol</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">vol</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc4">1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">vol</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">2</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">vol_d</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">stod</span><span class="sc10">(</span><span class="sc11">vol</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"Close price: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc4">4</span><span class="sc10">)</span><span class="sc0">
+                  </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\nVolume: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">vol_d</span><span class="sc0">
+                  </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\nNumber of trades: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc4">8</span><span class="sc10">)</span><span class="sc0">
+                  </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\nVolumen/Number of trades= "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">vol_d</span><span class="sc0"> </span><span class="sc10">/</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc4">8</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">get24hTicker</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">endpoint_candles</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"/api/v3/ticker/24hr"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_candles</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint_wcs</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc11">endpoint_wcs</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">add_header</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">keep_receiving</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc11">j</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc10">::</span><span class="sc11">parse</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">s</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc6">"symbol"</span><span class="sc10">).</span><span class="sc11">dump</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">s</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc11">s</span><span class="sc10">.</span><span class="sc11">length</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc4">5</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc6">"USDT"</span><span class="sc10">)</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc6">"symbol"</span><span class="sc10">).</span><span class="sc11">dump</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc6">"volume"</span><span class="sc10">).</span><span class="sc11">dump</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">get_wallet</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">endpoint_wallet</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"/sapi/v1/capital/config/getall"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">time</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">get_time</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">message_s</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"timestamp="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">time</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">recvWindow</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">message</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc11">message_s</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">message_s</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">()};</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">api_secret</span><span class="sc10">(</span><span class="sc11">api_secret_s</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">api_secret_s</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">stringstream</span><span class="sc0"> </span><span class="sc11">ss</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">HMAC</span><span class="sc10">::</span><span class="sc11">SHA256</span><span class="sc0"> </span><span class="sc11">HMAC_SHA256_OBJ</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">ch</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">HMAC_SHA256_OBJ</span><span class="sc10">.</span><span class="sc11">HMAC_SHA256</span><span class="sc10">(</span><span class="sc11">message</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">api_secret</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">ss</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">uppercase</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">hex</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc5">static_cast</span><span class="sc10">&lt;</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc10">&gt;(</span><span class="sc11">ch</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc4">4</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">ss</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">uppercase</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">hex</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc5">static_cast</span><span class="sc10">&lt;</span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc10">&gt;(</span><span class="sc11">ch</span><span class="sc10">++</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc0"> </span><span class="sc4">0xF</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_wallet</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"?"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"timestamp="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">time</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">recvWindow</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">"&amp;signature="</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">ss</span><span class="sc10">.</span><span class="sc11">str</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint_wcs</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_ws</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc11">endpoint_wcs</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">add_header</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">keep_receiving</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">price</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">double</span><span class="sc0"> </span><span class="sc11">price_d</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">json</span><span class="sc0"> </span><span class="sc11">j_getAvgPrice</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc11">j</span><span class="sc10">.</span><span class="sc11">clear</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">j</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc10">::</span><span class="sc11">parse</span><span class="sc10">(</span><span class="sc11">buffer</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc2">// "it" is of type json::reference and has no key() member
+</span><span class="sc0">        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">it</span><span class="sc10">[</span><span class="sc6">"free"</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc6">"0"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"coin: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">[</span><span class="sc6">"coin"</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" value: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">it</span><span class="sc10">[</span><span class="sc6">"free"</span><span class="sc10">];</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">it</span><span class="sc10">[</span><span class="sc6">"coin"</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc6">"USDT"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">j_getAvgPrice</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">getAvgPrice</span><span class="sc10">(</span><span class="sc11">it</span><span class="sc10">[</span><span class="sc6">"coin"</span><span class="sc10">]);</span><span class="sc0">
+                </span><span class="sc11">price</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">j_getAvgPrice</span><span class="sc10">.</span><span class="sc11">at</span><span class="sc10">(</span><span class="sc6">"price"</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc11">price_d</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">stod</span><span class="sc10">(</span><span class="sc11">price</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">" "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">price_d</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">open_session</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">get_wallet</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc11">close_connection</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span>
+</div>
+
+</div>

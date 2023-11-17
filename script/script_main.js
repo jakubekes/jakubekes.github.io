@@ -99,6 +99,12 @@ var routes = {
     },  	  
 	'/csv_divider_de': function () { 
 		contents_load_func("csv_divider_de")
+    },  	  
+	'/winhttp_api': function () { 
+		contents_load_func("winhttp_api")
+    },  	  
+	'/winhttp_api_de': function () { 
+		contents_load_func("winhttp_api_de")
     }
 };
 
