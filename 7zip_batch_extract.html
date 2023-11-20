@@ -6,7 +6,7 @@
 &emsp;I had a few times situation requiring extraction from lot of archives saved under different dir tree levels so it had to be solved with some automated process.<br/>
 Below I'm presenting the batch file using <a class="external_link" target="_blank" href="https://www.7-zip.org/" >7-Zip</a>  file archiver. It extracts all *.zip *.7z *.rar archives into subfolders named like the source files with <span class="quote">"_extracted"</span> suffix.<br/><br/>
 
-<div id="codeid" class ="code_short">@ECHO ON
+<div id="code_id_1" class ="code_short">@ECHO ON
 
 SET source="C:\Users\Michael\Documents\Archives"<br/>
 FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.zip"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"

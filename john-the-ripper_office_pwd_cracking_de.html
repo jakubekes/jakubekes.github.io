@@ -6,7 +6,7 @@
 &emsp;Hier gibt es ein einfaches Beispiel, wie soll man Passwort-Cracker <a class="external_link" target="_blank" href="https://www.openwall.com/john/" >John the Ripper</a> benutzen im Fall von eines passwortgeschützten MS Office Dokuments wie docx.<br/>
 Zuerst müssen wir einen Hash von der Datei erstellen und das kann mit einem von Johns in <a class="external_link" target="_blank" href="https://www.python.org/" >Python</a> eingeschriebenen Skripten unten <span class="quote">\run\office2john.py</span> erfolgt werden. Wenn Sie Python instaliert haben, geben Sie einfach in die Eingabeaufforderung ein:<br/>
 
-<div id="codeid" class ="code_short">python <span class ="quote">&lt;der Pfad zu office2john.py&gt; &lt;der Pfad zur Office-Datei&gt;</span> &gt; <span class ="quote">&lt;der Pfad zur Datei in der der Hash gepeichert werden soll&gt</span>
+<div id="code_id_1" class ="code_short">python <span class ="quote">&lt;der Pfad zu office2john.py&gt; &lt;der Pfad zur Office-Datei&gt;</span> &gt; <span class ="quote">&lt;der Pfad zur Datei in der der Hash gepeichert werden soll&gt</span>
 </div>
 
 Wenn wir die Hash-Datei schon haben, können wir hacken starten. John hast viele Optionen, die man in die <a class="external_link" target="_blank" href="https://www.openwall.com/john/doc/" >Dokumentation</a> oder mit --help überprüft kann. Für meine Sache hatte ich einige Ratschläge, wie das Passwort lauten könnte, also könnte ich einig(e) Muster/Maske erstellen, um den Hackenzeit zu verkürzen. Es hat so ausgesehen:<br/>
@@ -22,7 +22,7 @@ Nach der Reparatur, können wir weiter gehen:
 
 <img class = "content_image" style='display:block; margin: 20px auto; box-shadow: inset 0 3px 6px rgba(255,255,255,.16), 0 3px 6px rgba(255,255,255,.45); border-radius: 6px;' src='pictures/john3.png'>
 
-<div id="codeid" class ="code_short">john.exe --mask=[a-z][a-z][a-z][a-z][a-z]?d?d --format=office-opencl C:\Users\Bill\Desktop\john\hash.txt
+<div id="code_id_1" class ="code_short">john.exe --mask=[a-z][a-z][a-z][a-z][a-z]?d?d --format=office-opencl C:\Users\Bill\Desktop\john\hash.txt
 </div>
 
 .. und das Passwort erfolgreich knacken:<br/>

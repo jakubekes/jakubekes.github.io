@@ -7,7 +7,7 @@
 Hier unten präsentiere ich eine Batch-Datei, die <a class="external_link" target="_blank" href="https://www.7-zip.org/" >7-Zip</a> Archivierer benutzt. 
 Es extrahiert alle *.zip *.7z *.rar Archive in Unterordnen, die wie die Quelldateien mit dem zugegeben <span class="quote">"_extracted"</span> Suffix benannt sind.<br/><br/>
 
-<div id="codeid" class = "code_short">@ECHO ON
+<div id="code_id_1" class = "code_short">@ECHO ON
 
 SET source="C:\Users\Michael\Documents\Archives"
 FOR /F "tokens=*" %%F IN ('DIR /S /B "%source%\*.zip"') DO "C:\Program Files\7-Zip\7z.exe" x "%%~fF" -o"%%~fF_extracted"

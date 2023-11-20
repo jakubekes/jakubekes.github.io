@@ -105,6 +105,12 @@ var routes = {
     },  	  
 	'/winhttp_api_de': function () { 
 		contents_load_func("winhttp_api_de")
+    },  	  
+	'/qt_multithreading_and_networking_basics': function () { 
+		contents_load_func("qt_multithreading_and_networking_basics")
+    },  	  
+	'/qt_multithreading_and_networking_basics_de': function () { 
+		contents_load_func("qt_multithreading_and_networking_basics_de")
     }
 };
 
@@ -129,7 +135,23 @@ function contents_load_func(element_id){
 		
 };
 
-function change_code_height(){
+function change_code_height(num){
+
+	var div_id = "code_id_" + num;
+	var button_id = "changeCodeHeightBtn_id_" + num;
+	var height_px = $("#"+div_id).css("height");
+	var height = height_px.substring(0,height_px.length-2);
+	
+	if(height <= 400){
+		document.getElementById(div_id).style.height= '100%';
+		document.getElementById(button_id).textContent= 'Scroll';
+	} else {
+		document.getElementById(div_id).style.height= '400px';
+		document.getElementById(button_id).textContent= '100% height';
+	}
+}
+
+/*function change_code_height(){
 
 	var height_px = $("#codeid").css("height");
 	var height = height_px.substring(0,height_px.length-2);
@@ -140,7 +162,7 @@ function change_code_height(){
 		document.getElementById('codeid').style.height= '400px';
 		document.getElementById('buttoncodeheightid').textContent= '100% height';
 	}
-}
+}*/
 
 /*$(document).on("click", "a", function() {
 	contents_load_func(event.target.id);

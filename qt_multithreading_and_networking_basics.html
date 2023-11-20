@@ -1,0 +1,92 @@
+<span class = "content_title"> <a href="#/cpp"> C++</a> / <span class = "content_title_current">Qt multithreading and networking basics</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;<a class="external_link" target="_blank" href="https://www.qt.io/" >Qt</a> is very extensive and powerful framework based on C++ for wide range of applications, it's often recommended answer for questions like "What should I use to create GUI in C++?" or "Is there any good networking library for C++?". Important thing is, that with Qt we can create portable code and it has very good documentation and wide community always ready to help. Qt also offers development environment <a class="external_link" target="_blank" href="https://doc.qt.io/qtcreator/" >Qt Creator</a> that is also great and recommended when working with Qt to get fully into this ecosystem.<br/>
+I made the same decision when I have choosen to work with Qt for GUI design, so I decided to recreate <a class="internal_link" target="_blank" href="#/winhttp_api">
+WinHttp</a> functionality with <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qtnetwork-index.html" >Qt Network</a> library. My plan for this has been already hinted in WinHttp article to design application connecting with Binance cryptocurrency market and below representation is solid draft for fully functional multithread program with network solution.<br/>
+&emsp;Because Qt is fully functional framework for wide range of purposes, its one of main classes is definitely QObject and it's certain that user finally bumps into it, as lots of classes inherit from it. With this subject is stricly connected macro Q_OBJECT, as quoting the <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qobject.html#Q_OBJECT">documentation</a>:<br/>
+<span class="quote">The Q_OBJECT macro must appear in the private section of a class definition that declares its own signals and slots or that uses other services provided by Qt's meta-object system.</span><br/>
+Also <span class="code_quote">QApplication</span> class that we use in main.cpp is not an exception, its classes inheritance path goes like:<br/>
+<span class="quote">QApplication -> QGuiApplication -> QCoreApplication -> QObject</span>.<br/>
+
+<div class = "code_short"><span class="sc9">#include "binRaider.h"
+#include &lt;QApplication&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">argc</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">argv</span><span class="sc10">[])</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">QApplication</span><span class="sc0"> </span><span class="sc11">a</span><span class="sc10">(</span><span class="sc11">argc</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">argv</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">binRaider</span><span class="sc0"> </span><span class="sc11">w</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">w</span><span class="sc10">.</span><span class="sc11">show</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">a</span><span class="sc10">.</span><span class="sc11">exec</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span>
+</div>
+
+We use QApplication class that provides all the functionality for <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qwidget.html">QWidget</a>-based applications but we just use it as the one to start the program with <span class="code">exec()</span> function and before we use binRaider class which is the main one with <span class="code">show()</span>  function - this class inherits from <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qmainwindow.html">QMainWindow</a> in public mode and it inherits from QWidget - that's why we need to define QWidget pointer argument in constructor. It's all visible in binRaider.h header below:<br/>
+
+<br/><br/>
+<button id="changeCodeHeightBtn_id_1" onclick="change_code_height('1')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_1"  class="code_long"><span class="sc9">#ifndef BINRAIDER_H
+#define BINRAIDER_H
+</span><span class="sc0">
+</span><span class="sc9">#include &lt;QMainWindow&gt;
+#include &lt;QtWidgets/QTableWidget&gt;
+#include &lt;QtCharts&gt;
+#include &lt;binConThreadWorker.h&gt;
+</span><span class="sc0">
+</span><span class="sc11">QT_BEGIN_NAMESPACE</span><span class="sc0">
+</span><span class="sc5">namespace</span><span class="sc0"> </span><span class="sc11">Ui</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0"> </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">binRaider</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc11">QT_END_NAMESPACE</span><span class="sc0">
+
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">binRaider</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc11">QMainWindow</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+
+</span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc11">binRaider</span><span class="sc10">(</span><span class="sc11">QWidget</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">parent</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">nullptr</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">~</span><span class="sc11">binRaider</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc11">QThread</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">mThread</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">binConThreadWorker</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">worker</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">QThread</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">mThreadTrader1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">mThreadTrader2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">mThreadTrader3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">mThreadTrader4</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">binConThreadWorker</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">workerTrader1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">workerTrader2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">workerTrader3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">workerTrader4</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">isFreemThreadTrader1</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">isFreemThreadTrader2</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">isFreemThreadTrader3</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">isFreemThreadTrader4</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">private</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc11">Q_OBJECT</span><span class="sc0">
+    </span><span class="sc11">Ui</span><span class="sc10">::</span><span class="sc11">binRaider</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">ui</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">QTableWidget</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">m_table</span><span class="sc10">;</span><span class="sc0">
+
+ </span><span class="sc16">private</span><span class="sc0"> </span><span class="sc11">slots</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">onValueChanged</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">onValueSecChanged</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">onStartTrade</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">freemThreadTrader1</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">freemThreadTrader2</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">freemThreadTrader3</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">freemThreadTrader4</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_actionGetWallet_triggered</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_pushButton_candlesPrint_clicked</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_pushButton_autobotStart_clicked</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_pushButton_clear_clicked</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_pushButton_24hPPriceChangeScan_clicked</span><span class="sc10">();</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_pushButton_stop_clicked</span><span class="sc10">();</span><span class="sc0">
+
+</span><span class="sc11">signals</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_process_startTrader1</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_process_startTrader2</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_process_startTrader3</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">on_process_startTrader4</span><span class="sc10">(</span><span class="sc11">QString</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+</span><span class="sc9">#endif </span><span class="sc2">// BINRAIDER_H
+</span></div>
+
+
+
+<!--<div id="code_id_1" class = "code_long">
+</div>-->
+
+</div>
