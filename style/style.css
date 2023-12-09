@@ -253,12 +253,12 @@ nav .mainmenu>li {
 	max-width:1020px;
 	padding: 20px;
 	font-family: noto sans, sans-serif;/*arial, helvetica, sans-serif;*/
-	text-align: justify;
+	text-align: left;
 	/*font-size: 1.1rem;*/
 	/*font-size:16px;*/
 	font-size: 1.04rem;
 	line-height: 1.75rem;
-	border-left: 1px solid #D3D3D3;
+	border-left: 1px solid #D3D3D3;	/*#D3D3D3;*/
 	border-right: 1px solid #D3D3D3;	
 	color: #dedede;
 	/*background: rgba(19, 18, 21,  .50);*/
@@ -291,6 +291,7 @@ nav .mainmenu>li {
 	background: #111;
 	color: #D3D3D3;
 	font-size: 16px;
+	line-height: 1.2rem;
 	white-space: nowrap;
 	font-family: consolas, "localFontConsola";
 	white-space: pre;
@@ -306,6 +307,7 @@ nav .mainmenu>li {
 	background: #111;
 	color: #D3D3D3;
 	font-size: 16px;
+	line-height: 1.1rem;
 	white-space: nowrap;
 	font-family: consolas, "localFontConsola";
 	white-space: pre;
