@@ -4,9 +4,9 @@
 
 <div>
 &emsp;<a class="external_link" target="_blank" href="https://www.qt.io/" >Qt</a> is very extensive and powerful framework based on C++ for wide range of applications, it's often recommended answer for questions like "What should I use to create GUI in C++?" or "Is there any good networking library for C++?". Important thing is, that with Qt we can create portable code and it has very good documentation and wide community always ready to help. Qt also offers development environment <a class="external_link" target="_blank" href="https://doc.qt.io/qtcreator/" >Qt Creator</a> that is also great and recommended when working with Qt to get fully into this ecosystem.<br/>
-I made the same decision when I have choosen to work with Qt for GUI design, so I decided to recreate <a class="internal_link" target="_blank" href="#/winhttp_api">
+I made the same decision when I have chosen to work with Qt for GUI design, so I decided to recreate <a class="internal_link" target="_blank" href="#/winhttp_api">
 WinHttp</a> functionality with <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qtnetwork-index.html" >Qt Network</a> library. My plan for this has been already hinted in WinHttp article to design application connecting with Binance cryptocurrency market and below representation is solid draft for fully functional multithread program with network solution.<br/>
-&emsp;Because Qt is fully functional framework for wide range of purposes, its one of main classes is definitely QObject and it's certain that user finally bumps into it, as lots of classes inherit from it. With this subject is stricly connected macro <span class="code_quote">Q_OBJECT</span>, as per the <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qobject.html#Q_OBJECT">documentation</a>:<br/>
+&emsp;Because Qt is fully functional framework for wide range of purposes, its one of main classes is definitely QObject and it's certain that user finally bumps into it, as lots of classes inherit from it. With this subject is strictly connected macro <span class="code_quote">Q_OBJECT</span>, as per the <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qobject.html#Q_OBJECT">documentation</a>:<br/>
 <span class="quote">The Q_OBJECT macro must appear in the private section of a class definition that declares its own signals and slots or that uses other services provided by Qt's meta-object system.</span><br/>
 Also <span class="code_quote">QApplication</span> class that we use in <span class="quote">main.cpp</span> is not an exception, its classes inheritance path goes like that:<br/>
 <span class="quote">QApplication -> QGuiApplication -> QCoreApplication -> QObject</span>.<br/>
@@ -91,7 +91,7 @@ Also Ui namespace and <span class="code_quote"> Ui::binRaider *ui</span> pointer
 &emsp; &nbsp;<span class="code_quote">QObject::connect(worker, SIGNAL(valueSecChanged(QString)), this, SLOT(onValueSecChanged(QString)))</span> - here we connect signals from our mThread with slots in the main class where we are (that's why we use <span class="quote">this</span>) that update GUI objects.<br/>
 &emsp;- <span class="code_quote">QObject::connect(worker, SIGNAL(finished()), mThread, SLOT(quit()))</span>,<br/> 
 &emsp; &nbsp;<span class="code_quote">QObject::connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()))</span>,</br>
-&emsp; &nbsp;<span class="code_quote">QObject::connect(mThread, SIGNAL(finished()), mThread, SLOT(deleteLater()))</span> - we connect finished() signals to quit() and deleteLater() functions to safely finish our work with these objects and delete them when thread is finished. Finally then we can move our worker to the created mThread and start the new thread. It is worth to clarify that whole program works in the main thread and there is event loop that constantly waits to receive and send signals but also do standard work we want like the one inside the functions. Saying it very simple it's kind of while infinite loop checking if any triggers have occured. When moving worker so object of our class to a new thread, we can run separate tasks there and we don't block the main thread. <span style="font-style:italic; color:red;">Additionally it's important to mention that GUI handling runs only in the main thread! User shouldn't try to access connection with GUI from separate thread</span>.<br/>
+&emsp; &nbsp;<span class="code_quote">QObject::connect(mThread, SIGNAL(finished()), mThread, SLOT(deleteLater()))</span> - we connect finished() signals to quit() and deleteLater() functions to safely finish our work with these objects and delete them when thread is finished. Finally then we can move our worker to the created mThread and start the new thread. It is worth to clarify that the whole program works in the main thread and there is event loop that constantly waits to receive and send signals but also do standard work we want like the one inside the functions. Saying it very simply it's kind of while infinite loop checking if any triggers have occured. When moving worker so object of our class to a new thread, we can run separate tasks there and we don't block the main thread. <span style="font-style:italic; color:red;">Additionally it's important to mention that GUI handling runs only in the main thread! User shouldn't try to access connection with GUI from separate thread</span>.<br/>
 Here is the complete <span class="quote">binRaider.cpp</span> file:<br/>
 
 <br/>
@@ -490,7 +490,8 @@ Here is the complete <span class="quote">binRaider.cpp</span> file:<br/>
 </span></div>
 
 This leads us to <span class="quote">binConThreadWorker.h</span>, I won't present the whole functionality in cpp file that can be arranged according to the developer's preferences. We have seen in binRaider.h the <span class="code_quote">void onStartTrade(QString)</span> function that receives signals from our new thread and we can see below corresponding signal <span class="code_quote">void startTrade(QString)</span>. The purpose is to ask the main thread to start a next new thread that is going to do another task. The whole process path looks like this:<br/>
-button in GUI is clicked -> <span class="quote">(binRaider SLOT)</span> <span class="code_quote">void binRaider::on_pushButton_autobotStart_clicked()</span>, when mThread is started, then started() <span class="quote">SIGNAL</span> is sent to binConThreadWorker -> <span class="quote">(binConThreadWorker SLOT)</span> <span class="code_quote">process_autobotStart()</span>, after analyze <span class="quote">SIGNAL</span> void <span class="code_quote">startTrade(QString)</span> is sent to binRaider with symbol in QString variable -> <span class="quote">(binRaider SLOT)</span> void <span class="code_quote">onStartTrade(QString)</span> -> <span class="quote">(binRaider SIGNAL)</span> <span class="code_quote">on_process_startTrader1(QString)</span> (in the first turn) is sent to binConThreadWorker <span class="quote">SLOT</span> <span class="code_quote">process_startTrader(QString)</span>.<br/>
+
+button in GUI is clicked -> <span class="quote">(binRaider's class SLOT)</span> <span class="code_quote">void binRaider::on_pushButton_autobotStart_clicked()</span>, when mThread is started, then <span class="code_quote">started()</span> <span class="quote">SIGNAL</span> is sent to binConThreadWorker -> <span class="quote">(binConThreadWorker's class SLOT)</span> <span class="code_quote">void process_autobotStart()</span>, after analyze <span class="quote">SIGNAL</span> <span class="code_quote">void startTrade(QString)</span> is sent to binRaider with symbol in QString variable -> <span class="quote">(binRaider's class SLOT)</span> <span class="code_quote">void onStartTrade(QString)</span> -> <span class="quote">(binRaider's class SIGNAL)</span> <span class="code_quote">void on_process_startTrader1(QString)</span> (in the first turn) is sent to binConThreadWorker's class <span class="quote">SLOT</span> -> <span class="code_quote">void process_startTrader(QString)</span>.<br/>
 
 <br/>
 <button id="changeCodeHeightBtn_id_3" onclick="change_code_height('3')" style="float:right; width:100px;">100% height</button>
@@ -501,8 +502,6 @@ button in GUI is clicked -> <span class="quote">(binRaider SLOT)</span> <span cl
 </span><span class="sc0">
 </span><span class="sc9">#include &lt;binCon.h&gt;
 #include &lt;fstream&gt;
-</span><span class="sc2">//#include &lt;chrono&gt;
-//#include &lt;thread&gt;
 </span><span class="sc9">#include &lt;QThread&gt;
 </span><span class="sc0">
 </span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">binConThreadWorker</span><span class="sc0"> </span><span class="sc10">:</span><span class="sc0"> </span><span class="sc16">public</span><span class="sc0"> </span><span class="sc11">QObject</span><span class="sc0">
@@ -552,7 +551,7 @@ When we have this part clear, we are still missing networking explanation. Let's
 #include &lt;QMessageBox&gt;
 #include &lt;sstream&gt;
 #include "HMAC_SHA256.h"
-#pragma comment(lib, "HMAC_SHA256_upgrade_library")
+#pragma comment(lib, "HMAC_SHA256")
 #include &lt;nlohmann\json.hpp&gt;
 </span><span class="sc5">using</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">nlohmann</span><span class="sc10">::</span><span class="sc11">json</span><span class="sc10">;</span><span class="sc0">
 
@@ -591,7 +590,7 @@ When we have this part clear, we are still missing networking explanation. Let's
 </span></div>
 
 We can notice important included classes with <span class="quote">QNetwork</span> prefix but also <span class="quote">QUrl</span> one and very meaningful <span class="quote">QEventLoop</span>.<br/>
-Event loop is important pattern design in many programming languages that waits for and dispatches events or messages in a program, it works in the same thread but it's kind of next to it, it's not blocking the stack and it's especially noticable for long-term tasks, instead it queues the tasks and call them back to the stack when task is ready, for example asynchronous network communication. Same as in <a class="internal_link" target="_blank" href="#/winhttp_api">WinHttp</a>, I use <a class="external_link" target="_blank" href="https://json.nlohmann.me/">JSON for Modern C++</a>. Also please remember to try use Qt classes like QString instead of std::string, otherwise use conversion functions like <span class="code_quote">QString::fromStdString(std::string)</span>. I stayed here with std:string class due to my HMAC_SHA256 library implementation. Let's take a look at <span class="quote">binCon.cpp:</span>
+Event loop is important design pattern in many programming languages that waits for and dispatches events or messages in a program, it works in the same thread but it's kind of next to it, it's not blocking the stack and it's especially noticable for long-term tasks, instead it queues the tasks and call them back to the stack when task is ready, for example asynchronous network communication. Same as in <a class="internal_link" target="_blank" href="#/winhttp_api">WinHttp</a>, I use <a class="external_link" target="_blank" href="https://json.nlohmann.me/">JSON for Modern C++</a>. Also please remember to try use Qt classes like QString instead of std::string, otherwise use conversion functions like <span class="code_quote">QString::fromStdString(std::string)</span>. I stayed here with std:string class due to my HMAC_SHA256 library implementation. Let's take a look at <span class="quote">binCon.cpp:</span>
 
 <br/>
 <button id="changeCodeHeightBtn_id_5" onclick="change_code_height('5')" style="float:right; width:100px;">100% height</button>
@@ -868,7 +867,7 @@ Event loop is important pattern design in many programming languages that waits 
 </span><span class="sc10">}</span><span class="sc2">//namespace binCon
 </span></div>
 
-&emsp;In the internet we can find a few HTTP requests patterns in Qt, some of them are considered bad practice, however I think for simple projects and for specific purposes they're enough. Qt generally bases on signals and slots pattern and this should be the correct way to design it, to separate algorithm to more individual steps.
+&emsp;In the internet we can find a few HTTP request patterns in Qt, some of them are considered bad practice, however I think for simple projects and for specific purposes they're enough. Qt generally bases on signals and slots pattern and this should be the correct way to design it, to separate algorithm to more individual steps.
 Let's take a look at <span class = "code_quote">json getCandles(std::string coin, std::string interval, std::string limit)</span> function and first example with QEventLoop:<br/>
 
 <br/>
@@ -902,7 +901,7 @@ Let's take a look at <span class = "code_quote">json getCandles(std::string coin
     </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">;</span><span class="sc0">
 </span><span class="sc10">}</span></div>
 
-The most important part is when we send the request <span class="code_quote">reply = mgr.get(req)</span>, because we start then asynchronous operation. If <span class="code_quote">eventLoop.exec()</span> would be omitted, then we wouldn't have guarantee that <span class="code_quote">buffer = reply->readAll()</span> will be completed, as the reply can not come yet! With <span class="code_quote">eventLoop.exec()</span> we block the stack and kind of give the priority to execute all event loop taska and then continue with rest on the stack, when reply is finished and QEventLoop gets the information to quit, thanks to <span class="code_quote">QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()))</span>.<br/>
+The most important part is when we send the request <span class="code_quote">reply = mgr.get(req)</span>, because we start then asynchronous operation. If <span class="code_quote">eventLoop.exec()</span> would be omitted, then we wouldn't have guarantee that <span class="code_quote">buffer = reply->readAll()</span> will be completed, as the reply can not come yet! With <span class="code_quote">eventLoop.exec()</span> we block the stack and kind of give the priority to execute all event loop tasks and then continue with rest on the stack, when reply is finished and QEventLoop gets the information to quit, thanks to <span class="code_quote">QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()))</span>.<br/>
 &emsp;The second option that does the stuff is <span class="code_quote">QApplication::processEvents()</span>, however as mentioned in the <a class="external_link" target="_blank" href="https://doc.qt.io/qt-6/qcoreapplication.html#processEvents" >documentation</a>:<br/>
 <span class="quote">Use of this function is discouraged. Instead, prefer to move long operations out of the GUI thread into an auxiliary one and to completely avoid nested event loop processing. If event processing is really necessary, consider using QEventLoop instead.</span><br/>
 We need to <span class="code_quote">#include &lt;QApplication&gt;</span> also to make it works:<br/>
@@ -986,3 +985,4 @@ First we connect signal from reply to slot in our class, that's why we pass <spa
 
 
 All the job for getCandles function is done when we ask for the response and <span class="code_quote">void binConCl::replyFinished(QNetworkReply *reply)</span> will handle the reading. Finally, we can <span class="code_quote">emit</span> the signal exactly like we did earlier with built-in signals in Qt classes, the same what applies to GUI for example. Of course we have to declare proper QObject connection so emit signal goes to proper slot and declare it in <span class+"quote">binCon.h</span>. In the end I would like to advise to always write code in separate .cpp and .h files to avoid problems like I did bump into when not doing it, Qt program just couldn't compile the program, complained that is not possible to generate moc files etc., after the change everything "just worked" ;).
+</div>
