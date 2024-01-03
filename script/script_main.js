@@ -111,6 +111,12 @@ var routes = {
     },  	  
 	'/qt_multithreading_and_networking_basics_de': function () { 
 		contents_load_func("qt_multithreading_and_networking_basics_de")
+    },  	  
+	'/deluge_autoshutdown_python': function () { 
+		contents_load_func("deluge_autoshutdown_python")
+    },  	  
+	'/deluge_autoshutdown_python_de': function () { 
+		contents_load_func("deluge_autoshutdown_python_de")
     }
 };
 

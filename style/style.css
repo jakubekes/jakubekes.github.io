@@ -357,7 +357,6 @@ nav .mainmenu>li {
 	font-style: italic;
 }
 
-
 .sc0 {
 	color: #9cc;
 }
@@ -365,6 +364,9 @@ nav .mainmenu>li {
 	font-weight: bold;
 	font-style: italic;
 	color: #7F9F7F;
+}
+.sc3 {
+	color: #CC9393;
 }
 .sc4 {
 	color: #8CD0D3;
