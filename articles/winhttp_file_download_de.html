@@ -1,0 +1,174 @@
+<span class = "content_title"> <a href="#/cpp"> C++</a> / <span class = "content_title_current">Files download with WinHTTP <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>Das ist der ähnliche Artikel wie <a class="internal_link" target="_blank" href="#/winhttp_api_de">WinHttp</a>, nur mit einem anderen Ziel, also werden wir auf dies konzentrieren und die alle Grundlagen sind oben genau beschrieben.
+Ich musste die Deutschunterricht-MP3 Dateien herunterladen, aber die Seite war so entworfen, dass ich auf jeder Datei klicken musste um sie zu herunterladen und da waren hundert Dateien! Ich habe entschieden, dass das die tolle Anlass ist, um eine schnelle Veränderungen in dem obiegen Code zu machen und der Herunterladung automatisch laufen.<br/>
+Von oben gehen, in <span class = "code_quote">void create_request(const wchar_t* endpoint)</span> loswerden wir <span class = "code_quote">WINHTTP_FLAG_SECURE</span>, weil wir uns durch eine sichere Verbindung nicht verbinden, dann ganze <span class = "code_quote">void add_header()</span> gelöscht ist, denn sie ist ganz unnötig und schließlich in dem <span class = "code_quote">void keep_receiving(HANDLE hFile)</span> Teil brauchen wir die JSON Daten nich zulesen und sie zum std::string Buffer sammeln, aber schreiben im Datei-Handle, der haben wir im Function übergeben:<br/>
+
+<div class="code_short"><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">keep_receiving</span><span class="sc10">(</span><span class="sc11">HANDLE</span><span class="sc0"> </span><span class="sc11">hFile</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+</span><span class="sc2">//(...) 
+</span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">wmWritten</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">fr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WriteFile</span><span class="sc10">(</span><span class="sc11">hFile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">wmWritten</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">delete</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+Wir rufen die Funktion in <span class = "code_quote">main()</span> auf, innen die For-Schleife, die einen URL und ihren Speicherpfad für jede Datei zum Herunterladen generiert und eine neue Datei erstellt.
+
+<br/><br/>
+<button id="changeCodeHeightBtn_id_0" onclick="change_code_height(0);" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="codeid_0"  class="code_long"><span class="sc9">#include&lt;windows.h&gt;
+#include&lt;winhttp.h&gt;
+#include&lt;iostream&gt;
+#pragma comment(lib, "winhttp.lib")   
+#include&lt;string&gt;
+</span><span class="sc0">
+</span><span class="sc11">HINTERNET</span><span class="sc0">  </span><span class="sc11">hSession</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">hConnect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0">
+</span><span class="sc11">hRequest</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">burl</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">L"radio-download.dw.com"</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">BOOL</span><span class="sc0">  </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">FALSE</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">dwDownloaded</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc11">LPSTR</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">open_session</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Use WinHttpOpen to obtain a session handle.
+</span><span class="sc0">    </span><span class="sc11">hSession</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpOpen</span><span class="sc10">(</span><span class="sc6">L"WinHTTP Example/1.0"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_ACCESS_TYPE_DEFAULT_PROXY</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_NO_PROXY_NAME</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">WINHTTP_NO_PROXY_BYPASS</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// Specify an HTTP server.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">hConnect</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpConnect</span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">burl</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">INTERNET_DEFAULT_HTTP_PORT</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">endpoint</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">L"GET"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc2">// Create an HTTP request handle.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">hRequest</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpOpenRequest</span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">get</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">endpoint</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">WINHTTP_NO_REFERER</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_DEFAULT_ACCEPT_TYPES</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0"> </span><span class="sc2">// WINHTTP_FLAG_SECURE); -&gt; key change, no https!
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">send_and_receive</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Send a request.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpSendRequest</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_NO_ADDITIONAL_HEADERS</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc11">WINHTTP_NO_REQUEST_DATA</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0">
+            </span><span class="sc4">0</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc2">// End the request.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">bResults</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WinHttpReceiveResponse</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">keep_receiving</span><span class="sc10">(</span><span class="sc11">HANDLE</span><span class="sc0"> </span><span class="sc11">hFile</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Keep checking for data until there is nothing left.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">do</span><span class="sc0">
+        </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc2">// Check for available data.
+</span><span class="sc0">            </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">WinHttpQueryDataAvailable</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">dwSize</span><span class="sc10">))</span><span class="sc0">
+                </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %u in WinHttpQueryDataAvailable.\n"</span><span class="sc10">,</span><span class="sc0">
+                    </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+
+            </span><span class="sc2">// Allocate space for the buffer.
+</span><span class="sc0">            </span><span class="sc11">pszOutBuffer</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc16">char</span><span class="sc10">[</span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">];</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">pszOutBuffer</span><span class="sc10">)</span><span class="sc0">
+            </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Out of memory\n"</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc5">else</span><span class="sc0">
+            </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc2">// Read the data.
+</span><span class="sc0">                </span><span class="sc11">ZeroMemory</span><span class="sc10">(</span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+
+                </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">WinHttpReadData</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">LPVOID</span><span class="sc10">)</span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0">
+                    </span><span class="sc11">dwSize</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">dwDownloaded</span><span class="sc10">))</span><span class="sc0">
+                    </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %u in WinHttpReadData.\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+                </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+                    </span><span class="sc11">DWORD</span><span class="sc0"> </span><span class="sc11">wmWritten</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">fr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">WriteFile</span><span class="sc10">(</span><span class="sc11">hFile</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">dwSize</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc10">&amp;</span><span class="sc11">wmWritten</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc5">delete</span><span class="sc10">[]</span><span class="sc0"> </span><span class="sc11">pszOutBuffer</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">dwSize</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">CloseHandle</span><span class="sc10">(</span><span class="sc11">hFile</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">report_errors</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Report any errors.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">bResults</span><span class="sc10">)</span><span class="sc0">
+        </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Error %d has occurred.\n"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GetLastError</span><span class="sc10">());</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">close_connection</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc2">// Close any open handles.
+</span><span class="sc0">    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hConnect</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hSession</span><span class="sc10">);</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">open_session</span><span class="sc10">();</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">{</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc0"> </span><span class="sc10">};</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&lt;=</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp_num</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">temp_num</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"00"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">to_string</span><span class="sc10">(</span><span class="sc11">i</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&gt;=</span><span class="sc0"> </span><span class="sc4">10</span><span class="sc0"> </span><span class="sc10">&amp;&amp;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc4">100</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">temp_num</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"0"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">to_string</span><span class="sc10">(</span><span class="sc11">i</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">temp_num</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">to_string</span><span class="sc10">(</span><span class="sc11">i</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">endpoint_wallet</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">"/Events/dwelle/deutschkurse/audiotrainer/eng/Audiotrainer_Englisch_Lektion"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">temp_num</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">".mp3"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">endpoint_wallet</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">widestr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">url</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">());</span><span class="sc0">
+        </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">widecstr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">widestr</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc11">create_request</span><span class="sc10">(</span><span class="sc11">widecstr</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wcout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"Request URL: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">widecstr</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc0"> </span><span class="sc11">temp_num_wstr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc6">L"C:\\TEMP\\"</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wstring</span><span class="sc10">(</span><span class="sc11">temp_num</span><span class="sc10">.</span><span class="sc11">begin</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc11">temp_num</span><span class="sc10">.</span><span class="sc11">end</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc10">+</span><span class="sc0"> </span><span class="sc6">L".mp3"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc16">const</span><span class="sc0"> </span><span class="sc16">wchar_t</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">temp_num_wch</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">temp_num_wstr</span><span class="sc10">.</span><span class="sc11">c_str</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc11">HANDLE</span><span class="sc0"> </span><span class="sc11">hFile</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">CreateFile</span><span class="sc10">(</span><span class="sc11">temp_num_wch</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">GENERIC_WRITE</span><span class="sc0"> </span><span class="sc10">|</span><span class="sc0"> </span><span class="sc11">GENERIC_WRITE</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FILE_SHARE_WRITE</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">OPEN_ALWAYS</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">FILE_ATTRIBUTE_NORMAL</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">wcout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"Save path: "</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">temp_num_wch</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc11">send_and_receive</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">keep_receiving</span><span class="sc10">(</span><span class="sc11">hFile</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">report_errors</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc11">WinHttpCloseHandle</span><span class="sc10">(</span><span class="sc11">hRequest</span><span class="sc10">);</span><span class="sc0">
+       
+    </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc11">close_connection</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span></div></div>
+
+</div>

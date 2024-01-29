@@ -1,0 +1,46 @@
+<span class = "content_title"> <a href="#/virtualization"> Virtualization</a> / <span class = "content_title_current">Handling Proxmox vma.zst backups on Windows host</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;When trying to recreate the situation I met to get data from Proxmox backup vma.zst, I needed to recreate all situation so I'm going to describe whole process that shows many useful stuff. I started from <a class="external_link" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a> Virtual Environment installation and installed as a guest using <a class="external_link" target="_blank" href="https://www.virtualbox.org/">Oracle VM VirtualBox</a>. Then I created VHD file in Computer Management, initialized NTFS volume, and copied newest minimal Debian installation ISO file. Of course there is easier way like upload through web-based GUI, but I wanted to download back drive image. See <a class="internal_link" target="_blank" href="#/bootable_iso_and_physical_devices_with_VM">Creating bootable ISO from raw files and physical devices usage with virtual machines</a> for more details. Unfortunately downloading the file to mounted VHD inside the Proxmox didn't work well, I tried to turn the VHD disk offline in Computer Management and also check <span class="quote">Use Host I/O Cache</span> in Proxmox VM storage settings, but I kept getting I/O errors communicates in Proxmox console. Connecting real physical drive with this method like internal/external HDD/SSD works fine or we can use just USB stick through built-in option in VirtualBox if there is not much data to download. Below is the whole process description step by step:<br/>
+<ul style="list-style-type:decimal">
+	<li>Proxmox installation in VirtualBox</li>
+	<li>Downloading Debian image onto VHD drive</li>
+	<li>Adding VHD to Proxmox VM storage (see above method to add physical drive to VirtualBox)</li>
+	<li>In Proxmox:
+		<ul style="list-style-type:lower-alpha">
+			<li><span class="code_quote">lsblk</span> - to list all devices, in my case it was sdb2</li>
+			<li><span class="code_quote">mkdir /mnt/temp</span> - creating "temp" mountpoint</li>
+			<li><span class="code_quote">mount /dev/sdb2 /mnt/temp</span> - mounting sdb2 to /mnt/temp (to support NTFS filesystem we need to install <span class="code_quote">ntfs-3g</span> with <span class="code_quote">apt-get install ntfs-3g</span>)</li>
+		</ul>
+	</li>		
+	<li><span class="code_quote">cp /mnt/temp/debian*.iso /var/lib/vz/template/iso</span> - copying the iso to proper ISOs path!</li>
+	<li>Connecting to Proxmox GUI through browser and proceeding with new Debian VM creation and OS installation</li>
+	<li>Creating backup in GUI - so this is actually the starting point, just all the way above should go like uploading old backup to the backups path that is <span class="quote">/var/lib/vz/dump</span>. Overall the purpose is to get VM back to the Windows host, so in one of possible scenarios we could go now to GUI and restore backup, then download the VM image to our external drive. Unfortunately, when installing Proxmox with default settings, storage is managed by LVM and ZFS filesystem, what means that VMs aren't files but logical volumes (see <span class="code_quote">lvs</span> command and more <a class="external_link" target="_blank" href="https://pve.proxmox.com/pve-docs/pve-admin-guide.html#chapter_lvm">here</a>). When executing <span class="code_quote">ls /dev/pve</span>, result looked like <span class="quote">root swap vm-100-disk-0</span> where vm-100-disk-0 is my Debian VM. Invoking <span class="code_quote">ls -l /dev/pve/vm-100-disk-0</span> gives us:<br/> <span class="quote">lrwxrwxrwx 1 root root 7 Jan 8 20:06 /dev/pve/vm-100-disk-0 -> ../dm-6</span> so it's symbolic link to <span class="quote">/dev/dm-6</span>.<br/>
+	In such case, let's take a look at all the options:<br/>
+		<ul style="list-style-type:lower-alpha">
+			<li>We can restore the backup and use <span class="code_quote">dd</span> command to dump the device like for example:<br/>
+			<span class="code_quote">dd if=/dev/dm-6 of=/var/lib/vz/dump/dm-6_dump</span> - it will dump complete raw device bit by bit to the file under <span class="quote">/var/lib/vz/dump/dm-6_dump</span>. If we know that not much data is allocated like it was in my case, we can use in fly compression with 7z (recommended to install full package with <span class="code_quote">apt-get install p7zip-full</span>):<br/>
+			<span class="code_quote">dd if=/dev/dm-6 | 7z a -si /var/lib/vz/dump/dm-6_dump</span> (-si to read data from stdin).
+			</li>
+			<li>Second option is to not restore the backup but first extract it from the zst archive:<br/>
+			<span class="code_quote">zstd *.vma.zst</span><br/>
+			..and then we can extract raw image from vma file and additionally compress later:<br/>
+			<span class="code_quote">vma extract *.vma &lt;targetdir&gt;<file></span> - it's worth to mention that I considered first <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a> usage and there is no problem to extract zst archive of course, but vma tool is not widely avalibale on Linux systems, I just found separated vma from Proxmox <a class="external_link" target="_blank" href="https://github.com/AenonDynamics/vma-backup-extractor">here</a>, but didn't test it.
+			</li>				
+		</ul>
+	</li>
+	<li>We can now copy our raw image to mounted in VM physical device by using <span class="quote">cp</span> or there is also SSH/SCP (Secure Copy Protocol) connection possibility to download the file from Windows level. We need <a class="external_link" target="_blank" href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PSCP (PuTTY Secure Copy Protocol)</a> so cousin of popular PuTTY. It's command line tool so if we are in desktop folder where also pscp.exe file is, below command will connect us to Proxmox server at IP address 192.168.0.103 and port 22 as the root user and download to our desktop location the file from Proxmox under /var/lib/vz/dump/*.raw and save it there as *.raw:<br/>
+	<span class="code_quote">pscp -P 22 root@192.168.0.103:/var/lib/vz/dump/*.raw *.raw</span><br/>
+	It will ask first for root password naturally.
+	</li>
+	<li>Finally in the end we have our raw image on the Windows machine (or we have to unpack it in case we compressed it inside Proxmox). To make it work in VirtualBox we can convert it to some more usable format like VDI. We can open command line, cd to <span class="quote">C:\Program Files\Oracle\VirtualBox</span> and execute below command:<br/>
+	<span class="code_quote">VBoxManage.exe convertfromraw C:\Users\UserName\Desktop\*.raw C:\Users\UserName\VirtualBox VMs\*.vdi --format VDI</span><br/>
+	Above command will convert raw image from desktop and save it in user's VirtualBox VMs folder as proper VDI file.
+	</li>
+	
+</ul>
+
+</div>
+</div>

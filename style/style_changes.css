@@ -52,7 +52,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	max-width:1050px;		
 	height: 30px;
 	padding-top:10px;
-	color:#6fb1db;
+	color:#fff;
 	letter-spacing:5px;
 	text-align:center;
 	font-family: "localFontConsola", "Courier New";	
@@ -142,7 +142,7 @@ nav a:link, nav a:visited, nav a:active, nav a{
 }
 
 nav a:hover, nav a:active{
-	color: #6fb1db;
+	color: #ff0000;
 	/*text-decoration:underline;*/
 	/*background: rgba(30, 30, 30,  .85);	*/
 	transition: all .2s ease-in-out;
@@ -189,6 +189,8 @@ nav .mainmenu>li {
 	border: 1px solid #d3d3d3;
 }
 
+
+
 .expand {
 	font-size:11px; 
 	float:right;
@@ -228,12 +230,15 @@ nav .mainmenu>li {
 /* ******************* Submenu styles ******************* */
 
 .submenu_site {
-	list-style-type: katakana;
-	/*font-family: consolas;*/
+	border-color:#888;
+	padding: 0px;
+	margin: 0 auto;
+	height: 140px;
+	background-color:white;
 }
 
-.submenu_site li:hover {
-	/*color: #00BFFF;*/
+.submenu_site:hover {
+	border-color: red;
 }
 
 .submenu_site a {
@@ -241,26 +246,30 @@ nav .mainmenu>li {
 	text-decoration:none;
 }
 
-.submenu_site li {
-	color: #6fb1db;
-	text-decoration-color: #6fb1db;
-	transition: all .2s ease-in-out;	
+.submenu_site a:hover {
+	text-decoration-color: red;
 }
 
 .content a:hover, .content a:active {
-	/*text-decoration:underline;*/
-	cursor: pointer;
-	color: #6fb1db;
-	font-style:italic;
-	transition: all .2s ease-in-out;	
+	text-decoration:underline;
+	cursor: pointer;	
 }
 
-.submenu_date_slash {
-	color: #6fb1db;
-	font-style:italic;
+.menu_date {
 	font-weight:bold;
+	font-style:italic;
+	background-color:yellow;	
 }
 
+.submenu_en {	
+	background-color:blue;
+}
+
+.submenu_de {
+	background-color:#a49;
+}
+
+}
 /* ******************* Contents styles ******************* */
 
 .content {
@@ -280,6 +289,8 @@ nav .mainmenu>li {
 	border-right: 1px solid #D3D3D3;	
 	color: #dedede;
 	/*background: rgba(19, 18, 21,  .50);*/
+	word-wrap: break-word;
+
 }
 
 /*.content a{
@@ -365,10 +376,9 @@ nav .mainmenu>li {
 }
 
 .internal_link {
-	color: #bbb;
+	color: #4aa;
 	font-style: italic;
-	text-decoration:underline;
-	text-decoration-style: dotted;
+	text-decoration: none;
 }
 
 .important {

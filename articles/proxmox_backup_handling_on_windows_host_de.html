@@ -1,0 +1,52 @@
+<span class = "content_title"> <a href="#/virtualization"> Virtualization</a> / <span class = "content_title_current">Handling Proxmox vma.zst backups on Windows host <span style="color:#f00;">DE Version</span></span></span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Wenn versuchte ich die getroffene Situation wiederherzustellen um die Daten von Proxmox-Sicherung zu erhalten, brauchte ich die ganze Situation wiederherstellen, also beschreibe ich den kompletten Prozess, der viele nützliche Dinge zeigt. Ich habe die Installation von der <a class="external_link" target="_blank" href="https://www.proxmox.com/en/">Proxmox</a> Virtuelle Umgebung gestartet und habe als der Gast für <a class="external_link" target="_blank" href="https://www.virtualbox.org/">Oracle VM VirtualBox</a> installiert. Danach habe ich eine VHD-Datei in der Computer Verwaltung erstellt, NTFS Laufwerk initialisiert und kopiert die neuste minimal Debian ISO-Datei an. Natürlich gibt es der einfachere Weg wie Hochladen über eine webbasierte GUI, aber ich wollte das Laufwerksabbild zurück herunterladen. Sehen Sie <a class="internal_link" target="_blank" href="#/bootable_iso_and_physical_devices_with_VM">Creating bootable ISO from raw files and physical devices usage with virtual machines</a> für mehrere Details. Bedauerlicherweise hat das Herunterladen von der Datei zur gemountete VHD innen Proxmox nicht richtig funktioniert, habe ich die VHD offline in der Computer Verwaltung versucht und auch <span class="quote">Use Host I/O Cache</span> in VM Speicher Einstellungen von Proxmox markiert, aber ich habe immer wieder I/O Fehlermeldungen in der Proxmox Konsole bekommen.
+Verbindung eines echten physischen Laufwerk mit dieser Methode wie ein intern/extern HDD/SSD funktioniert einwandfrei oder wir können einfach einen USB-Stick mit der integrierten Option in VirtualBox nutzen, wenn es nich so viel Daten zum Herunterladung gibt.
+Unten gibt es die ganze Prozessbeschreibung Schritt für Schritt:<br/>
+
+<ul style="list-style-type:decimal">
+	<li>Die Installation von Proxmox in VirtualBox</li>
+	<li>Der Download des Debian-Abbilds auf der VHD.</li>
+	<li>Das Hinzufügen der VHD zum VM-Speicher (sehen sie oben die Methode wie einen physischen Laufwerk zu VirtualBox hinzufügen)</li>
+	
+	<li>In Proxmox:
+		<ul style="list-style-type:lower-alpha">
+			<li><span class="code_quote">lsblk</span> - um alle Geräte zu auflisten, in meinem Fall es war sdb2</li>
+			<li><span class="code_quote">mkdir /mnt/temp</span> - die Erstellung vom "temp" Mountpoint</li>
+			<li><span class="code_quote">mount /dev/sdb2 /mnt/temp</span> - die Montage des sdb2 zum /mnt/temp (um das NTFS-Dateisystem zu unterstützen, mussen wir <span class="code_quote">ntfs-3g</span> mit <span class="code_quote">apt-get install ntfs-3g</span> installieren)</li>
+		</ul>
+	</li>	
+	<li><span class="code_quote">cp /mnt/temp/debian*.iso /var/lib/vz/template/iso</span> - das Kopieren des ISOs im korrekten Pfad des ISOs!</li>
+	<li>Die Verbindung mit der Proxmox GUI über der Browser und fortfahren mit der Erstelung der neuen Debian-VM und des Betriebsystems installation.</li>
+	<li>Die Erstellung von der Sicherungskopie in der GUI - also, das ist eigentlich der Startpunkt, einfach sollte der gesamte Weg oben gehen wie hochladen die Sicherungskopie im Sicherungspfad, das ist <span class="quote">/var/lib/vz/dump</span>. Gesamt ist der Zweck um VM zurück zum Windows-Gastgeber holen, also in einem der möglichen Szenarien, könnten wir jetzt zur GUI wechseln und die Sicherungskopie wiederherzustellen, dann die VM-Abbild-Datei auf unsere externe Festplatte herunterladen.
+	Bedauerlicherweise wenn man Proxmox mit den Standardeinstellungen installiert, der Speicher ist von den LVM und ZFS-Dateisystem verwaltet, was bedeutet das Virtuelle Maschinen keine Dateien aber logische Volumes sind (sehen Sie den <span class="code_quote">lvs</span> Befehl and mehr <a class="external_link" target="_blank" href="https://pve.proxmox.com/pve-docs/pve-admin-guide.html#chapter_lvm">hier</a>). Wenn man <span class="code_quote">ls /dev/pve</span> ausführt, sieht das Result wie <span class="quote">root swap vm-100-disk-0</span> aus, wo vm-100-disk-0 meine Debian VM ist.
+	Die Aufruf von <span class="code_quote">ls -l /dev/pve/vm-100-disk-0</span> gibt uns:<br/> <span class="quote">lrwxrwxrwx 1 root root 7 Jan 8 20:06 /dev/pve/vm-100-disk-0 -> ../dm-6</span> also das ist der symbolische Link zu <span class="quote">/dev/dm-6</span>.<br/>
+	In einem solchen Fall, lassen wir uns einen Blick auf die gesamte Optionen werfen:<br/>
+		<ul style="list-style-type:lower-alpha">
+			<li>Wir können die Sicherungskopie wiederherstellen und den <span class="code_quote">dd</span> Befehl nutzen um das Gerät zu übertragen, wie z.B:<br/>
+			<span class="code_quote">dd if=/dev/dm-6 of=/var/lib/vz/dump/dm-6_dump</span> - es wird eine komplette rohe Gerät, bit für bit zum Datei übertragen unter dem <span class="quote">/var/lib/vz/dump/dm-6_dump</span> Pfad. Wenn wir wissen, dass nicht zu viel Daten zugewiesen sind, wie es in meinem Fall war, können wir im Flug mit 7z komprimieren (es wird empfohlen um das gesamte Paket mit <span class="code_quote">apt-get install p7zip-full</span> zu installieren):<br/>
+			<span class="code_quote">dd if=/dev/dm-6 | 7z a -si /var/lib/vz/dump/dm-6_dump</span> (-si um die Daten von stdin lesen).
+			</li>
+			<li>Die zweite Möglichkeit ist um die Sicherungskopie nicht wiederherstellen, aber sie zuerst extrahieren vom zst-Archiv:<br/>
+			<span class="code_quote">zstd *.vma.zst</span><br/>
+			.. und dann können wir das rohe Abbild von der vma Datei extrahieren und später komprimieren:<br/>
+			<span class="code_quote">vma extract *.vma &lt;targetdir&gt;<file></span> - es ist erwähnenswert, dass ich zuerst die <a class="external_link" target="_blank" href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a> Nutzung in Betracht gezogen habe und es gibt natürlich kein Problem um das zst-Archive extrahieren, aber vma tool ist nicht breit verfügbar auf Linux-Betriebssysteme, ich habe nur separat vma von Proxmox <a class="external_link" target="_blank" href="https://github.com/AenonDynamics/vma-backup-extractor">hier</a> gefunden, aber ich habe es nicht geprüft.
+			</li>				
+		</ul>
+	</li>
+	<li>Wir können jetzt unser Rohabbild zum physische Gerät in der VM gemountet kopieren mit <span class="quote">cp</span> oder es gibt auch die SSH/SCP (Secure Copy Protocol) Verbindungsmöglichkeit um die Datei von der Windows-Ebene herunterzuladen. Wir brauchen <a class="external_link" target="_blank" href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PSCP (PuTTY Secure Copy Protocol)</a> also ein Cousin des populären PuTTy. Es ist ein Befehlszeilentool, also wenn wir in Desktop Verzeichnis sind wo pscp.exe auch existiert, der folgende Befehl wird uns mit Proxmox-Server an 192.168.0.103 IP-Adresse und Port 22 als Root-Benutzer verbinden und die Datei from Proxmox unter /var/lib/vz/dump/*.raw auf unserer Desktop-Lage herunterladen und sie als *.raw da speichern:<br/>
+	<span class="code_quote">pscp -P 22 root@192.168.0.103:/var/lib/vz/dump/*.raw *.raw</span><br/>
+	Natürlich wirs es nach dem Root-Passwort zuerst gefragt.
+	</li>
+	Schließlich am ende haben wir unser Rohabbild auf der Windows-Maschine (oder wir haben um es zu extrahieren, im Fall haben wir es in Proxmox komprimiert). Damit es in VirtualBox funktioniert, können wir es in ein nützlicheres Format komprimieren wie VDI. Wir können die Befehlszeile starten, cd zu <span class="quote">C:\Program Files\Oracle\VirtualBox</span> und folgenden Befehl ausführen:<br/>
+	<span class="code_quote">VBoxManage.exe convertfromraw C:\Users\UserName\Desktop\*.raw C:\Users\UserName\VirtualBox VMs\*.vdi --format VDI</span><br/>
+	Der obiege Befehl wird das Rohabbild von desktop konvertieren und es speichern in das VirtualBox VMs Verzeichnis des Benutzers als die korrekte VDI-Datei.
+	</li>
+	
+</ul>
+
+</div>
+</div>
