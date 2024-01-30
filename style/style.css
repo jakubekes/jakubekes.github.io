@@ -52,7 +52,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	max-width:1050px;		
 	height: 30px;
 	padding-top:10px;
-	color:#6fb1db;
+	color:#2E67F8;
 	letter-spacing:5px;
 	text-align:center;
 	font-family: "font-face_lucon", "Courier New";	
@@ -142,7 +142,7 @@ nav a:link, nav a:visited, nav a:active, nav a{
 }
 
 nav a:hover, nav a:active{
-	color: #6fb1db;
+	color: #2E67F8;
 	/*text-decoration:underline;*/
 	/*background: rgba(30, 30, 30,  .85);	*/
 	transition: all .2s ease-in-out;
@@ -242,23 +242,35 @@ nav .mainmenu>li {
 }
 
 .submenu_site li {
-	color: #6fb1db;
-	text-decoration-color: #6fb1db;
+	color: #2E67F8;
+	text-decoration-color: #2E67F8;
 	transition: all .2s ease-in-out;	
 }
 
 .content a:hover, .content a:active {
 	/*text-decoration:underline;*/
 	cursor: pointer;
-	color: #6fb1db;
-	font-style:italic;
+	text-decoration:underline;
 	transition: all .2s ease-in-out;	
 }
 
+.submenu_site a:hover, .submenu_site a:active {
+	/*text-decoration:underline;*/
+	cursor: pointer;
+	color: #2E67F8;
+	text-decoration:none;
+	transition: all .2s ease-in-out;
+	
+}
+
 .submenu_date_slash {
-	color: #6fb1db;
+	color: #2E67F8;
 	font-style:italic;
 	font-weight:bold;
+}
+
+.de_version {
+	color:red;
 }
 
 /* ******************* Contents styles ******************* */
