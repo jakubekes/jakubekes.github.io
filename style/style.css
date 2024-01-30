@@ -55,7 +55,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	color:#6fb1db;
 	letter-spacing:5px;
 	text-align:center;
-	font-family: "localFontConsola", "Courier New";	
+	font-family: "font-face_lucon", "Courier New";	
 	position:relative;
 }
 
@@ -80,7 +80,7 @@ border:1px solid #fff;*/
 	/*color: #50394c;*/
 	color:#D3D3D3;
 	/*font-family: 'Kanit', sans-serif;*/
-	font-family: "myFirstFont", "Courier New";
+	font-family: "font-face_Orbitron-Regular", "Courier New";
 	display:inline-block;
 	float:left;
 	margin-top:5px;
@@ -211,17 +211,17 @@ nav .mainmenu>li {
 
 
 @font-face {
-  font-family: myFirstFont;
+  font-family: font-face_Orbitron-Regular;
   src: url(/fonts/Orbitron-Regular.ttf);
 }
 
 @font-face {
-  font-family: myFirstFont2;
+  font-family: font-face_Mchroma-Regular;
   src: url(/fonts/Michroma-Regular.ttf);
 }
 
 @font-face {
-  font-family: localFontConsola;
+  font-family: font-face_lucon;
   src: url(/fonts/lucon.ttf);
 }
 
@@ -290,7 +290,7 @@ nav .mainmenu>li {
 .content_title, .content_title a{
 	color:#eee;
 	font-style: italic;
-	font-family: consolas, "localFontConsola";
+	font-family: consolas, "font-face_lucon";
 	text-decoration:none;
 }
 
@@ -311,7 +311,7 @@ nav .mainmenu>li {
 	font-size: 16px;
 	line-height: 1.2rem;
 	white-space: nowrap;
-	font-family: consolas, "localFontConsola";
+	font-family: consolas, "font-face_lucon";
 	white-space: pre;
 	border:1px solid #abf;	
 }
@@ -327,7 +327,7 @@ nav .mainmenu>li {
 	font-size: 16px;
 	line-height: 1.1rem;
 	white-space: nowrap;
-	font-family: consolas, "localFontConsola";
+	font-family: consolas, "font-face_lucon";
 	white-space: pre;
 	border:1px solid #abf;	
 }
@@ -340,7 +340,7 @@ nav .mainmenu>li {
 	color: #D3D3D3;
 	font-size: 16px;
 	white-space: nowrap;
-	font-family: consolas, "localFontConsola";
+	font-family: consolas, "font-face_lucon";
 	white-space: pre;
 }
 
@@ -349,7 +349,7 @@ nav .mainmenu>li {
 	/*font-weight: bold;*/
 	/*color: #ee1a1a;*/
 	color:#FFE4B5;
-	font-family: consolas, "localFontConsola";
+	font-family: consolas, "font-face_lucon";
 }
 
 .quote {
