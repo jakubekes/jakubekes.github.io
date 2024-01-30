@@ -291,6 +291,7 @@ nav .mainmenu>li {
 	border-left: 1px solid #D3D3D3;	/*#D3D3D3;*/
 	border-right: 1px solid #D3D3D3;	
 	color: #dedede;
+	word-wrap: break-word;	
 	/*background: rgba(19, 18, 21,  .50);*/
 }
 
@@ -386,6 +387,10 @@ nav .mainmenu>li {
 .important {
 	color: #fbb;
 	font-style: italic;
+}
+
+.aoc_text {
+
 }
 
 .sc0 {
