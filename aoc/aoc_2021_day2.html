@@ -1,0 +1,145 @@
+<span class = "content_title"> <a href="#/aoc"> AoC</a> / <span class = "content_title_current">Advent of Code 2021 - Day 2</span> </span>
+<hr/>
+<br/>
+
+<div>
+<a class="external_link" href="https://adventofcode.com/2021/day/2" target=”_blank”>Advent of Code 2021 - Day 2</a><br/>
+<a class="internal_link" href="/aoc/day2_input.txt" target=”_blank”>Day 2 input</a><br/><br/>
+
+<div class="aoc_text">--- Day 2: Dive! ---<br />
+<br />
+Now, you need to figure out how to pilot this thing.<br />
+<br />
+It seems like the submarine can take a series of commands like forward 1, down 2, or up 3:<br />
+<br />
+ forward X increases the horizontal position by X units.<br />
+ down X increases the depth by X units.<br />
+ up X decreases the depth by X units.<br />
+<br />
+Note that since you're on a submarine, down and up affect your depth, and so they have the opposite result of what you might expect.<br />
+<br />
+The submarine seems to already have a planned course (your puzzle input). You should probably figure out where it's going. For example:<br />
+<br />
+forward 5<br />
+down 5<br />
+forward 8<br />
+up 3<br />
+down 8<br />
+forward 2<br />
+<br />
+Your horizontal position and depth both start at 0. The steps above would then modify them as follows:<br />
+<br />
+ forward 5 adds 5 to your horizontal position, a total of 5.<br />
+ down 5 adds 5 to your depth, resulting in a value of 5.<br />
+ forward 8 adds 8 to your horizontal position, a total of 13.<br />
+ up 3 decreases your depth by 3, resulting in a value of 2.<br />
+ down 8 adds 8 to your depth, resulting in a value of 10.<br />
+ forward 2 adds 2 to your horizontal position, a total of 15.<br />
+<br />
+After following these instructions, you would have a horizontal position of 15 and a depth of 10. (Multiplying these together produces 150.)<br />
+<br />
+Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?<br />
+<br />
+Your puzzle answer was 1524750.
+</div>
+
+<div class="code_short"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;fstream&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(){</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0"> </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day2_input.txt"</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">horizontal</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">};</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">depth</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">};</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">v</span><span class="sc10">{};</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">push_back</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++){</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'f'</span><span class="sc10">){</span><span class="sc0">
+        </span><span class="sc11">horizontal</span><span class="sc10">+=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">8</span><span class="sc10">]-</span><span class="sc7">'0'</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc2">//std::cout&lt;&lt;"F: "&lt;&lt;horizontal&lt;&lt;"\n";
+</span><span class="sc0">        </span><span class="sc10">}</span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'u'</span><span class="sc10">){</span><span class="sc0">
+            </span><span class="sc11">depth</span><span class="sc10">-=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">3</span><span class="sc10">]-</span><span class="sc7">'0'</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc5">else</span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'d'</span><span class="sc10">)</span><span class="sc11">depth</span><span class="sc10">+=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">5</span><span class="sc10">]-</span><span class="sc7">'0'</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc11">horizontal</span><span class="sc10">*</span><span class="sc11">depth</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+<div class = "aoc_text">--- Part Two ---<br />
+<br />
+Based on your calculations, the planned course doesn't seem to make any sense. You find the submarine manual and discover that the process is actually slightly more complicated.<br />
+<br />
+In addition to horizontal position and depth, you'll also need to track a third value, aim, which also starts at 0. The commands also mean something entirely different than you first thought:<br />
+<br />
+ down X increases your aim by X units.<br />
+ up X decreases your aim by X units.<br />
+ forward X does two things:<br />
+ It increases your horizontal position by X units.<br />
+ It increases your depth by your aim multiplied by X.<br />
+<br />
+Again note that since you're on a submarine, down and up do the opposite of what you might expect: &quot;down&quot; means aiming in the positive direction.<br />
+<br />
+Now, the above example does something different:<br />
+<br />
+ forward 5 adds 5 to your horizontal position, a total of 5. Because your aim is 0, your depth does not change.<br />
+ down 5 adds 5 to your aim, resulting in a value of 5.<br />
+ forward 8 adds 8 to your horizontal position, a total of 13. Because your aim is 5, your depth increases by 8*5=40.<br />
+ up 3 decreases your aim by 3, resulting in a value of 2.<br />
+ down 8 adds 8 to your aim, resulting in a value of 10.<br />
+ forward 2 adds 2 to your horizontal position, a total of 15. Because your aim is 10, your depth increases by 2*10=20 to a total of 60.<br />
+<br />
+After following these new instructions, you would have a horizontal position of 15 and a depth of 60. (Multiplying these produces 900.)<br />
+<br />
+Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?<br />
+<br />
+Your puzzle answer was 1592426537.<br />
+<br />
+Both parts of this puzzle are complete! They provide two gold stars: **
+</div>
+
+<div class="code_short"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;fstream&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">(){</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0"> </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day2_input.txt"</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">horizontal</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">};</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">depth</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">},</span><span class="sc0"> </span><span class="sc11">aim</span><span class="sc10">{</span><span class="sc4">0</span><span class="sc10">};</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">v</span><span class="sc10">{};</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">))</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">push_back</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc16">char</span><span class="sc0"> </span><span class="sc11">a</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++){</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'f'</span><span class="sc10">){</span><span class="sc0">
+        </span><span class="sc11">horizontal</span><span class="sc10">+=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">8</span><span class="sc10">]-</span><span class="sc4">48</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">depth</span><span class="sc10">+=</span><span class="sc11">aim</span><span class="sc10">*(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">8</span><span class="sc10">]-</span><span class="sc4">48</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'u'</span><span class="sc10">){</span><span class="sc0">
+            </span><span class="sc11">aim</span><span class="sc10">-=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">3</span><span class="sc10">]-</span><span class="sc4">48</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'d'</span><span class="sc10">){</span><span class="sc0">
+            </span><span class="sc11">aim</span><span class="sc10">+=</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc4">5</span><span class="sc10">]-</span><span class="sc4">48</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc11">horizontal</span><span class="sc10">*</span><span class="sc11">depth</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+</div>

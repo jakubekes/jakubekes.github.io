@@ -129,6 +129,84 @@ var routes = {
     },  	  
 	'/proxmox_backup_handling_on_windows_host_de': function () { 
 		contents_load_func("articles/proxmox_backup_handling_on_windows_host_de")
+    },  	  
+	'/aoc': function () { 
+		contents_load_func("categories/aoc")
+    },  	  
+	'/aoc_2021_day1': function () { 
+		contents_load_func("aoc/aoc_2021_day1")
+    },  	  
+	'/aoc_2021_day2': function () { 
+		contents_load_func("aoc/aoc_2021_day2")
+    },  	  
+	'/aoc_2021_day3': function () { 
+		contents_load_func("aoc/aoc_2021_day3")
+    },  	  
+	'/aoc_2021_day4': function () { 
+		contents_load_func("aoc/aoc_2021_day4")
+    },  	  
+	'/aoc_2021_day5': function () { 
+		contents_load_func("aoc/aoc_2021_day5")
+    },  	  
+	'/aoc_2021_day6': function () { 
+		contents_load_func("aoc/aoc_2021_day6")
+    },  	  
+	'/aoc_2021_day7': function () { 
+		contents_load_func("aoc/aoc_2021_day7")
+    },  	  
+	'/aoc_2021_day8': function () { 
+		contents_load_func("aoc/aoc_2021_day8")
+    },  	  
+	'/aoc_2021_day9': function () { 
+		contents_load_func("aoc/aoc_2021_day9")
+    },  	  
+	'/aoc_2021_day10': function () { 
+		contents_load_func("aoc/aoc_2021_day10")
+    },  	  
+	'/aoc_2021_day11': function () { 
+		contents_load_func("aoc/aoc_2021_day11")
+    },  	  
+	'/aoc_2021_day12': function () { 
+		contents_load_func("aoc/aoc_2021_day12")
+    },  	  
+	'/aoc_2022_day1': function () { 
+		contents_load_func("aoc/aoc_2022_day1")
+    },  	  
+	'/aoc_2022_day2': function () { 
+		contents_load_func("aoc/aoc_2022_day2")
+    },  	  
+	'/aoc_2022_day3': function () { 
+		contents_load_func("aoc/aoc_2022_day3")
+    },  	  
+	'/aoc_2022_day4': function () { 
+		contents_load_func("aoc/aoc_2022_day4")
+    },  	  
+	'/aoc_2022_day5': function () { 
+		contents_load_func("aoc/aoc_2022_day5")
+    },  	  
+	'/aoc_2022_day6': function () { 
+		contents_load_func("aoc/aoc_2022_day6")
+    },  	  
+	'/aoc_2022_day7': function () { 
+		contents_load_func("aoc/aoc_2022_day7")
+    },  	  
+	'/aoc_2022_day8': function () { 
+		contents_load_func("aoc/aoc_2022_day8")
+    },  	  
+	'/aoc_2022_day9': function () { 
+		contents_load_func("aoc/aoc_2022_day9")
+    },  	  
+	'/aoc_2022_day10': function () { 
+		contents_load_func("aoc/aoc_2022_day10")
+    },  	  
+	'/aoc_2022_day11': function () { 
+		contents_load_func("aoc/aoc_2022_day11")
+    },  	  
+	'/aoc_2022_day12': function () { 
+		contents_load_func("aoc/aoc_2022_day12")
+    },  	  
+	'/aoc_2022_day13': function () { 
+		contents_load_func("aoc/aoc_2022_day13")
     }
 };
 
