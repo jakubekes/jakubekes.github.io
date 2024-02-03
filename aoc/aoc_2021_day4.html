@@ -3,71 +3,9 @@
 <br/>
 
 <div>
-<a class="external_link" href="https://adventofcode.com/2021/day/4" target=”_blank”>Advent of Code 2021 - Day 4</a><br/>
-<a class="internal_link" href="/aoc/day4_input.txt" target=”_blank”>Day 4 input</a><br/><br/>
-
-<div class="aoc_text">--- Day 4: Giant Squid ---<br />
-<br />
-You're already almost 1.5km (almost a mile) below the surface of the ocean, already so deep that you can't see any sunlight. What you can see, however, is a giant squid that has attached itself to the outside of your submarine.<br />
-<br />
-Maybe it wants to play bingo?<br />
-<br />
-Bingo is played on a set of boards each consisting of a 5x5 grid of numbers. Numbers are chosen at random, and the chosen number is marked on all boards on which it appears. (Numbers may not appear on all boards.) If all numbers in any row or any column of a board are marked, that board wins. (Diagonals don't count.)<br />
-<br />
-The submarine has a bingo subsystem to help passengers (currently, you and the giant squid) pass the time. It automatically generates a random order in which to draw numbers and a random set of boards (your puzzle input). For example:<br />
-<br />
-7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1<br />
-<br />
-22 13 17 11 0<br />
- 8 2 23 4 24<br />
-21 9 14 16 7<br />
- 6 10 3 18 5<br />
- 1 12 20 15 19<br />
-<br />
- 3 15 0 2 22<br />
- 9 18 13 17 5<br />
-19 8 7 25 23<br />
-20 11 10 24 4<br />
-14 21 16 12 6<br />
-<br />
-14 21 17 24 4<br />
-10 16 15 9 19<br />
-18 8 23 26 20<br />
-22 11 13 6 5<br />
- 2 0 12 3 7<br />
-<br />
-After the first five numbers are drawn (7, 4, 9, 5, and 11), there are no winners, but the boards are marked as follows (shown here adjacent to each other to save space):<br />
-<br />
-22 13 17 11 0 3 15 0 2 22 14 21 17 24 4<br />
- 8 2 23 4 24 9 18 13 17 5 10 16 15 9 19<br />
-21 9 14 16 7 19 8 7 25 23 18 8 23 26 20<br />
- 6 10 3 18 5 20 11 10 24 4 22 11 13 6 5<br />
- 1 12 20 15 19 14 21 16 12 6 2 0 12 3 7<br />
-<br />
-After the next six numbers are drawn (17, 23, 2, 0, 14, and 21), there are still no winners:<br />
-<br />
-22 13 17 11 0 3 15 0 2 22 14 21 17 24 4<br />
- 8 2 23 4 24 9 18 13 17 5 10 16 15 9 19<br />
-21 9 14 16 7 19 8 7 25 23 18 8 23 26 20<br />
- 6 10 3 18 5 20 11 10 24 4 22 11 13 6 5<br />
- 1 12 20 15 19 14 21 16 12 6 2 0 12 3 7<br />
-<br />
-Finally, 24 is drawn:<br />
-<br />
-22 13 17 11 0 3 15 0 2 22 14 21 17 24 4<br />
- 8 2 23 4 24 9 18 13 17 5 10 16 15 9 19<br />
-21 9 14 16 7 19 8 7 25 23 18 8 23 26 20<br />
- 6 10 3 18 5 20 11 10 24 4 22 11 13 6 5<br />
- 1 12 20 15 19 14 21 16 12 6 2 0 12 3 7<br />
-<br />
-At this point, the third board wins because it has at least one complete row or column of marked numbers (in this case, the entire top row is marked: 14 21 17 24 4).<br />
-<br />
-The score of the winning board can now be calculated. Start by finding the sum of all unmarked numbers on that board; in this case, the sum is 188. Then, multiply that sum by the number that was just called when the board won, 24, to get the final score, 188 * 24 = 4512.<br />
-<br />
-To guarantee victory against the giant squid, figure out which board will win first. What will your final score be if you choose that board?<br />
-<br />
-Your puzzle answer was 16716.
-</div>
+<a class="external_link" href="https://adventofcode.com/2021/day/4" target=”_blank”>Advent of Code 2021 - Day 4</a> / 
+<a class="internal_link" href="/aoc/aoc_2021_day4.pdf" target=”_blank”>Local PDF</a><br/>
+<a class="internal_link" href="/aoc/aoc_2021_day4_input.txt" target=”_blank”>Day 4 input</a><br/>
 
 <br/>
 <button id="changeCodeHeightBtn_id_0" onclick="change_code_height('0')" style="float:right; width:100px;">100% height</button>
@@ -140,21 +78,6 @@ Your puzzle answer was 16716.
 
     </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc11">sum</span><span class="sc10">*</span><span class="sc11">memnum</span><span class="sc10">;</span><span class="sc0">
 </span><span class="sc10">}</span></div>
-
-<div class = "aoc_text">--- Part Two ---<br />
-<br />
-On the other hand, it might be wise to try a different strategy: let the giant squid win.<br />
-<br />
-You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.<br />
-<br />
-In the above example, the second board is the last to win, which happens after 13 is eventually called and its middle column is completely marked. If you were to keep playing until this point, the second board would have a sum of unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.<br />
-<br />
-Figure out which board will win last. Once it wins, what would its final score be?<br />
-<br />
-Your puzzle answer was 4880.<br />
-<br />
-Both parts of this puzzle are complete! They provide two gold stars: **
-</div>
 
 <br/>
 <button id="changeCodeHeightBtn_id_1" onclick="change_code_height('1')" style="float:right; width:100px;">100% height</button>

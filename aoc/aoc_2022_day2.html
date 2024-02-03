@@ -1,0 +1,127 @@
+<span class = "content_title"> <a href="#/aoc"> AoC</a> / <span class = "content_title_current">Advent of Code 2022 - Day 2</span> </span>
+<hr/>
+<br/>
+
+<div>
+<a class="external_link" href="https://adventofcode.com/2022/day/2" target=”_blank”>Advent of Code 2022 - Day 2</a> /
+<a class="internal_link" href="/aoc/aoc_2022_day2.pdf" target=”_blank”>Local PDF</a><br/>
+<a class="internal_link" href="/aoc/aoc_2022_day2_input.txt" target=”_blank”>Day 2 input</a><br/>
+
+<br/>
+<button id="changeCodeHeightBtn_id_0" onclick="change_code_height('0')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_0"  class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0">  </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day2_input.txt"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">long</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">answer</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">is_open</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">)){</span><span class="sc0">
+            </span><span class="sc5">switch</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]){</span><span class="sc0">
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'X'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'A'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'C'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'Y'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'A'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'B'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">      
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'Z'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'B'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'C'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">          
+            </span><span class="sc10">}</span><span class="sc0">   
+        </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"Answer: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">answer</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"File not opened, quitting."</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+
+<br/>
+<button id="changeCodeHeightBtn_id_1" onclick="change_code_height('1')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_1"  class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0">  </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day2_input.txt"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ios</span><span class="sc10">::</span><span class="sc11">in</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">long</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">answer</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">is_open</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+        </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">)){</span><span class="sc0">
+            </span><span class="sc5">switch</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">2</span><span class="sc10">]){</span><span class="sc0">
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'X'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'A'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc2">//scissors +3
+</span><span class="sc0">                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'B'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'C'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'Y'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'A'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> 
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'B'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'C'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">      
+                </span><span class="sc5">case</span><span class="sc0"> </span><span class="sc7">'Z'</span><span class="sc10">:</span><span class="sc0">
+                    </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'A'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">2</span><span class="sc10">;</span><span class="sc0"> 
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'B'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">3</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">]==</span><span class="sc7">'C'</span><span class="sc10">){</span><span class="sc0">
+                        </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+                    </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc4">6</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc5">break</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">   
+        </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"Answer: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">answer</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"File not opened, quitting."</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+</div>
