@@ -1,0 +1,155 @@
+<span class = "content_title"> <a href="#/aoc"> AoC</a> / <span class = "content_title_current">Advent of Code 2022 - Day 10</span> </span>
+<hr/>
+<br/>
+
+<div>
+<a class="external_link" href="https://adventofcode.com/2022/day/10" target=”_blank”>Advent of Code 2022 - Day 10</a> /
+<a class="internal_link" href="/aoc/aoc_2022_day10.pdf" target=”_blank”>Local PDF</a><br/>
+<a class="internal_link" href="/aoc/aoc_2022_day10_input.txt" target=”_blank”>Day 10 input</a><br/>
+
+<br/>
+<button id="changeCodeHeightBtn_id_0" onclick="change_code_height('0')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_0"  class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;fstream&gt;
+#include &lt;chrono&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">start</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">high_resolution_clock</span><span class="sc10">::</span><span class="sc11">now</span><span class="sc10">();</span><span class="sc0">
+    
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0">  </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day10_input.txt"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">long</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">answer</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">is_open</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"File opened\n"</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">{};</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">val</span><span class="sc10">{</span><span class="sc4">1</span><span class="sc10">};</span><span class="sc0">
+        
+        </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">)){</span><span class="sc0">
+            
+            </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">4</span><span class="sc10">)==</span><span class="sc6">"noop"</span><span class="sc10">){</span><span class="sc0">
+                    
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">19</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">59</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">99</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">139</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">179</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">219</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc11">val</span><span class="sc10">*(</span><span class="sc11">cycle</span><span class="sc10">+</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"val: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">val</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">19</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">59</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">99</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">139</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">179</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">219</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc11">val</span><span class="sc10">*(</span><span class="sc11">cycle</span><span class="sc10">+</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"val: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">val</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">19</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">59</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">99</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">139</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">179</span><span class="sc0"> </span><span class="sc10">||</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">==</span><span class="sc4">219</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">answer</span><span class="sc10">+=</span><span class="sc11">val</span><span class="sc10">*(</span><span class="sc11">cycle</span><span class="sc10">+</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"val: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">val</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+                
+                </span><span class="sc11">val</span><span class="sc10">+=</span><span class="sc11">stoi</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">length</span><span class="sc10">()-</span><span class="sc4">5</span><span class="sc10">));</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            
+        </span><span class="sc10">}</span><span class="sc0">
+        
+        </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"Answer: "</span><span class="sc10">&lt;&lt;</span><span class="sc11">answer</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">finish</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">high_resolution_clock</span><span class="sc10">::</span><span class="sc11">now</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">duration</span><span class="sc10">&lt;</span><span class="sc16">double</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">elapsed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">finish</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">start</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Elapsed time: %f\n"</span><span class="sc10">,</span><span class="sc11">elapsed</span><span class="sc10">.</span><span class="sc11">count</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"File not opened, quitting."</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+<br/>
+<button id="changeCodeHeightBtn_id_1" onclick="change_code_height('1')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_1"  class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;chrono&gt;
+</span><span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">start</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">high_resolution_clock</span><span class="sc10">::</span><span class="sc11">now</span><span class="sc10">();</span><span class="sc0">
+    
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ifstream</span><span class="sc0">  </span><span class="sc11">plik</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">open</span><span class="sc10">(</span><span class="sc6">"day10_input.txt"</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">unsigned</span><span class="sc0"> </span><span class="sc16">long</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">answer</span><span class="sc10">{};</span><span class="sc0">
+    
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">is_open</span><span class="sc10">())</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"File opened\n"</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">cycle</span><span class="sc10">{};</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">val</span><span class="sc10">{</span><span class="sc4">1</span><span class="sc10">};</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc16">char</span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">v</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc4">6</span><span class="sc10">,</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">vector</span><span class="sc10">&lt;</span><span class="sc16">char</span><span class="sc10">&gt;(</span><span class="sc4">40</span><span class="sc10">,</span><span class="sc7">'.'</span><span class="sc10">));</span><span class="sc0">
+        
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">{};</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++){</span><span class="sc0">
+            </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">{};</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">++){</span><span class="sc0">
+                </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc11">j</span><span class="sc10">];</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        
+        </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">getline</span><span class="sc10">(</span><span class="sc11">plik</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">)){</span><span class="sc0">
+            
+            </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc4">0</span><span class="sc10">,</span><span class="sc4">4</span><span class="sc10">)==</span><span class="sc6">"noop"</span><span class="sc10">){</span><span class="sc0">
+                    
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">abs</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">-</span><span class="sc11">val</span><span class="sc10">)&lt;</span><span class="sc4">2</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">cycle</span><span class="sc10">/</span><span class="sc4">40</span><span class="sc10">][</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">]=</span><span class="sc7">'#'</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">abs</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">-</span><span class="sc11">val</span><span class="sc10">)&lt;</span><span class="sc4">2</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">cycle</span><span class="sc10">/</span><span class="sc4">40</span><span class="sc10">][</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">]=</span><span class="sc7">'#'</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">abs</span><span class="sc10">(</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">-</span><span class="sc11">val</span><span class="sc10">)&lt;</span><span class="sc4">2</span><span class="sc10">){</span><span class="sc0">
+                    </span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">cycle</span><span class="sc10">/</span><span class="sc4">40</span><span class="sc10">][</span><span class="sc11">cycle</span><span class="sc10">%</span><span class="sc4">40</span><span class="sc10">]=</span><span class="sc7">'#'</span><span class="sc10">;</span><span class="sc0">  
+                </span><span class="sc10">}</span><span class="sc0">
+                </span><span class="sc11">cycle</span><span class="sc10">++;</span><span class="sc0">
+                
+                </span><span class="sc11">val</span><span class="sc10">+=</span><span class="sc11">stoi</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">substr</span><span class="sc10">(</span><span class="sc4">5</span><span class="sc10">,</span><span class="sc11">temp</span><span class="sc10">.</span><span class="sc11">length</span><span class="sc10">()-</span><span class="sc4">5</span><span class="sc10">));</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        
+        </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\nAnswer:\n"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">{};</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">.</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++){</span><span class="sc0">
+            </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">{};</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">&lt;</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc4">0</span><span class="sc10">].</span><span class="sc11">size</span><span class="sc10">();</span><span class="sc0"> </span><span class="sc11">j</span><span class="sc10">++){</span><span class="sc0">
+                </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc11">v</span><span class="sc10">[</span><span class="sc11">i</span><span class="sc10">][</span><span class="sc11">j</span><span class="sc10">];</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc10">&lt;&lt;</span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+                
+        </span><span class="sc16">auto</span><span class="sc0"> </span><span class="sc11">finish</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">high_resolution_clock</span><span class="sc10">::</span><span class="sc11">now</span><span class="sc10">();</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">chrono</span><span class="sc10">::</span><span class="sc11">duration</span><span class="sc10">&lt;</span><span class="sc16">double</span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc11">elapsed</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">finish</span><span class="sc0"> </span><span class="sc10">-</span><span class="sc0"> </span><span class="sc11">start</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">printf</span><span class="sc10">(</span><span class="sc6">"Elapsed time: %f\n"</span><span class="sc10">,</span><span class="sc11">elapsed</span><span class="sc10">.</span><span class="sc11">count</span><span class="sc10">());</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"File not opened, quitting."</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">plik</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+</div>
