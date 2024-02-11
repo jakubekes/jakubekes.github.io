@@ -207,6 +207,78 @@ var routes = {
     },  	  
 	'/aoc_2022_day13': function () { 
 		contents_load_func("aoc/aoc_2022_day13")
+    },  	  
+	'/hackerrank': function () { 
+		contents_load_func("categories/hackerrank")
+    },  	  
+	'/binary_search_tree_insertion': function () { 
+		contents_load_func("hackerrank/binary_search_tree_insertion")
+    },  	  
+	'/cavity_map': function () { 
+		contents_load_func("hackerrank/cavity_map")
+    },  	  
+	'/circular_array_rotation': function () { 
+		contents_load_func("hackerrank/circular_array_rotation")
+    },  	  
+	'/countingsort4': function () { 
+		contents_load_func("hackerrank/countingsort4")
+    },  	  
+	'/crush': function () { 
+		contents_load_func("hackerrank/crush")
+    },  	  
+	'/detect_whether_a_linked_list_contains_a_cycle': function () { 
+		contents_load_func("hackerrank/detect_whether_a_linked_list_contains_a_cycle")
+    },  	  
+	'/dynamic_array': function () { 
+		contents_load_func("hackerrank/dynamic_array")
+    },  	  
+	'/fair_rations': function () { 
+		contents_load_func("hackerrank/fair_rations")
+    },  	  
+	'/flatland_space_stations': function () { 
+		contents_load_func("hackerrank/flatland_space_stations")
+    },  	  
+	'/happy_ladybugs': function () { 
+		contents_load_func("hackerrank/happy_ladybugs")
+    },  	  
+	'/insert_a_node_into_a_sorted_doubly_linked_list': function () { 
+		contents_load_func("hackerrank/insert_a_node_into_a_sorted_doubly_linked_list")
+    },  	  
+	'/kaprekar_numbers': function () { 
+		contents_load_func("hackerrank/kaprekar_numbers")
+    },  	  
+	'/lisa_workbook': function () { 
+		contents_load_func("hackerrank/lisa_workbook")
+    },  	  
+	'/manasa_and_stones': function () { 
+		contents_load_func("hackerrank/manasa_and_stones")
+    },  	  
+	'/matrix_rotation_algo': function () { 
+		contents_load_func("hackerrank/matrix_rotation_algo")
+    },  	  
+	'/reverse_a_doubly_linked_list': function () { 
+		contents_load_func("hackerrank/reverse_a_doubly_linked_list")
+    },  	  
+	'/sparse_arrays': function () { 
+		contents_load_func("hackerrank/sparse_arrays")
+    },  	  
+	'/tree_height_of_a_binary_tree': function () { 
+		contents_load_func("hackerrank/tree_height_of_a_binary_tree")
+    },  	  
+	'/tree_inorder_traversal': function () { 
+		contents_load_func("hackerrank/tree_inorder_traversal")
+    },  	  
+	'/tree_level_order_traversal': function () { 
+		contents_load_func("hackerrank/tree_level_order_traversal")
+    },  	  
+	'/tree_postorder_traversal': function () { 
+		contents_load_func("hackerrank/tree_postorder_traversal")
+    },  	  
+	'/tree_preorder_traversal': function () { 
+		contents_load_func("hackerrank/tree_preorder_traversal")
+    },  	  
+	'/tree_top_view': function () { 
+		contents_load_func("hackerrank/tree_top_view")
     }
 };
 

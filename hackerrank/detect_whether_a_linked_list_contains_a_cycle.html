@@ -1,0 +1,146 @@
+<span class = "content_title"> <a href="#/hackerrank">HackerRank</a> / <span class = "content_title_current">HackerRank - Cycle Detection</span> </span>
+<hr/>
+<br/>
+
+<div>
+<a class="external_link" href="https://www.hackerrank.com/challenges/detect-whether-a-linked-list-contains-a-cycle/problem" target=”_blank”>HackerRank - Cycle Detection</a> /
+<a class="internal_link" href="/hackerrank/detect_whether_a_linked_list_contains_a_cycle.pdf" target=”_blank”>Local PDF</a><br/>
+
+<br/>
+<button id="changeCodeHeightBtn_id_0" onclick="change_code_height('0')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_0"  class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+</span><span class="sc0">
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">SinglyLinkedListNode</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">node_data</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">data</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node_data</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">nullptr</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">SinglyLinkedList</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">head</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">tail</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc11">SinglyLinkedList</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">head</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">nullptr</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">tail</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">nullptr</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+
+        </span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">insert_node</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">node_data</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">(</span><span class="sc11">node_data</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">head</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">head</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">tail</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+
+            </span><span class="sc5">this</span><span class="sc10">-&gt;</span><span class="sc11">tail</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">print_singly_linked_list</span><span class="sc10">(</span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">string</span><span class="sc0"> </span><span class="sc11">sep</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ofstream</span><span class="sc10">&amp;</span><span class="sc0"> </span><span class="sc11">fout</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">node</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">fout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">-&gt;</span><span class="sc11">data</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc11">node</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">node</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">fout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">sep</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">void</span><span class="sc0"> </span><span class="sc11">free_singly_linked_list</span><span class="sc10">(</span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">node</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">node</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">node</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc11">free</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">has_cycle</span><span class="sc10">(</span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">head</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+
+    </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">head</span><span class="sc10">==</span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">keep</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">head</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">head</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">!=</span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">head</span><span class="sc10">=</span><span class="sc11">head</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">temp</span><span class="sc10">=</span><span class="sc11">keep</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">!=</span><span class="sc11">head</span><span class="sc10">){</span><span class="sc0">
+           </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">head</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">==</span><span class="sc11">temp</span><span class="sc10">)</span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0"> 
+           </span><span class="sc11">temp</span><span class="sc10">=</span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+    
+    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span><span class="sc0">
+
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0">
+</span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">ofstream</span><span class="sc0"> </span><span class="sc11">fout</span><span class="sc10">(</span><span class="sc11">getenv</span><span class="sc10">(</span><span class="sc6">"OUTPUT_PATH"</span><span class="sc10">));</span><span class="sc0">
+
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tests</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">tests</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc10">.</span><span class="sc11">ignore</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">numeric_limits</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">streamsize</span><span class="sc10">&gt;::</span><span class="sc11">max</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc7">'\n'</span><span class="sc10">);</span><span class="sc0">
+
+    </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">tests_itr</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">tests_itr</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">tests</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">tests_itr</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">index</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">index</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc10">.</span><span class="sc11">ignore</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">numeric_limits</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">streamsize</span><span class="sc10">&gt;::</span><span class="sc11">max</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc7">'\n'</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc11">SinglyLinkedList</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">llist</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">SinglyLinkedList</span><span class="sc10">();</span><span class="sc0">
+
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">llist_count</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">llist_count</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc10">.</span><span class="sc11">ignore</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">numeric_limits</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">streamsize</span><span class="sc10">&gt;::</span><span class="sc11">max</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc7">'\n'</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">llist_count</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">llist_item</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">llist_item</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc10">.</span><span class="sc11">ignore</span><span class="sc10">(</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">numeric_limits</span><span class="sc10">&lt;</span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">streamsize</span><span class="sc10">&gt;::</span><span class="sc11">max</span><span class="sc10">(),</span><span class="sc0"> </span><span class="sc7">'\n'</span><span class="sc10">);</span><span class="sc0">
+
+            </span><span class="sc11">llist</span><span class="sc10">-&gt;</span><span class="sc11">insert_node</span><span class="sc10">(</span><span class="sc11">llist_item</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+      
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">extra</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">(-</span><span class="sc4">1</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc11">SinglyLinkedListNode</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">llist</span><span class="sc10">-&gt;</span><span class="sc11">head</span><span class="sc10">;</span><span class="sc0">
+      
+        </span><span class="sc5">for</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">&lt;</span><span class="sc0"> </span><span class="sc11">llist_count</span><span class="sc10">;</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">++)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc11">index</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">extra</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            
+            </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">i</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc11">llist_count</span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">temp</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+      
+        </span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">next</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">extra</span><span class="sc10">;</span><span class="sc0">
+
+        </span><span class="sc16">bool</span><span class="sc0"> </span><span class="sc11">result</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">has_cycle</span><span class="sc10">(</span><span class="sc11">llist</span><span class="sc10">-&gt;</span><span class="sc11">head</span><span class="sc10">);</span><span class="sc0">
+
+        </span><span class="sc11">fout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">result</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc6">"\n"</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc11">fout</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">();</span><span class="sc0">
+    
+    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+</div>

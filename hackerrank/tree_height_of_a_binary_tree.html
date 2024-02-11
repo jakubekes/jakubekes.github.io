@@ -1,0 +1,96 @@
+<span class = "content_title"> <a href="#/hackerrank">HackerRank</a> / <span class = "content_title_current">HackerRank - Tree: Height of a Binary Tree</span> </span>
+<hr/>
+<br/>
+
+<div>
+<a class="external_link" href="https://www.hackerrank.com/challenges/tree-height-of-a-binary-tree/problem" target=”_blank”>HackerRank - Tree: Height of a Binary Tree</a> /
+<a class="internal_link" href="/hackerrank/tree_height_of_a_binary_tree.pdf" target=”_blank”>Local PDF</a><br/>
+
+<br/>
+<button id="changeCodeHeightBtn_id_0" onclick="change_code_height('0')" style="float:right; width:100px;">100% height</button>
+<br/>
+
+<div id="code_id_0" class="code_long"><span class="sc9">#include &lt;iostream&gt;
+#include &lt;stack&gt;
+</span><span class="sc0">
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Node</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Node</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">left</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Node</span><span class="sc0"> </span><span class="sc10">*</span><span class="sc11">right</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Node</span><span class="sc10">(</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">d</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc11">data</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">d</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">left</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+            </span><span class="sc11">right</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0">
+
+</span><span class="sc16">class</span><span class="sc0"> </span><span class="sc11">Solution</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+    </span><span class="sc16">public</span><span class="sc10">:</span><span class="sc0">
+        </span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">insert</span><span class="sc10">(</span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">root</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+            </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc5">new</span><span class="sc0"> </span><span class="sc11">Node</span><span class="sc10">(</span><span class="sc11">data</span><span class="sc10">);</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                </span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">cur</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">data</span><span class="sc0"> </span><span class="sc10">&lt;=</span><span class="sc0"> </span><span class="sc11">root</span><span class="sc10">-&gt;</span><span class="sc11">data</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                    </span><span class="sc11">cur</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">insert</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">-&gt;</span><span class="sc11">left</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc11">root</span><span class="sc10">-&gt;</span><span class="sc11">left</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">cur</span><span class="sc10">;</span><span class="sc0">
+                </span><span class="sc10">}</span><span class="sc0"> </span><span class="sc5">else</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+                    </span><span class="sc11">cur</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">insert</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">-&gt;</span><span class="sc11">right</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">);</span><span class="sc0">
+                    </span><span class="sc11">root</span><span class="sc10">-&gt;</span><span class="sc11">right</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">cur</span><span class="sc10">;</span><span class="sc0">
+               </span><span class="sc10">}</span><span class="sc0">
+               </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">root</span><span class="sc10">;</span><span class="sc0">
+           </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">height</span><span class="sc10">(</span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">root</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">stack</span><span class="sc10">&lt;</span><span class="sc11">Node</span><span class="sc10">*&gt;</span><span class="sc11">st</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">level_st</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">temp</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc5">if</span><span class="sc0"> </span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">!=</span><span class="sc5">NULL</span><span class="sc10">){</span><span class="sc0">
+            </span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">push</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">);</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">=</span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+        
+        </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">empty</span><span class="sc10">()){</span><span class="sc0">
+            </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">empty</span><span class="sc10">()){</span><span class="sc0">
+                </span><span class="sc11">temp</span><span class="sc10">=</span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">top</span><span class="sc10">();</span><span class="sc0">                
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">right</span><span class="sc10">!=</span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc11">level_st</span><span class="sc10">.</span><span class="sc11">push</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">right</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc5">if</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">left</span><span class="sc10">!=</span><span class="sc5">NULL</span><span class="sc10">)</span><span class="sc11">level_st</span><span class="sc10">.</span><span class="sc11">push</span><span class="sc10">(</span><span class="sc11">temp</span><span class="sc10">-&gt;</span><span class="sc11">left</span><span class="sc10">);</span><span class="sc0">
+                </span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">pop</span><span class="sc10">();</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            
+            </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc10">(!</span><span class="sc11">level_st</span><span class="sc10">.</span><span class="sc11">empty</span><span class="sc10">()){</span><span class="sc0">
+                </span><span class="sc11">st</span><span class="sc10">.</span><span class="sc11">push</span><span class="sc10">(</span><span class="sc11">level_st</span><span class="sc10">.</span><span class="sc11">top</span><span class="sc10">());</span><span class="sc0">
+                </span><span class="sc11">level_st</span><span class="sc10">.</span><span class="sc11">pop</span><span class="sc10">();</span><span class="sc0">
+            </span><span class="sc10">}</span><span class="sc0">
+            </span><span class="sc11">i</span><span class="sc10">++;</span><span class="sc0">
+        </span><span class="sc10">}</span><span class="sc0">
+        
+        </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc11">i</span><span class="sc10">-</span><span class="sc4">1</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+</span><span class="sc10">};</span><span class="sc0"> </span>
+<span class="sc0">
+</span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+  
+    </span><span class="sc11">Solution</span><span class="sc0"> </span><span class="sc11">myTree</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc11">Node</span><span class="sc10">*</span><span class="sc0"> </span><span class="sc11">root</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc5">NULL</span><span class="sc10">;</span><span class="sc0">
+    
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">t</span><span class="sc10">;</span><span class="sc0">
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">t</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">while</span><span class="sc10">(</span><span class="sc11">t</span><span class="sc10">--</span><span class="sc0"> </span><span class="sc10">&gt;</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc10">{</span><span class="sc0">
+        </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cin</span><span class="sc0"> </span><span class="sc10">&gt;&gt;</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">;</span><span class="sc0">
+        </span><span class="sc11">root</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">myTree</span><span class="sc10">.</span><span class="sc11">insert</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">data</span><span class="sc10">);</span><span class="sc0">
+    </span><span class="sc10">}</span><span class="sc0">
+  
+    </span><span class="sc16">int</span><span class="sc0"> </span><span class="sc11">height</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">myTree</span><span class="sc10">.</span><span class="sc11">height</span><span class="sc10">(</span><span class="sc11">root</span><span class="sc10">);</span><span class="sc0">
+    
+    </span><span class="sc11">std</span><span class="sc10">::</span><span class="sc11">cout</span><span class="sc0"> </span><span class="sc10">&lt;&lt;</span><span class="sc0"> </span><span class="sc11">height</span><span class="sc10">;</span><span class="sc0">
+
+    </span><span class="sc5">return</span><span class="sc0"> </span><span class="sc4">0</span><span class="sc10">;</span><span class="sc0">
+</span><span class="sc10">}</span></div>
+
+</div>
