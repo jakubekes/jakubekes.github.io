@@ -2,7 +2,7 @@ $(window).on('load', function(){
 	
 $(document).ready(function(){
 	
-    $("#contents").load("/home.html", function(responseTxt, statusTxt, xhr){
+    $("#contents").load("./home.html", function(responseTxt, statusTxt, xhr){
 
   });
 	
@@ -297,7 +297,7 @@ function contents_load_func(element_id){
 		}, 500);
 	
 	setTimeout(function(){
-	$("#contents").load("/"+element_id+".html"),
+	$("#contents").load("./"+element_id+".html"),
     $("#contents").fadeIn();	
 	}, 500);
 		

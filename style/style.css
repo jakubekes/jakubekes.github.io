@@ -5,7 +5,7 @@ body{
 	height:100%;
 	margin: 0;
 	padding: 0;
-	background-image:URL("/pictures/bg.jpg");
+	background-image:URL("../pictures/bg.jpg");
 	/*background-color: #010106;*/
 	background-size: 100% 100%;
  /*background: rgb(40,40,50);*/
@@ -69,7 +69,7 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	/*background: rgb(0,57,74);*/
 /*background: radial-gradient(circle, rgba(0,57,74,1) 0%, rgba(18,18,18,1) 46%, rgba(0,57,74,1) 100%); 
 border:1px solid #fff;*/
-	background-image:URL("/pictures/women_android_banner.jpg");
+	background-image:URL("../pictures/women_android_banner.jpg");
     background-size: cover;
 	background-repeat:no-repeat;
 	border-radius: 8px;
@@ -212,17 +212,17 @@ nav .mainmenu>li {
 
 @font-face {
   font-family: font-face_Orbitron-Regular;
-  src: url(/fonts/Orbitron-Regular.ttf);
+  src: url(../fonts/Orbitron-Regular.ttf);
 }
 
 @font-face {
   font-family: font-face_Mchroma-Regular;
-  src: url(/fonts/Michroma-Regular.ttf);
+  src: url(../fonts/Michroma-Regular.ttf);
 }
 
 @font-face {
   font-family: font-face_lucon;
-  src: url(/fonts/lucon.ttf);
+  src: url(../fonts/lucon.ttf);
 }
 
 /* ******************* Submenu styles ******************* */
