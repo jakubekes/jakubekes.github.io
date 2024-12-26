@@ -1,0 +1,144 @@
+<span class = "content_title"> <a href="#/all"> All articles</a> / <span class = "content_title_current">YouTube API Liked Videos Details Dump</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;It's a short article inspired by the situation when I wanted to find some old movie I liked in YouTube and it wasn't very easy to scroll through around 5000 videos, especially when browser started to slowing down terribly with every additional newly hundred loaded videos on the list and when opening several dozen tabs by the occasion.<br/>
+I decided to find a quick way to dump detailed info about each video I liked and use Google/YouTube API for this. Here below are steps in correct order to achieve this:
+<ul>
+<li>Create Google account if you don't have it.</li>
+<li>Create new project.</li>
+<li>Go to <a class="external_link" target="_blank" href="https://console.cloud.google.com/apis" >Google API Console.</a></li>
+<li>Click on <a class="external_link" target="_blank" href="https://console.cloud.google.com/apis/credentials" >Credentials</a> on the left.</li>
+<li>Click on <a class="external_link" target="_blank" href="https://console.cloud.google.com/apis/credentials" >+ Create credentials</a> above and choose OAuth client id.</li>
+<li>Configure consent screen, I set user type to the outside one. Put email adresses and name, rest is not necessary. Second step "Ranges" can be bypassed, in third add your testing user (just your google account email).</li>
+<li>Again go through adding credentials steps and create OAuth credentials for computer application. When you can see it now on the list of Credentials, on the right side there is an arrow pointing down button to download credentials as a JSON file.</li>
+</ul>
+
+As I wanted to do it asap I decided to follow most convinient way for me which is Python way and I did read some information on this <a class="external_link" target="_blank" href="https://developers.google.com/youtube/v3/quickstart/python?hl=en" >Python Quickstart</a> guide.<br/>
+Most important info here is to which libraries for Python to install:<br/>
+<div id="code_id_1" class ="code_short">pip install --upgrade google-api-python-client<br/>
+pip install --upgrade google-auth-oauthlib google-auth-httplib2</div>
+..but as I use PyCharm I do it quicker in Python Packages GUI manager.</br>
+Next step was to just copy example code from <a class="external_link" target="_blank" href="https://developers.google.com/youtube/v3/code_samples/code_snippets?hl=en" >Use Cases and Code Snippets</a>, select "playlistItems" and "list" method. Then on the right it's possible to switch to fullscreen in APIs Explorer (where we can play around and execute requests directly), switch to Python tab and copy the code:<br/>
+
+<div id="code_id_1" class = "code_long"><span class="sc1"># -*- coding: utf-8 -*-</span><span class="sc0">
+
+</span><span class="sc1"># Sample Python code for youtube.playlistItems.list</span><span class="sc0">
+</span><span class="sc1"># See instructions for running these code samples locally:</span><span class="sc0">
+</span><span class="sc1"># https://developers.google.com/explorer-help/code-samples#python</span><span class="sc0">
+
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">os</span><span class="sc0">
+
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">google_auth_oauthlib</span><span class="sc10">.</span><span class="sc11">flow</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">discovery</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">errors</span><span class="sc0">
+
+</span><span class="sc11">scopes</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc3">"https://www.googleapis.com/auth/youtube.readonly"</span><span class="sc10">]</span><span class="sc0">
+
+</span><span class="sc5">def</span><span class="sc0"> </span><span class="sc9">main</span><span class="sc10">():</span><span class="sc0">
+    </span><span class="sc1"># Disable OAuthlib's HTTPS verification when running locally.</span><span class="sc0">
+    </span><span class="sc1"># *DO NOT* leave this option enabled in production.</span><span class="sc0">
+    </span><span class="sc11">os</span><span class="sc10">.</span><span class="sc11">environ</span><span class="sc10">[</span><span class="sc3">"OAUTHLIB_INSECURE_TRANSPORT"</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"1"</span><span class="sc0">
+
+    </span><span class="sc11">api_service_name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"youtube"</span><span class="sc0">
+    </span><span class="sc11">api_version</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"v3"</span><span class="sc0">
+    </span><span class="sc11">client_secrets_file</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"YOUR_CLIENT_SECRET_FILE.json"</span><span class="sc0">
+
+    </span><span class="sc1"># Get credentials and create an API client</span><span class="sc0">
+    </span><span class="sc11">flow</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">google_auth_oauthlib</span><span class="sc10">.</span><span class="sc11">flow</span><span class="sc10">.</span><span class="sc11">InstalledAppFlow</span><span class="sc10">.</span><span class="sc11">from_client_secrets_file</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">client_secrets_file</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">scopes</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">credentials</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">flow</span><span class="sc10">.</span><span class="sc11">run_console</span><span class="sc10">()</span><span class="sc0">
+    </span><span class="sc11">youtube</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">discovery</span><span class="sc10">.</span><span class="sc11">build</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">api_service_name</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">api_version</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">credentials</span><span class="sc10">=</span><span class="sc11">credentials</span><span class="sc10">)</span><span class="sc0">
+
+    </span><span class="sc11">request</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">youtube</span><span class="sc10">.</span><span class="sc11">playlistItems</span><span class="sc10">().</span><span class="sc14">list</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">part</span><span class="sc10">=</span><span class="sc3">"snippet,contentDetails"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">maxResults</span><span class="sc10">=</span><span class="sc2">25</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">playlistId</span><span class="sc10">=</span><span class="sc3">"PLBCF2DAC6FFB574DE"</span><span class="sc0">
+    </span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">response</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">request</span><span class="sc10">.</span><span class="sc11">execute</span><span class="sc10">()</span><span class="sc0">
+
+    </span><span class="sc14">print</span><span class="sc10">(</span><span class="sc11">response</span><span class="sc10">)</span><span class="sc0">
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc11">__name__</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc3">"__main__"</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc11">main</span><span class="sc10">()</span></div>
+
+What I changed was:<br/>
+<ul>
+<li>os.environ["OAUTHLIB_INSECURE_TRANSPORT"] to "0".</li>
+<li>client_secrets_file path.</li>
+<li>maxResults to 6000 - I knew that I have around 5K liked videos so that's the reason I set it like this, but actually maxResults limit can't be higher than 50, so if we have more videos than 50 we need to jump each time to next page or actually when browsing the list scroll down and wait to have another part loaded. To get more results we need to pass pageToken parameter (more details below).</li>
+<li>playlistId to "LL" - when you go to your liked videos on YouTube you can see address is "https://www.youtube.com/playlist?list=LL" and "LL" is it's ID. If you choose for example your own created list, ID is usually more complex.</li>
+<li>Added pageToken parameter that we gather from our first and next JSON responses. When there is no "nextPageToken" value in our JSON response it means we loaded already all data.</li>
+<li>As the last step instead of printing the server response which is JSON data, I've added code to invoke more requests if "nextPageToken" is available and dump all data to the JSON file.</li>
+</ul>
+
+<div id="code_id_2" class = "code_long"><span class="sc1"># -*- coding: utf-8 -*-</span><span class="sc0">
+
+</span><span class="sc1"># Sample Python code for youtube.playlistItems.list</span><span class="sc0">
+</span><span class="sc1"># See instructions for running these code samples locally:</span><span class="sc0">
+</span><span class="sc1"># https://developers.google.com/explorer-help/code-samples#python</span><span class="sc0">
+
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">os</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">json</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">google_auth_oauthlib</span><span class="sc10">.</span><span class="sc11">flow</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">discovery</span><span class="sc0">
+</span><span class="sc5">import</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">errors</span><span class="sc0">
+
+</span><span class="sc11">scopes</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc10">[</span><span class="sc3">"https://www.googleapis.com/auth/youtube.readonly"</span><span class="sc10">]</span><span class="sc0">
+
+
+</span><span class="sc5">def</span><span class="sc0"> </span><span class="sc9">main</span><span class="sc10">():</span><span class="sc0">
+    </span><span class="sc1"># Disable OAuthlib"s HTTPS verification when running locally.</span><span class="sc0">
+    </span><span class="sc1"># *DO NOT* leave this option enabled in production.</span><span class="sc0">
+    </span><span class="sc11">os</span><span class="sc10">.</span><span class="sc11">environ</span><span class="sc10">[</span><span class="sc3">"OAUTHLIB_INSECURE_TRANSPORT"</span><span class="sc10">]</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"0"</span><span class="sc0">
+
+    </span><span class="sc11">api_service_name</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"youtube"</span><span class="sc0">
+    </span><span class="sc11">api_version</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">"v3"</span><span class="sc0">
+    </span><span class="sc11">client_secrets_file</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc3">r".\client_secret_717592460212-1l4og100tuknv9v9qr2hd7hhgmsa716u.apps.googleusercontent.com.json"</span><span class="sc0">
+
+    </span><span class="sc1"># Get credentials and create an API client</span><span class="sc0">
+    </span><span class="sc11">flow</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">google_auth_oauthlib</span><span class="sc10">.</span><span class="sc11">flow</span><span class="sc10">.</span><span class="sc11">InstalledAppFlow</span><span class="sc10">.</span><span class="sc11">from_client_secrets_file</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">client_secrets_file</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">scopes</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc1">#credentials = flow.run_console()</span><span class="sc0">
+    </span><span class="sc11">credentials</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">flow</span><span class="sc10">.</span><span class="sc11">run_local_server</span><span class="sc10">(</span><span class="sc11">port</span><span class="sc10">=</span><span class="sc2">0</span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">youtube</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">googleapiclient</span><span class="sc10">.</span><span class="sc11">discovery</span><span class="sc10">.</span><span class="sc11">build</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">api_service_name</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">api_version</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">credentials</span><span class="sc10">=</span><span class="sc11">credentials</span><span class="sc10">)</span><span class="sc0">
+
+    </span><span class="sc11">request</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">youtube</span><span class="sc10">.</span><span class="sc11">playlistItems</span><span class="sc10">().</span><span class="sc14">list</span><span class="sc10">(</span><span class="sc0">
+        </span><span class="sc11">part</span><span class="sc10">=</span><span class="sc3">"snippet,contentDetails"</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">maxResults</span><span class="sc10">=</span><span class="sc2">50</span><span class="sc10">,</span><span class="sc0">
+        </span><span class="sc11">playlistId</span><span class="sc10">=</span><span class="sc3">"LL"</span><span class="sc0">
+    </span><span class="sc10">)</span><span class="sc0">
+    </span><span class="sc11">response</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">request</span><span class="sc10">.</span><span class="sc11">execute</span><span class="sc10">()</span><span class="sc0">
+
+    </span><span class="sc5">with</span><span class="sc0"> </span><span class="sc14">open</span><span class="sc10">(</span><span class="sc3">r".\YouTube_Liked_Videos.json"</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc3">"a"</span><span class="sc10">)</span><span class="sc0"> </span><span class="sc5">as</span><span class="sc0"> </span><span class="sc11">outfile</span><span class="sc10">:</span><span class="sc0">
+        </span><span class="sc5">while</span><span class="sc0"> </span><span class="sc11">response</span><span class="sc0"> </span><span class="sc10">!=</span><span class="sc0"> </span><span class="sc3">""</span><span class="sc10">:</span><span class="sc0">
+            </span><span class="sc11">json</span><span class="sc10">.</span><span class="sc11">dump</span><span class="sc10">(</span><span class="sc11">response</span><span class="sc10">,</span><span class="sc0"> </span><span class="sc11">outfile</span><span class="sc10">)</span><span class="sc0">
+            </span><span class="sc5">try</span><span class="sc10">:</span><span class="sc0">
+                </span><span class="sc11">next_page_token</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">response</span><span class="sc10">[</span><span class="sc3">"nextPageToken"</span><span class="sc10">]</span><span class="sc0">
+            </span><span class="sc5">except</span><span class="sc0"> </span><span class="sc14">KeyError</span><span class="sc0"> </span><span class="sc5">as</span><span class="sc0"> </span><span class="sc11">e</span><span class="sc10">:</span><span class="sc0">
+                </span><span class="sc14">print</span><span class="sc10">(</span><span class="sc11">e</span><span class="sc10">)</span><span class="sc0">
+                </span><span class="sc11">outfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">()</span><span class="sc0">
+                </span><span class="sc5">break</span><span class="sc0">
+            </span><span class="sc11">request</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">youtube</span><span class="sc10">.</span><span class="sc11">playlistItems</span><span class="sc10">().</span><span class="sc14">list</span><span class="sc10">(</span><span class="sc0">
+                </span><span class="sc11">part</span><span class="sc10">=</span><span class="sc3">"snippet,contentDetails"</span><span class="sc10">,</span><span class="sc0">
+                </span><span class="sc11">maxResults</span><span class="sc10">=</span><span class="sc2">6000</span><span class="sc10">,</span><span class="sc0">
+                </span><span class="sc11">playlistId</span><span class="sc10">=</span><span class="sc3">"LL"</span><span class="sc10">,</span><span class="sc0">
+                </span><span class="sc11">pageToken</span><span class="sc10">=</span><span class="sc11">next_page_token</span><span class="sc0">
+            </span><span class="sc10">)</span><span class="sc0">
+            </span><span class="sc11">response</span><span class="sc0"> </span><span class="sc10">=</span><span class="sc0"> </span><span class="sc11">request</span><span class="sc10">.</span><span class="sc11">execute</span><span class="sc10">()</span><span class="sc0">
+        </span><span class="sc11">outfile</span><span class="sc10">.</span><span class="sc11">close</span><span class="sc10">()</span><span class="sc0">
+
+
+</span><span class="sc5">if</span><span class="sc0"> </span><span class="sc11">__name__</span><span class="sc0"> </span><span class="sc10">==</span><span class="sc0"> </span><span class="sc3">"__main__"</span><span class="sc10">:</span><span class="sc0">
+    </span><span class="sc11">main</span><span class="sc10">()</span><span class="sc0">
+</span></div>
+
+Once the program is ready, after running it, a new tab should open in our default browser, allowing us to authorize the Google user we specified when creating the OAuth credentials. After successful authorization we should get our data, it can take some seconds depending on amount of liked videos.
+BTW when I tried to use API key first what was mistake, I needed to get my YouTube channel ID. You can't take it from address bar where there is other alias/link to your profile but you should enter your chanel, click on "Show more info about this channel" -> "Share channel" -> "Copy channel ID".
+<!-- BTW show other playlists ID - how to get them, same as profile ID!!!-->
+
+
+</div>

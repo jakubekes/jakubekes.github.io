@@ -279,6 +279,12 @@ var routes = {
     },  	  
 	'/tree_top_view': function () { 
 		contents_load_func("hackerrank/tree_top_view")
+    },  	  
+	'/youtube_api_liked': function () { 
+		contents_load_func("articles/youtube_api_liked")
+    },  	  
+	'/youtube_api_liked_de': function () { 
+		contents_load_func("articles/youtube_api_liked_de")
     }
 };
 
