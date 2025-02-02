@@ -286,6 +286,19 @@ var routes = {
 	'/youtube_api_liked_de': function () { 
 		contents_load_func("articles/youtube_api_liked_de")
     }
+	,  	  
+	'/ps_check_running_proc': function () { 
+		contents_load_func("articles/ps_check_running_proc")
+    },  	  
+	'/ps_check_file_sig_and_rename': function () { 
+		contents_load_func("articles/ps_check_file_sig_and_rename")
+    },  	  
+	'/ps_get_file_bytes_dump_to_string': function () { 
+		contents_load_func("articles/ps_get_file_bytes_dump_to_string")
+    },  	  
+	'/ps_create_files_loop_from_csv': function () { 
+		contents_load_func("articles/ps_create_files_loop_from_csv")
+    }
 };
 
 	var router = Router(routes);

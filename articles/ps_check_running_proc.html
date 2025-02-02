@@ -1,0 +1,12 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell check running process</span> </span>
+<hr/>
+<br/>
+
+<div>
+
+<div id="code_id_1" class ="code_short" style = "background-color:#012456"><span class="sc8">for</span><span class="sc0"> </span><span class="sc6">(;;)</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc8">if</span><span class="sc6">((</span><span class="sc9">Get-Process</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Id</span><span class="sc0"> </span><span class="sc4">3104</span><span class="sc6">)</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc5">$null</span><span class="sc6">){</span><span class="sc9">Write-Output</span><span class="sc6">(</span><span class="sc2">"Finished"</span><span class="sc6">)}</span><span class="sc8">else</span><span class="sc6">{</span><span class="sc9">Write-Output</span><span class="sc6">(</span><span class="sc2">"Running"</span><span class="sc6">)}}</span>
+</div>
+<br/>
+
+
+</div>

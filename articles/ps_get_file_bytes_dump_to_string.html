@@ -1,0 +1,15 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell check running process</span> </span>
+<hr/>
+<br/>
+
+<div>
+
+<div id="code_id_1" class ="code_short" style = "background-color:#012456"><span class="sc5">$var</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc11">Format-Hex</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc6">.</span><span class="sc0">\</span><span class="sc7">File</span><span class="sc6">.</span><span class="sc7">txt</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Count</span><span class="sc0"> </span><span class="sc4">24</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Offset</span><span class="sc0"> </span><span class="sc4">343</span><span class="sc6">).</span><span class="sc7">Bytes</span><span class="sc0">
+</span><span class="sc5">$var</span><span class="sc0"> </span><span class="sc6">|</span><span class="sc0"> </span><span class="sc6">%</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc5">$myString</span><span class="sc0"> </span><span class="sc6">+=</span><span class="sc0"> </span><span class="sc5">$_</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">as</span><span class="sc0"> </span><span class="sc6">[</span><span class="sc7">char</span><span class="sc6">]}</span><span class="sc0">
+</span><span class="sc1"># or $var | % {$myString += [char]$_}</span><span class="sc0">
+</span><span class="sc5">$myString</span>
+</div>
+<br/>
+
+
+</div>

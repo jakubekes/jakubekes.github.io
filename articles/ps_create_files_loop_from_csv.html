@@ -1,0 +1,22 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell batch copy from zips</span> </span>
+<hr/>
+<br/>
+
+<div>
+CSV example (size, name):
+<div id="code_id_1" class ="code_short">433131200512,Backup_2024-02-05T200056_Adm.bak
+4656443392,Backup_2024-02-06T200124_Adm.bak
+4972638208,Backup_2024-02-07T200035_Adm.bak
+4075429888,Backup_2024-02-08T200040_Adm.bak
+2732519424,Backup_2024-02-09T200411_Adm.bak
+2483789824,Backup_2024-02-10T200206_Adm.bak
+291830,Backup_2024-02-05T200056_Adm.log
+</div>
+
+<div id="code_id_1" class ="code_short" style = "background-color:#012456"><span class="sc1"># fsutil method:</span><span class="sc0">
+</span><span class="sc9">Get-Content</span><span class="sc0"> </span><span class="sc6">.</span><span class="sc0">\</span><span class="sc7">createfiles</span><span class="sc6">.</span><span class="sc7">csv</span><span class="sc0"> </span><span class="sc6">|</span><span class="sc0"> </span><span class="sc6">%</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc5">$var</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc5">$_</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">split</span><span class="sc0"> </span><span class="sc2">","</span><span class="sc6">;</span><span class="sc0"> </span><span class="sc9">Write-Output</span><span class="sc6">(</span><span class="sc5">$var</span><span class="sc6">[</span><span class="sc4">1</span><span class="sc6">]);</span><span class="sc0"> </span><span class="sc7">fsutil</span><span class="sc0"> </span><span class="sc7">file</span><span class="sc0"> </span><span class="sc7">CreateNew</span><span class="sc0"> </span><span class="sc5">$var</span><span class="sc6">[</span><span class="sc4">1</span><span class="sc6">],</span><span class="sc0"> </span><span class="sc5">$var</span><span class="sc6">[</span><span class="sc4">0</span><span class="sc6">]}</span>
+</div>
+<br/>
+
+
+</div>

@@ -1,0 +1,29 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">PowerShell check running process</span> </span>
+<hr/>
+<br/>
+
+<div>
+
+<div id="code_id_1" class ="code_short" style = "background-color:#012456"><span class="sc6">[</span><span class="sc7">byte</span><span class="sc6">[]]</span><span class="sc0"> </span><span class="sc5">$var</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc4">0xFF</span><span class="sc6">,</span><span class="sc4">0xD8</span><span class="sc6">,</span><span class="sc4">0xFF</span><span class="sc6">)</span><span class="sc0">
+</span><span class="sc5">$sourcePath</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc2">"C:\temp"</span><span class="sc0">
+
+</span><span class="sc8">foreach</span><span class="sc6">(</span><span class="sc5">$object</span><span class="sc0"> </span><span class="sc8">in</span><span class="sc0"> </span><span class="sc9">Get-ChildItem</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Path</span><span class="sc0"> </span><span class="sc5">$sourcePath</span><span class="sc6">){</span><span class="sc0">
+    </span><span class="sc5">$var2</span><span class="sc0"> </span><span class="sc6">=</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$object</span><span class="sc0"> </span><span class="sc6">|</span><span class="sc0"> </span><span class="sc11">Format-Hex</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">Count</span><span class="sc0"> </span><span class="sc4">3</span><span class="sc6">).</span><span class="sc7">Bytes</span><span class="sc0">
+    </span><span class="sc8">if</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$var</span><span class="sc6">.</span><span class="sc7">count</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">ne</span><span class="sc0"> </span><span class="sc5">$var2</span><span class="sc6">.</span><span class="sc7">count</span><span class="sc6">)</span><span class="sc0"> </span><span class="sc6">{</span><span class="sc0">
+        </span><span class="sc8">continue</span><span class="sc0">
+    </span><span class="sc6">}</span><span class="sc0">
+    </span><span class="sc8">for</span><span class="sc6">(</span><span class="sc5">$i</span><span class="sc6">=</span><span class="sc4">0</span><span class="sc6">;</span><span class="sc0"> </span><span class="sc5">$i</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">lt</span><span class="sc0"> </span><span class="sc5">$var</span><span class="sc6">.</span><span class="sc7">count</span><span class="sc6">;</span><span class="sc0"> </span><span class="sc5">$i</span><span class="sc6">++){</span><span class="sc0">
+        </span><span class="sc8">if</span><span class="sc6">(</span><span class="sc5">$var</span><span class="sc6">[</span><span class="sc5">$i</span><span class="sc6">]</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">ne</span><span class="sc0"> </span><span class="sc5">$var2</span><span class="sc6">[</span><span class="sc5">$i</span><span class="sc6">]){</span><span class="sc0">
+            </span><span class="sc8">break</span><span class="sc0">
+        </span><span class="sc6">}</span><span class="sc0">
+        </span><span class="sc8">if</span><span class="sc0"> </span><span class="sc6">(</span><span class="sc5">$i</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">eq</span><span class="sc0"> </span><span class="sc5">$var</span><span class="sc6">.</span><span class="sc7">count-1</span><span class="sc6">){</span><span class="sc0">
+            </span><span class="sc9">Move-Item</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">path</span><span class="sc0"> </span><span class="sc5">$object</span><span class="sc0"> </span><span class="sc6">-</span><span class="sc7">destination</span><span class="sc0"> </span><span class="sc5">$object</span><span class="sc2">".jpg"</span><span class="sc0">
+            </span><span class="sc9">Write-Host</span><span class="sc6">(</span><span class="sc5">$object</span><span class="sc6">.</span><span class="sc7">Extension</span><span class="sc6">)</span><span class="sc0">
+        </span><span class="sc6">}</span><span class="sc0">
+    </span><span class="sc6">}</span><span class="sc0">
+</span><span class="sc6">}</span>
+</div>
+<br/>
+
+
+</div>
