@@ -94,6 +94,11 @@ border:1px solid #fff;*/
 	display: inline;
 }
 
+.banner_title a:link, .banner_title a:visited, .banner_title a:active, .banner_title a{
+	text-decoration:none;
+	color:#D3D3D3;
+}
+	
 .banner .banner_quote {
 	font-size:15px;
 	font-style: italic;
