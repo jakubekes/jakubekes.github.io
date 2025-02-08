@@ -1,0 +1,22 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">WSL bash loop conversion PDF to txt</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp; The solution to this particular case was inspired by the request to find a specific PDF file among thousands of other such files. Searching through raw data is not posible due to compression, but luckily I have found interesting Linux tool named AbiWord - a free and open-source word processor. As by neccesity I worked in Windows, I gladly installed WSL with default Ubuntu distro to perform this task. It's worth to mention that I tried later same thing in WSL openSUSE that I use too and it failed, it looks like it doesn't work correctly, maybe only on specific version, anyway it looked like AbiWord dumps just raw bytes without actual conversion.<br/>
+Of course it wasn't possible to do this without issues on the way. Simple for loop usage in bash can be problematic, because it splits when it sees any whitespace like space, tab, or newline. One of the recommendations I've found is to change IFS (Internal Filed Separator) temporarily to split only by the newline:
+<div class = "code_short"><span class="sc8">IFS</span><span class="sc7">=</span><span class="sc5">$'\n'</span><span class="sc0">
+</span><span class="sc4">for</span><span class="sc0"> </span><span class="sc8">i</span><span class="sc0"> </span><span class="sc4">in</span><span class="sc0"> </span><span class="sc11">$(find "$PWD" - name "*.pdf")</span><span class="sc7">;</span><span class="sc0"> </span><span class="sc4">do</span><span class="sc0"> </span><span class="sc8">abiword</span><span class="sc0"> </span><span class="sc8">--to</span><span class="sc7">=</span><span class="sc8">doc</span><span class="sc0"> </span><span class="sc5">"$i"</span><span class="sc7">;</span><span class="sc0"> </span><span class="sc4">done</span><span class="sc0">
+</span><span class="sc2"># for testing:</span><span class="sc0">
+</span><span class="sc2"># for i in $(find "$PWD" - name "*.pdf"); do echo "$i"; done</span><span class="sc0">
+</span><span class="sc4">unset</span><span class="sc0"> </span><span class="sc8">IFS</span>
+</div>
+Adding <span class="code_quote">"$PWD"</span> to <span class="code_quote">find</span> will list full path, we can omit it. I was also thinking about concatenating <span class="code_quote">ls</span> and <span class="code_quote">grep</span> commands but it wasn't the best idea especially I had subfolders to search in and for files in subfolders I wouldn't get relative paths in one line to pipe it further (until it's possibly but tricky?).<br/>
+I came to conclusion that best solution is to use <span class="code_quote">find</span> and get rid of <span class="code_quote">for</span> loop by replacing it with <span class="code_quote">while</span> and <span class="code_quote">read</span>. The best solution is listed below:</br>
+<div class = "code_short"><span class="sc4">find</span><span class="sc0"> </span><span class="sc8">-name</span><span class="sc0"> </span><span class="sc5">"*.pdf"</span><span class="sc0"> </span><span class="sc7">|</span><span class="sc0"> </span><span class="sc4">while</span><span class="sc0"> </span><span class="sc4">read</span><span class="sc0"> </span><span class="sc8">i</span><span class="sc7">;</span><span class="sc0"> </span><span class="sc4">do</span><span class="sc0"> </span><span class="sc8">abiword</span><span class="sc0"> </span><span class="sc8">--display</span><span class="sc7">=</span><span class="sc8">none</span><span class="sc0"> </span><span class="sc8">--to</span><span class="sc7">=</span><span class="sc8">txt</span><span class="sc0"> </span><span class="sc5">"$i"</span><span class="sc7">;</span><span class="sc0"> </span><span class="sc4">done</span><span class="sc0">
+</span><span class="sc2"># for testing:</span><span class="sc0">
+</span><span class="sc2"># find -name "*.pdf" | while read i; do echo "$i"; done</span>
+</div>
+As you can notice I've changed also conversion to txt instead of doc as it was much faster and added <span class="code_quote">--display=none</span> what helped me to start this script in WSL openSUSE and omit "GTK" errors, but in Ubuntu it wasn't not necessary.<br/>
+Finally I could search txt files for some specific phrases to track the file and I used in my opinion best tool for this which is <a class="external_link" target="_blank" href="https://ghisler.com" >Total Commander</a>.
+</div>

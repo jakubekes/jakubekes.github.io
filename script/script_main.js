@@ -299,6 +299,10 @@ var routes = {
 	'/ps_create_files_loop_from_csv': function () { 
 		contents_load_func("articles/ps_create_files_loop_from_csv")
     }
+	,  	  
+	'/ps_search_txt_filter_save_to_file': function () { 
+		contents_load_func("articles/ps_search_txt_filter_save_to_file")
+    }
 };
 
 	var router = Router(routes);
