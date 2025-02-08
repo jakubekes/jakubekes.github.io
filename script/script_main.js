@@ -298,10 +298,12 @@ var routes = {
     },  	  
 	'/ps_create_files_loop_from_csv': function () { 
 		contents_load_func("articles/ps_create_files_loop_from_csv")
-    }
-	,  	  
+    },  	  
 	'/ps_search_txt_filter_save_to_file': function () { 
 		contents_load_func("articles/ps_search_txt_filter_save_to_file")
+    },  	  
+	'/wsl_bash_loop_abiword_pdf_to_txt': function () { 
+		contents_load_func("articles/wsl_bash_loop_abiword_pdf_to_txt")
     }
 };
 
