@@ -304,6 +304,12 @@ var routes = {
     },  	  
 	'/wsl_bash_loop_abiword_pdf_to_txt': function () { 
 		contents_load_func("articles/wsl_bash_loop_abiword_pdf_to_txt")
+    },  	  
+	'/wsl_quick_start': function () { 
+		contents_load_func("articles/wsl_quick_start")
+    },
+    '/slackware_init_probs': function () {
+		contents_load_func("articles/slackware_init_probs")
     }
 };
 

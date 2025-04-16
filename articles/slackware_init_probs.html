@@ -1,0 +1,264 @@
+<span class = "content_title"> <a href="#/linux">Linux</a> / <span class = "content_title_current">Slackware initial post install problems</span> </span>
+<hr/>
+<br/>
+
+<div>
+&emsp;Quick notes in a FAQ form to describe encountered problems during and after Slackware Linux installation on a bare metal machine:<br/>
+<ul>
+    <li>
+    Perfect install instructions can be found <a class="external_link" target="_blank" href="https://docs.slackware.com/slackware:install">here</a> and <a class="external_link" target="_blank" href="https://docs.slackware.com/slackware:beginners_guide">here</a>. First we need to list all devices with <span class = "code_quote">fdisk -l</span> and then choose destination drive i.e. <span class = "code_quote">fdisk /dev/sda</span>. First time I didn't create EFI partition on the drive and in next steps I didn't notice that I choose EFI partition from my another drive with Windows installation! It caused problems later after the installation when I was trying to <span class = "code_quote">slackpkg update</span> and <span class = "code_quote">slackpkg upgrade</span>, because it did lead to Kernel upgrade and as I assume it didn't mount automatically after first reboot - I would need to edit <span class="quote">/etc/fstab</span> to get mounted partition from another drive.<br/>
+    So following help information in fdisk, we create EFI, swap and main volume mounted in the root (/), but of course we can create more of them, like separate one for the home directory.<br/>
+    Installation process is rather clear and straightforward, I recommend just to get some knowledge about available packets to not install not necessary stuff.
+    </li>
+
+    <li>
+    In terminal we create user "slacker" including home directory (-m switch), we set primary group (-g) and other groups (-G) and also login shell:<br/>
+    <span class = "code_quote">useradd -m -g users -G wheel,floppy,audio,video,cdrom,plugdev,power,netdev,lp,scanner -s /bin/bash slacker</span><br/>
+    or separately:<br/>
+    <span class = "code_quote">useradd -m -s /bin/bash slacker</span><br/>
+    <span class = "code_quote">usermod -g users -aG wheel,floppy,audio,video,cdrom,plugdev,power,netdev,lp,scanner slacker</span><br/>
+    List all users:<br/>
+    <span class = "code_quote">cat /etc/passwd</span><br/>
+    List all groups:<br/>
+    <span class = "code_quote">cat /etc/group</span><br/>
+    Add <span class = "code_quote">|grep slacker</span> to filter for slacker user info.
+    </li>
+
+    <li>
+    Create password for the new user as later you won't be allowed to log into graphical user interface! It's not possible to do this with the root account!:<br/>
+    <span class = "code_quote">passwd slacker</span><br/>
+    </li>
+
+    <li>
+    Still as the root type <span class = "code_quote">visudo</span> and uncomment wheel group to allow users to execute any command.
+    </li>
+
+    <li>
+    To start with a graphical login screen on boot instead of Slackware's default console login, change the default runlevel to 4. Edit the file <span class = "quote">/etc/inittab</span> and change the line that looks like
+    <span class = "quote">id:3:initdefault:</span> to <span class = "quote">id:4:initdefault:</span><br/>
+    </li>
+
+    <li>
+    Edit mirrors file for slackpkg to allow to update and upgrade packages. It should be mirror for the correct version of Slackware you are using:<br/>
+    <span class = "code_quote">vim /etc/slackpkg/mirrors</span>
+    </li>
+
+    <li>
+    Run: <span class = "code_quote">slackpkg update</span> and <span class = "code_quote">slackpkg upgrade-all</span>. As written above, be careful when upgrading kernel, it can lead to problems. I needed to run <span class = "code_quote">mkinitrd</span>, then copy <span class = "quote">/boot/initrd.gz</span> and <span class = "quote">/boot/vmlinuz</span> files to <span class = "quote">/boot/efi/EFI/Slackware/</span>, then also I've to run <span class = "code_quote">eliloconfig</span>. The message after upgrade I saw was:<br/> <span class = "quote">"Your kernel image was updated, and lilo does not appear to be used on
+your system.  You may need to adjust your boot manager (like GRUB) to
+boot the appropriate kernel (after generating an initrd if required).
+Press the "Enter" key to continue..."</span></br>
+    Because I use EFI and so ELILO, I needed to run eliloconfig (and always we need to generate initrd?).
+    </li>
+
+    <li>
+    After installation and reboot no <span class = "quote">~/.bashrc</span> so in terminal bash didn't show name and hostname but just "bash" and version. Solution -> created the file in user's and root's home and copied some defaults from someones <a class="external_link" target="_blank" href="https://gist.githubusercontent.com/rchowe/1727301/raw/c2dd8d45d62ce2a35ed4ccb7bd499597f3391485/.bashrc">GIT</a>. Why it dissapeared? Don't know.
+    </li>
+
+    <li>
+    Issue with changing hostname, after reboot it went back to darkstar all the
+    time (see this thread on <a class="external_link" target="_blank" href="https://www.linuxquestions.org/questions/slackware-14/can-not-get-the-default-hostname-to-change-on-current-4175649985/">linuxquestions.org</a>). I followed part "Note that there's a code sequence in <span class = "quote">/etc/rc.d/rc.M</span>, that sets the hostname based on what it finds in <span class = "quote">/etc/HOSTNAME"</span>. It fixed my issue, I just created HOSTNAME file in /etc (please notice it must be case sensitive!) and then it worked. Running <span class = "code_quote">netconfig</span> might be the solution too.
+
+    )
+    </li>
+
+    <li>
+    New software installation - my first attempt to install something that it's not included by default, it was htop in newer version, as the one in version 15.0 has no I/O monitoring. I downloaded it from official Slackware <a class="external_link" target="_blank" href="https://packages.slackware.com">site</a>, searching in packages for current release. I installed with command  <span class = "code_quote">installpkg htop-3.4.0-x86_64-1.txz</span>. Unfortunately I got many errors when trying to launch about missing libraries under <span class = "quote">/usr/lib64</span> altough I had them. To not fight with it too much, I decided to download from <a class="external_link" target="_blank" href="https://github.com/htop-dev/htop/releases">source</a>, unpack and install:</br>
+    <span class = "code_quote">tar -xvf htop-3.4.0.tar.xz</span><br/>
+    <span class = "code_quote">./configure</span><br/>
+    <span class = "code_quote">make</span><br/>
+    <span class = "code_quote">make install</span><br/>
+    One issue that occured, required from me to modify PATH by executing <span class = "code_quote">PATH=$PATH:/usr/local/bin</span>, as this is were binary file has been installed, instead of <span class = "quote">/usr/bin</span>. It works well enough now, but suprisingly I can't change settings with F2 when starting from Konsole, I have to press F4. I.e. F6 for sorting is correct. Weird. This problem can't be seen when launching htop with the Application Launcher. I left it like that, because I couldn't find any solution.<br/>
+
+    <i>
+    By the way on a side note, when still following the installing from source way with Abiword (to dump PDF data to txt) I've learned about <span class = "quote">PKG_CONFIG_PATH</span> environment variable that specifies additional paths in which pkg-config will search for its .pc files.<br/>
+    This variable is used to augment pkg-config's default search path. On a typical Unix system, it will search in the directories /usr/lib/pkgconfig and /usr/share/pkgconfig. This will usually cover system installed modules. However, some local modules may be installed in a different prefix such as /usr/local. In that case, it's necessary to prepend the search path so that pkg-config can locate the .pc files.<br/>
+    The pkg-config program is used to retrieve information about installed libraries in the system. The primary use of pkg-config is to provide the necessary details for compiling and linking a program to a library. This metadata is stored in pkg-config files. These files have the suffix .pc and reside in specific locations known to the pkg-config tool.<br/>
+    To check the <span class = "quote">PKG_CONFIG_PATH</span> value use this command:<br/>
+    <span class = "code_quote">echo $PKG_CONFIG_PATH</span><br/>
+
+    To set the PKG_CONFIG_PATH value use:<br/>
+
+    <span class = "code_quote">export PKG_CONFIG_PATH=/usr/lib/pkgconfig</span><br/>
+
+    or<br/>
+
+    <span class = "code_quote">export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig</span><br/>
+    </i>
+    BTW. I've known variable <span class = "quote">$LD_LIBRARY_PATH</span> when getting errors for libraries during Abiword installation, to append to it execute <span class = "code_quote">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your/custom/path/</span><br/>
+    Installing from source can be painful and time consuming, especially when we need to rely on more dependencies. Even fantastic site <a class="external_link" target="_blank" href="https://slackbuilds.org">slackbuilds.org</a> doesn't solve this issue automatically, but it links to dependencies for each software, allowing us to install it manually. Luckily, some people created automation tools to install software in a very easy way. One of them is <a class="external_link" target="_blank" href="https://dslackw.gitlab.io/slpkg">slpkg</a>. As the site informs, we can install from slackbuilds.org as well and I did it that way installing all dependencies first of course, but somehow it failed for me. When I tried to install first, larger package which is LibreOffice (yes, it's not available by default on Slackware) I got some nasty Python errors informing about not initialized variable. Well, I decided not to dig in someones code and solve this issue, so I quickly moved to another package automation tool which is <a class="external_link" target="_blank" href="https://sbopkg.org/">sbopkg</a>. I downloaded ready package from the official site (it's not available on slackbuilds.org anyway) and installed without issue, after that everything worked flawlessly.<br/>
+    Attention! To build in parallel remember to add <span class = "code_quote">-j$(nproc)</span> parameter to <span class = "code_quote">make</span> (see <a class="external_link" target="_blank" href="https://www.gnu.org/software/make/manual/html_node/Options-Summary.html">this</a> and <a class="external_link" target="_blank" href="https://www.gnu.org/software/make/manual/html_node/Parallel.html">this</a> ) in <span class = "quote">configure</span> file or add/uncomment (depending) in the same file <span class = "code_quote">MAKEFLAGS=-j$(nproc)</span>. When using sbopkg we can edit <span class = "quote">/etc/sbopkg/sbopkg.conf</span> and add
+    <span class = "code_quote">export MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}</span>. To make the variable set at startup, we could put it to shell's start-up file, such as ~/.bashrc.
+
+    <li>
+    Qemu quick scripts including network access (see <a class="external_link" target="_blank" href="#/qemu_basics">QEMU article</a> for basic info). Please note that libslirp library should be installed to use user-mode networking! Initial steps:<br/>
+    <span class = "code_quote">echo allow br0 > /etc/qemu/bridge.conf</span><br/>
+    <span class = "code_quote">chmod 755 /dev/net/tun</span><br/>
+    <span class = "code_quote">/etc/rc.d/rc.inet1 restart</span><br/>
+
+
+    Enable tap bridge:
+        <div id="code_id_1" class ="code_short">ip tuntap add tap0 mode tap user jakub
+ip link set tap0 up
+ip link add br0 type bridge
+ip link set tap0 master br0
+ip link set dev eth0 down
+ip addr flush dev eth0
+ip link set dev eth0 up
+ip link set eth0 master br0
+ip link set dev br0 up
+dhclient -v br0</div>
+    Start VM with tap bridge:
+    <div id="code_id_1" class ="code_short">qemu-system-x86_64 -cdrom ubuntu-24.04.2-desktop-amd64.iso -enable-kvm -m 8192 -smp 4 -drive file=Ubuntu.qcow,format=qcow2 -netdev tap,id=mynet0,ifname=tap0,script=no,downscript=no -device e1000,netdev=mynet0,mac=52:55:00:d1:55:01 -audio driver=sdl,model=virtio -vga virtio</div>
+    Start VM with QEMU user networking (NAT):
+    <div id="code_id_2" class ="code_short">qemu-system-x86_64 -cdrom ubuntu-24.04.2-desktop-amd64.iso -enable-kvm -m 8192 -smp 4 -drive file=Ubuntu.qcow,format=qcow2 -netdev user,id=user.1 -device e1000,netdev=user.1 -audio driver=sdl,model=virtio -vga virtio</div>
+    I also tried to install and use <a class="external_link" target="_blank" href="https://libvirt.org/">libvirt</a> with <a class="external_link" target="_blank" href="https://virt-manager.org/">virt-manager</a>, but due to constantly failing to initialize network and seeing this error among others: <span class = "quote">Network 'default' is not active</span> and <span class = "quote">dnsmasq: failed to create listening socket for port 53: Address already in use</span> - after hours of trying different solutions (like <a class="external_link" target="_blank" href="https://github.com/NixOS/nixpkgs/issues/227070">https://github.com/NixOS/nixpkgs/issues/227070</a>) I've resigned from it as everything actually works with the clean QEMU.<br/>
+    Useful links:</br>
+    - <a class="external_link" target="_blank" href="https://wiki.qemu.org/Documentation/Networking">https://wiki.qemu.org/Documentation/Networking</a></br>
+    - <a class="external_link" target="_blank" href="https://superuser.com/questions/818347/how-to-bridge-tap-to-eth0-on-raspberry-pi">https://superuser.com/questions/818347/how-to-bridge-tap-to-eth0-on-raspberry-pi</a></br>
+    - <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/Network_bridge">https://wiki.archlinux.org/title/Network_bridge</a></br>
+    - <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/QEMU#Networking">https://wiki.archlinux.org/title/QEMU#Networking</a></br>
+    - <a class="external_link" target="_blank" href="https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c">https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c</a></br>
+    </li>
+
+    <li>
+    I've installed Apache server and it runs by default, no special config for this, just changed paths in <span class = "code_quote">/etc/httpd/httpd.conf</span> in
+    <span class = "code_quote">DocumentRoot "/srv/httpd/htdocs"</span> and <span class = "code_quote">&lt;Directory "/srv/httpd/htdocs"&gt;</span> to <span class = "code_quote">/srv/httpd</span> and created my folder(s) there with html websites inside. After this we need to restart the service by executing <span class = "code_quote">/etc/rc.d/rc.httpd restart</span>. Just important thing to remember that folders in /srv link to /var/www:<br/>
+    <div id="code_id_1" class ="code_short">$ ls -il
+total 0
+11534339 lrwxrwxrwx 1 root root 8 mar 13 11:45 httpd -> /var/www
+11534338 lrwxrwxrwx 1 root root 8 mar 13 11:45 www -> /var/www</div>
+    </li>
+
+    <li>
+    Next important step was to fix scraching noise by changing pulseaudio to pipewire by following <a class="external_link" target="_blank" href="https://www.linuxquestions.org/questions/slackware-14/using-pipewire-instead-of-pulseaudio-in-slackware-15-a-4175693980/">this</a> instruction. "First, you will need add the following 3 desktop files in <span class = "quote">/etc/xdg/autostart</span>:<br/>
+    <span class = "quote">pipewire.desktop</span><br/>
+    <div id="code_id_1" class ="code_short">[Desktop Entry]
+Version=1.0
+Name=PipeWire Media System
+Comment=Start the PipeWire Media System
+Exec=/usr/bin/daemon -frB --pidfiles=~/.run --name=pipewire /usr/bin/pipewire
+Terminal=false
+Type=Application
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1</div>
+    <span class = "quote">pipewire-pulse.desktop</span><br/>
+    <div id="code_id_1" class ="code_short">[Desktop Entry]
+Version=1.0
+Name=PipeWire Pulse
+Comment=Start the PipeWire Pulse
+Exec=/usr/bin/daemon -frB --pidfiles=~/.run --name=pipewire-pulse /usr/bin/pipewire-pulse
+Terminal=false
+Type=Application
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1</div>
+    <span class = "quote">pipewire-media-session.desktop</span><br/>
+    <div id="code_id_1" class ="code_short">[Desktop Entry]
+Version=1.0
+Name=PipeWire Media Session
+Comment=Start the PipeWire Media Session
+Exec=/usr/bin/daemon -frB --pidfiles=~/.run --name=pipewire-media-session /usr/bin/pipewire-media-session
+Terminal=false
+Type=Application
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1</div>
+    Then, you need to edit <span class = "code_quote">/etc/pulse/client.conf</span> and change <span class = "code_quote">autospawn = yes</span> to <span class = "code_quote">autospawn = no</span>, then remove/move/rename <span class = "code_quote">/etc/xdg/autostart/pulseaudio.desktop</span>. Actually later I've noticed that all these 3x files are actually included in the directory with ".sample" suffix, so we can just copy them and rename by removing it.<br/>
+    The related "xdg" path is important thing to revise wider by quoting one of the users from <a class="external_link" target="_blank" href="https://bbs.archlinux.org/viewtopic.php?id=99534">this</a> topic:<br/>
+    <span class = "quote">XDG stands for X Development Group, which was the old name of FreeDesktop.org:<br/>
+    freedesktop.org wrote:<br/>
+
+        "Freedesktop.org is open source / open discussion software projects working on interoperability and shared technology for X Window System desktops. The most famous X desktops are GNOME and KDE, but developers working on any Linux/UNIX GUI technology are welcome to participate."<br/>
+
+    I believe /etc/xdg/ is the system-wide equivalent of ~/.config/, in other words a place to define default configuration files for applications that comply with the freedesktop standards.</span>
+
+    <li>
+    Renamed <span class = "quote">/etc/rc.d/rc.sshd</span> to <span class = "quote">/etc/rc.d/rc.sshd_disabled</span> to disable it on boot.
+    </li>
+
+    <li>
+    I've investigated NTFS BitLocker encrypted device mount process, normally it's straightforward from the GUI, we need to authenticate with the BitLocker key/password and then with root password to mount it. To decrypt BitLocker volume Slackware uses <a class="external_link" target="_blank" href="https://linux.die.net/man/8/cryptsetup">cryptsetup</a> and later <a class="external_link" target="_blank" href="https://www.freedesktop.org/wiki/Software/udisks/">udisks</a> to manage storage devices. Authorization manager is called <a class="external_link" target="_blank" href="https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html">polkit</a>. Manual way to mount BitLocker NTFS device would look like this:<br/>
+    <div id="code_id_1" class ="code_short"><span class = "code_quote">cryptsetup open /dev/sda2 --type=bitlk mapped_name</span>
+Enter passphrase for /dev/sda2:
+<span class = "code_quote">udisks --mount /dev/mapper/mapped_name</span>
+Mounted /org/freedesktop/UDisks/devices/dm_2d0 at /media/Data1</div>
+    <span class = "code_quote">mapped_name</span> is a name and an argument needed to unlock device and map it under <span class = "quote">/dev/mapper</span>. Later we use full path to mount the mapped device with <span class = "code_quote">udisks</span>. Udisks command must be run as an user to access the device from the GUI! Of course we will get asked for a root password.
+    </li>
+
+    <li>Interesting commands and paths:<br>
+    - <span class="code_quote">netstat -lntu</span> - list service which are listening on some port, show port number, show tcp and udp ports and name of the program.<br/>
+    - <span class="code_quote">netconfig</span> - configure your network in TUI way.<br/>
+    - <span class="quote">/etc/ssh/sshd_config</span> - ssh config.<br/>
+    - <span class="quote">/etc/services</span> - opened services/ports.<br/>
+    - <span class="quote">/etc/rc.d</span> - a directory containing scripts used to control the starting, stopping, and restarting of system services or daemons.<br/>
+    - <span class="quote">/etc/rc.d/rc.inet1.conf</span> - main net conf file. It configures your networking devices and sets up your routing<br/>
+    - <span class="quote">/etc/log/</span> - path to log files.<br/>
+    - <span class="quote">/usr/share/xsessions/</span> - path to .desktop session config files.<br/>
+    - <span class="quote">/etc/rc.d/rc.inet2.conf</span> - any services or daemons that use the network should be started from this file. Most of the rc scripts in charge of starting daemons like inetd, sshd, bind, nfs, etc get called from rc.inet2 (<a class="external_link" target="_blank" href="http://www.slackware.com/config/network.php">more on networking on the offical site :)</a>).<br/>
+    - <span class="code_quote">getent passwd</span> - list all users.<br/>
+    - <span class="code_quote">cat /etc/passwd</span> - list all users.<br/>
+    - <span class="code_quote">getent group</span> - list all groups.<br/>
+    - <span class="code_quote">cat /etc/group</span> - list all groups.<br/>
+    - <span class="code_quote">less /proc/modules</span> - list all available modules/drivers.<br/>
+    - <span class="code_quote">lsmod</span> - list all loaded modules/drivers.<br/>
+    - <span class="code_quote">modinfo &lt;module name&gt;</span> - show info about the given module.<br/>
+    - <span class="code_quote">modprobe &lt;module name&gt;</span> - load specified module.<br/>
+    - <span class="code_quote">dmesg</span> - diagnostic message.<br/>
+    - <span class="code_quote">xwmconfig</span> - select window manager.<br/>
+    - <span class="code_quote">grep -r '/path/to/somewhere/' -e 'pattern'</span> - search recursively for some text in all files.<br/>
+    </li>
+    <li>Interesting links:<br>
+    <ul>
+    <li>
+    <a class="external_link" target="_blank" href="https://alien.slackbook.org/blog/how-i-setup-apache-for-slackware-nl">https://alien.slackbook.org/blog/how-i-setup-apache-for-slackware-nl</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://wiki.qemu.org/Documentation/Networking">https://wiki.qemu.org/Documentation/Networking</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/QEMU">https://wiki.archlinux.org/title/QEMU</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/Network_bridge">https://wiki.archlinux.org/title/Network_bridge</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://www.qemu.org/docs/master/system/devices/net.html">https://www.qemu.org/docs/master/system/devices/net.html</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c">https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="http://xinehq.de/index.php/about">http://xinehq.de/index.php/about</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://apps.kde.org/dragonplayer/">https://apps.kde.org/dragonplayer/</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://www.qtav.org/">https://www.qtav.org/</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://felipec.wordpress.com/2009/12/27/setting-up-qemu-with-a-nat/">https://felipec.wordpress.com/2009/12/27/setting-up-qemu-with-a-nat/</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/Internet_sharing">https://wiki.archlinux.org/title/Internet_sharing</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="http://www.linux-kvm.org/page/Networking">http://www.linux-kvm.org/page/Networking</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://forum.proxmox.com/threads/e1000-vs-virtio.80553/">https://forum.proxmox.com/threads/e1000-vs-virtio.80553/</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://docs.slackware.com/howtos:slackware_admin:building_packages_with_sbopkg">https://docs.slackware.com/howtos:slackware_admin:building_packages_with_sbopkg</a>
+    </li>
+    <li>
+    <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/Xinit">https://wiki.archlinux.org/title/Xinit</a>
+    </li>
+    </ul>
+
+https://wiki.archlinux.org/title/Xinit
+
+    </li>
+
+</ul>
+
+</div>

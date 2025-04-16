@@ -408,6 +408,11 @@ nav .mainmenu>li {
 .sc0 {
 	color: #9cc;
 }
+.sc1 {
+	font-weight: bold;
+	font-style: italic;
+	color: #7F9F7F;
+}
 .sc2 {
 	font-weight: bold;
 	font-style: italic;
@@ -426,6 +431,10 @@ nav .mainmenu>li {
 .sc6 {
 	color: #CC9393;
 }
+.sc8 {
+	font-weight: bold;
+	color: #DFC47D;
+}
 .sc9 {
 	color: #FFCFAF;
 }
@@ -433,13 +442,10 @@ nav .mainmenu>li {
 	font-weight: bold;
 	color: #9F9D6D;
 }
-.sc11 {
-	
+.sc13 {
+	color: #7F9F7F;
 }
-.sc16 {
-	font-weight: bold;
-	color: #CEDF99;
-}
+
 
 /*
 https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
