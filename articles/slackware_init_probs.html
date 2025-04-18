@@ -44,7 +44,7 @@
     </li>
 
     <li>
-    Run: <span class = "code_quote">slackpkg update</span> and <span class = "code_quote">slackpkg upgrade-all</span>. As written above, be careful when upgrading kernel, it can lead to problems. I needed to run <span class = "code_quote">mkinitrd</span>, then copy <span class = "quote">/boot/initrd.gz</span> and <span class = "quote">/boot/vmlinuz</span> files to <span class = "quote">/boot/efi/EFI/Slackware/</span>, then also I've to run <span class = "code_quote">eliloconfig</span>. The message after upgrade I saw was:<br/> <span class = "quote">"Your kernel image was updated, and lilo does not appear to be used on
+    Run: <span class = "code_quote">slackpkg update</span> and <span class = "code_quote">slackpkg upgrade-all</span>. As written above, be careful when upgrading kernel, it can lead to problems. I needed to run <span class = "code_quote">mkinitrd</span> (or see below <span class = "code_quote">geninitrd</span>!), then copy <span class = "quote">/boot/initrd.gz</span> and <span class = "quote">/boot/vmlinuz</span> files to <span class = "quote">/boot/efi/EFI/Slackware/</span>, then also I've to run <span class = "code_quote">eliloconfig</span>. The message after upgrade I saw was:<br/> <span class = "quote">"Your kernel image was updated, and lilo does not appear to be used on
 your system.  You may need to adjust your boot manager (like GRUB) to
 boot the appropriate kernel (after generating an initrd if required).
 Press the "Enter" key to continue..."</span></br>
@@ -184,7 +184,25 @@ Mounted /org/freedesktop/UDisks/devices/dm_2d0 at /media/Data1</div>
     <span class = "code_quote">mapped_name</span> is a name and an argument needed to unlock device and map it under <span class = "quote">/dev/mapper</span>. Later we use full path to mount the mapped device with <span class = "code_quote">udisks</span>. Udisks command must be run as an user to access the device from the GUI! Of course we will get asked for a root password.
     </li>
 
+    <li>
+    After my motherboard's BIOS update suprisingly I couldn't get to see my Slackware UEFI partition, altough the drive was normally visible. Changing large amount of settings didn't help. No such a problem with second Windows drive. I booted from USB Stick Slackware installation and first tried to use "assisted" boot option and it worked. I did run <span class = "code_quote">eliloconfig</span> and rebooted. Now I could see Slackware UEFI entry in BIOS and set it at first position to boot, however booting failed with below errors:<br/>
+    <span class = "quote">No kernel modules found for Linux 5.15.161.<br/>
+    mount: mounting /dev/sdd3 on /mnt failed: no such device<br/>
+    Error No /sbin/init found on rootdev (or not mounted). Trouble ahead.</span><br/>
+    I tried later again boot from USB and run installation to get into kind of live environment, mounted my Slackware drive root and efi volumes and played around with copying kernels from <span class = "quote">/boot</span> to <span class = "quote">/boot/efi/EFI/Slackware</span> and modifying <span class = "quote">/boot/efi/EFI/Slackware/elilo.conf</span> but it didn't help. I'm not sure what and why happened, executing just <span class = "code_quote">eliloconfig</span> couldn't make such a mess, could it? <br/>
+    After first after installation (and last) <span class = "code_quote">update-all</span> and <span class = "code_quote">upgrade-all</span> what I've described above, I corrected my mistakes, but still I sometimes could see message that "No kernel modules found" but the system was still booting normally so I didn't bother. I've decided to act like I indeed recently did kernel upgrade and followed stuff in <a class="external_link" target="_blank" href="https://www.linuxquestions.org/questions/slackware-14/no-kernel-modules-found-4175709641">this</a> thread and again I booted from USB stick and luckily could boot to my system with assisted mode and by selecting <span class = "quote">vmlinuz-kernel-huge</span> and I did below:<br/>
+    <div id="code_id_3" class ="code_short"><span class = "code_quote">getinitrd
+cd /boot
+cp initrd.gz ./efi/EFI/Slackware/
+cp vmlinuz-generic-5.15.161 ./efi/EFI/Slackware/
+rm ./efi/EFI/Slackware/vmlinuz
+mv vmlinuz-generic-5.15.161 vmlinuz
+eliloconfig</span></div>
+    I'm aware that copying and renaming kernel and removing old one wasn't necessary as it was good one, but just for clarity I did that. File <span class = "quote">elilo.conf</span> points correctly now to both <span class = "code_quote">initrd.gz</span> and <span class = "code_quote">vmlinuz</span> kernel file and after reboot everything worked like a charm. I couldn't see if still annoying message about missing kernel modules at boot still shows up or if it's really gone, because lines of log messages run too fast sometimes, but at least I avoided reinstallation. I think that maybe <span class = "code_quote">geninitrd</span> does better job than <span class = "code_quote">mkinitrd</span>. Also it's worth to mention about available script made by the Slackware's creator Patrick under this path: <span class = "code_quote">/usr/share/mkinitrd/mkinitrd_command_generator.sh</span> but I didn't investigate it in-depth, possibly it does a great job same as <span class = "code_quote">geninitrd</span>.
+    </li>
+
     <li>Interesting commands and paths:<br>
+    - <span class="code_quote">uname -r</span> - show the kernel version in use.<br/>
     - <span class="code_quote">netstat -lntu</span> - list service which are listening on some port, show port number, show tcp and udp ports and name of the program.<br/>
     - <span class="code_quote">netconfig</span> - configure your network in TUI way.<br/>
     - <span class="quote">/etc/ssh/sshd_config</span> - ssh config.<br/>
@@ -254,11 +272,6 @@ Mounted /org/freedesktop/UDisks/devices/dm_2d0 at /media/Data1</div>
     <a class="external_link" target="_blank" href="https://wiki.archlinux.org/title/Xinit">https://wiki.archlinux.org/title/Xinit</a>
     </li>
     </ul>
-
-https://wiki.archlinux.org/title/Xinit
-
     </li>
-
 </ul>
-
 </div>
