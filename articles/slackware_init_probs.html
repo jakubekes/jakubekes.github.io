@@ -3,7 +3,7 @@
 <br/>
 
 <div>
-&emsp;Quick notes in a FAQ form to describe encountered problems during and after Slackware Linux installation on a bare metal machine:<br/>
+&emsp;Quick notes in a lazy notes form to describe encountered problems during and after Slackware Linux installation on a bare metal machine:<br/>
 <ul>
     <li>
     Perfect install instructions can be found <a class="external_link" target="_blank" href="https://docs.slackware.com/slackware:install">here</a> and <a class="external_link" target="_blank" href="https://docs.slackware.com/slackware:beginners_guide">here</a>. First we need to list all devices with <span class = "code_quote">fdisk -l</span> and then choose destination drive i.e. <span class = "code_quote">fdisk /dev/sda</span>. First time I didn't create EFI partition on the drive and in next steps I didn't notice that I choose EFI partition from my another drive with Windows installation! It caused problems later after the installation when I was trying to <span class = "code_quote">slackpkg update</span> and <span class = "code_quote">slackpkg upgrade</span>, because it did lead to Kernel upgrade and as I assume it didn't mount automatically after first reboot - I would need to edit <span class="quote">/etc/fstab</span> to get mounted partition from another drive.<br/>
