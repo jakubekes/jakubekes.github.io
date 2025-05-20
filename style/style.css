@@ -446,6 +446,14 @@ nav .mainmenu>li {
 	color: #7F9F7F;
 }
 
+/*Vim Styles */
+/*pre { white-space: pre-wrap; font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }*/
+* { font-size: 1em; }
+.Statement { color: #ffff00; }
+.Comment { color: #00ffff; }
+.Identifier { color: #00ffff; font-weight: bold; }
+.Constant { color: #ff40ff; }
 
 /*
 https://stackoverflow.com/questions/21441993/media-queries-doesnt-work
