@@ -1,0 +1,92 @@
+<span class = "content_title"> <a href="#/windows"> Windows</a> / <span class = "content_title_current">WSL quick start</span> </span>
+<hr/>
+<br/>
+
+<div id="code_id_1" class ="code_short" style = "background-color:#012456">wsl --list --online <span class="Comment"># list available distros</span>
+wsl --list <span class="Comment"># list installed distros</span>
+wsl --install<span class="Statement"> -d</span> &lt;distroname&gt; <span class="Comment"># install WSL and choosen distro</span>
+wsl --install<span class="Statement"> -d</span> &lt;distroname&gt; --<span class="Identifier">web-download</span> --<span class="Identifier">enable-wsl1</span> <span class="Comment"># install WSL and choosen distro, do not use MSStore and enable WSL1</span>
+wsl --update <span class="Comment"># update WSL</span>
+wsl --version <span class="Comment"># show WSL details</span>
+wsl<span class="Statement"> -l -v</span> <span class="Comment"># list distros, their status and WSL version</span>
+wsl --<span class="Identifier">set-default-version</span> <span class="Constant">2</span> <span class="Comment"># set default version to WSL2</span>
+wsl --<span class="Identifier">set-version</span> &lt;Distro&gt; &lt;Version&gt; <span class="Comment"># assign WSL version to distro</span>
+wsl<span class="Statement"> -t</span> &lt;Distro&gt; <span class="Comment"># terminate distro (shutdown)</span>
+wsl<span class="Statement"> -d</span> &lt;Distro&gt; <span class="Comment"># launch distro</span>
+wmic diskdrive list brief <span class="Comment"># list all drives with details on Windows machine</span>
+wsl --mount \\.\PHYSICALDRIVE2 <span class="Comment"># mount \\.\PHYSICALDRIVE2 to WSL</span>
+
+<span class="Comment">#for openSUSE TW:</span>
+
+sudo zypper <span class="Statement">in</span><span class="Statement"> -t</span> pattern wsl_systemd <span class="Comment"># install systemd. Needs restart (terminate and relaunch)</span>
+systemctl <span class="Identifier">is-system-running</span> <span class="Comment"># check if systemd is running</span>
+
+<span class="Comment">&lt;# </span>
+<span class="Comment">Another way is to configure the /etc/wsl.conf file of the WSL instance accordingly:</span>
+
+<span class="Comment">[boot]</span>
+<span class="Comment">systemd=true</span>
+
+<span class="Comment">After a reboot, the instance should have systemd. </span>
+<span class="Comment">#&gt;</span>
+
+sudo zypper <span class="Statement">in</span><span class="Statement"> -t</span> pattern wsl_gui <span class="Comment"># install GUI support</span>
+
+<span class="Comment">&lt;#***** From MS site: *****</span>
+<span class="Comment">Build Instructions</span>
+
+<span class="Comment">Instructions for building an x86_64 WSL2 kernel with an Ubuntu distribution using bash are as follows:</span>
+
+<span class="Comment">    Install the build dependencies:</span>
+<span class="Comment">    $ sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev cpio qemu-utils</span>
+
+<span class="Comment">    Modify WSL2 kernel configs (optional):</span>
+<span class="Comment">    $ make menuconfig KCONFIG_CONFIG=Microsoft/config-wsl</span>
+
+<span class="Comment">    Build the kernel using the WSL2 kernel configuration and put the modules in a modules folder under the current working directory:</span>
+<span class="Comment">    $ make KCONFIG_CONFIG=Microsoft/config-wsl &amp;&amp; make INSTALL_MOD_PATH=&quot;$PWD/modules&quot; modules_install</span>
+
+<span class="Comment">    You may wish to include -j$(nproc) on the first make command to build in parallel.</span>
+<span class="Comment">*****		   *****#&gt;</span>
+
+<span class="Comment">&lt;#in openSUSE TW:</span>
+
+<span class="Comment">$ sudo zypper in make</span>
+<span class="Comment">$ sudo zypper in gcc</span>
+<span class="Comment">$ sudo zypper in build</span>
+<span class="Comment">$ sudo zypper in git</span>
+<span class="Comment">$ sudo zypper in linux-headers</span>
+<span class="Comment">$ sudo zypper in openssl</span>
+<span class="Comment">$ sudo zypper in bc</span>
+<span class="Comment">$ sudo zypper in elfutils</span>
+<span class="Comment">$ sudo zypper in libelf-devel</span>
+
+<span class="Comment">$ git clone <a class="external_link" href="https://urldefense.com/v3/__https://github.com/microsoft/WSL2-Linux-Kernel.git__;!!NS5tBFLM26xxuQ!0bbBZ-3oTUTjWy_lbDxmrOgaef9eiLqwPsVM89MYnCz0uFxXKznWFtES4CfT562BvNN6cf6DXLfsYg0d7sXQ--w$">https://urldefense.com/v3/__https://github.com/microsoft/WSL2-Linux-Kernel.git__;!!NS5tBFLM26xxuQ!0bbBZ-3oTUTjWy_lbDxmrOgaef9eiLqwPsVM89MYnCz0uFxXKznWFtES4CfT562BvNN6cf6DXLfsYg0d7sXQ--w$</a> </span>
+<span class="Comment">$ cd WSL2-Linux-Kernel</span>
+<span class="Comment">$ make menuconfig KCONFIG_CONFIG=Microsoft/config-wsl  # change required options and save to same file or another but then change it in the next command (file &quot;Microsoft/config-ws&quot;)</span>
+<span class="Comment">$ make KCONFIG_CONFIG=Microsoft/config-wsl -j$(nproc)</span>
+<span class="Comment">$ sudo mkdir /mnt/c/Users/jakub/.wsl-kernel</span>
+<span class="Comment">$ cp arch/x86_64/boot/bzImage /mnt/c/Users/jakub/.wsl-kernel</span>
+
+<span class="Comment">Then we create in Windows .wslconfig file in our user folder # <a class="external_link" href="https://urldefense.com/v3/__https://learn.microsoft.com/en-us/windows/wsl/wsl-config*configure-global-options-with-wslconfig__;Iw!!NS5tBFLM26xxuQ!0bbBZ-3oTUTjWy_lbDxmrOgaef9eiLqwPsVM89MYnCz0uFxXKznWFtES4CfT562BvNN6cf6DXLfsYg0d4Pc9UCo$">https://urldefense.com/v3/__https://learn.microsoft.com/en-us/windows/wsl/wsl-config*configure-global-options-with-wslconfig__;Iw!!NS5tBFLM26xxuQ!0bbBZ-3oTUTjWy_lbDxmrOgaef9eiLqwPsVM89MYnCz0uFxXKznWFtES4CfT562BvNN6cf6DXLfsYg0d4Pc9UCo$</a> </span>
+
+<span class="Comment">Content of .wslconfig file:</span>
+
+<span class="Comment">[wsl2]</span>
+<span class="Comment">kernel=C:\\Users\\jakub\\.wsl-kernel\bzImage</span>
+
+<span class="Comment">wsl --shutdown # maybe best also to reboot PC - then after relaunching our distro we should have it working with newly compiled kernel</span>
+
+<span class="Comment">My purpose was to add QNX4 and QNX6 filesystems support, I've selected them in &quot;$ make menuconfig KCONFIG_CONFIG=Microsoft/config-wsl&quot; step as built-in kernel option (not a module) and later I could prove and see them with command:</span>
+<span class="Comment">$ cat /proc/filesystems</span>
+
+<span class="Comment">***** OTHER *****</span>
+<span class="Comment">$ cat ~/.bash_history | grep &quot;zypper in&quot; # check bash history and filter with &quot;zypper in&quot;</span>
+<span class="Comment">$ gunzip -dkc /proc/config.gz &gt;&gt; ~/kernel-running-config.txt # decompress and save to a file current kernel config</span>
+<span class="Comment">$ grep &quot;QNX&quot; ~/kernel-running-config.txt # this also proved that QNX filesystem is built-in</span>
+
+<span class="Comment">In case of installing additional kernel functionality as modules we can check them later with:</span>
+<span class="Comment">$ modprobe &lt;module name&gt; # it will load pointed out module if it's not loaded</span>
+<span class="Comment">$ lsmod # it will list loaded modules</span>
+<span class="Comment">$ uname -r # print current in use kernel release</span>
+<span class="Comment">$ ls /lib/modules/$(uname -r) # list available modules. In my case under /lib/modules there is only folder &quot;5.15.167.4-microsoft-standard-WSL2&quot; altough uname -r prints &quot;6.6.75.1-microsoft-standard-WSL2+&quot; after loading newly compiled kernel, possibly because no modules have been added during the compilation process. Please remember that it's not possible to add modules to original WSL kernel, that's why we need to compile our own.#&gt;</span></div>
